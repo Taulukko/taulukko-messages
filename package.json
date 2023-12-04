@@ -1,0 +1,26 @@
+{
+  "name": "taulukko-messages",
+  "version": "0.0.1",
+  "description": "Simple messaging system in-memory based on WebSocket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "publish": "npm publish",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Taulukko/taulukko-messages.git"
+  },
+  "keywords": [
+    "messaging",
+    "topic",
+    "web-socket"
+  ],
+  "author": "Edson Vicente Carli Junior",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Taulukko/taulukko-messages/issues"
+  },
+  "homepage": "https://github.com/Taulukko/taulukko-messages#readme"
+}
