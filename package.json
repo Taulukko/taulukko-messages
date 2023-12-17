@@ -4,9 +4,13 @@
   "description": "Simple messaging system in-memory based on WebSocket",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "tsc --sourceMap",
+    "posttest": "npm run tslint",
+    "tsfm": "tsfmt -r --no-tslint",
+    "test": "jest --env node",
     "publish": "npm publish",
-    "start": "node index.js"
+    "start": "node -r source-map-support/register index.js",
+    "startDev": "nodemon  -r source-map-support/register index.js"
   },
   "repository": {
     "type": "git",
@@ -22,5 +26,37 @@
   "bugs": {
     "url": "https://github.com/Taulukko/taulukko-messages/issues"
   },
-  "homepage": "https://github.com/Taulukko/taulukko-messages#readme"
+  "homepage": "https://github.com/Taulukko/taulukko-messages#readme",
+  "dependencies": {
+    "source-map-support": "^0.5.16",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@google-cloud/nodejs-repo-tools": "^3.3.0",
+    "@types/express": "^4.16.0",
+    "@types/jest": "^24.0.15",
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.7",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^10.9.1",
+    "tslint": "^5.11.0",
+    "tslint-eslint-rules-recommended": "^1.2.2",
+    "typescript": "^3.0.1",
+    "typescript-formatter": "^7.2.2",
+    "express": "^4.16.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "\\.test\\.ts",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
 }

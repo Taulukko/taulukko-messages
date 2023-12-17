@@ -1,2 +1,2 @@
 # taulukko-messages
-Simple messagery system in memory baseaded in websocket
+Simple messaging system in-memory based on WebSocket
