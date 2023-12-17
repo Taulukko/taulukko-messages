@@ -30,6 +30,10 @@ test('init Server',async  () => {
 });
 
 
+test('publish a string message for all',async  () => {
+
+});
+
 
 test('publish a string message',async  () => {
   const server = await initServer();
