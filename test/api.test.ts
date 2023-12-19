@@ -1,4 +1,4 @@
-import  {Server,Publisher,Subscriber,Message} from 'index.ts';
+import  {Server,Publisher,Subscriber,Message} from 'index';
 
 async function initServer(options={}){
 
@@ -16,7 +16,7 @@ test('init Server',async  () => {
   expect(server.data().online).toBe(true);
   expect(server.data().status).toBe("ONLINE");
 
-  server.forceClose();//close without exceptions
+  await server.forceClose();//close without exceptions
 
   server = await initServer({port:7778,localhost:"127.0.0.1"});
 
@@ -25,7 +25,7 @@ test('init Server',async  () => {
   expect(server.data().online).toBe(true);
   expect(server.data().status).toBe("ONLINE");
 
-  server.forceClose();//close without exceptions
+  await server.forceClose();//close without exceptions
  
 });
 
@@ -48,12 +48,12 @@ test('publish a string message for all',async  () => {
 
   await subscriber.open();
 
-  server.sendAll("topic.helloWorld","test");
-  server.sendAll(null,"test2");
+  await server.sendAll("topic.helloWorld","test");
+  await server.sendAll(null,"test2");
 
-  subscriber.close();
+  await subscriber.close();
   
-  server.close();
+  await server.close();
 });
 
 
@@ -98,12 +98,12 @@ test('publish a string message',async  () => {
 
   expect(server.subscribers[0].status).toBe("ONLINE");
 
-  publisher.send("topic.helloWorld","Hello World");
+  await publisher.send("topic.helloWorld","Hello World");
 
-  subscriber.close();
+  await subscriber.close();
 
-  publisher.close();
+  await publisher.close();
   
-  server.close();
+  await server.close();
 });
  
