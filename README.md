@@ -61,7 +61,8 @@ async function subscribeToTopic() {
 ### Documentation
 
 For detailed information on how to use and contribute to the project, please refer to the documentation available on the GitHub Wiki page of this project. You can find it at [the GitHub Wiki page of Taulukko Message](https://github.com/Taulukko/taulukko-messages/wiki).
-```
+
+---
 
 ### Contributions
 
