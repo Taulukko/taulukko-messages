@@ -1,11 +1,17 @@
 {
   "compilerOptions": {
     "target": "es2016",
-    "module": "commonjs"
+    "module": "commonjs",
+    "baseUrl": "./" ,
+    "paths": {
+      "@server/*": ["src/server/*"], 
+      "@client/*": ["src/client/*"], 
+      "@common/*": ["src/common/*"] 
+    }
   },
   "include": [
     "./**/*.ts" 
-  ],
+, "src/poc/server.poc.js"  ],
   "exclude":[
     "./demos/*",
     "./**/bin/*",

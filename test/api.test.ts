@@ -1,4 +1,4 @@
-import  {Server,Publisher,Subscriber,Message} from '../index';
+import  {Server,Publisher,Subscriber,Message} from 'index.ts';
 
 async function initServer(options={}){
 
@@ -31,7 +31,29 @@ test('init Server',async  () => {
 
 
 test('publish a string message for all',async  () => {
+  const server = await initServer(); 
+ 
+  let countMessages=0;
 
+  const subscriber = await Subscriber.create({
+    server:"taulukko://localhost:7777",
+    topics:["topic.helloWorld","unexistentTopic"],
+    handler:(message:Message)=>{
+      countMessages++;
+      expect(["topic.helloWorld","unexistentTopic"] ).toContain(message.topic);
+      expect(message.data).toBe("Hello World");
+      expect(countMessages).toBe(1);
+    }
+  }); 
+
+  await subscriber.open();
+
+  server.sendAll("topic.helloWorld","test");
+  server.sendAll(null,"test2");
+
+  subscriber.close();
+  
+  server.close();
 });
 
 
@@ -76,7 +98,7 @@ test('publish a string message',async  () => {
 
   expect(server.subscribers[0].status).toBe("ONLINE");
 
-  publisher.publish("topic.helloWorld","Hello World");
+  publisher.send("topic.helloWorld","Hello World");
 
   subscriber.close();
 
