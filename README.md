@@ -43,10 +43,11 @@ import { Publisher, Subscriber, Message } from 'taulukko-messages';
 //Publishing
 async function publishMessage() {
   const publisher = Publisher.create({
-    server: "taulukko://localhost:7777"
+    server: "taulukko://localhost:7777",
+    topics: ["topic.helloWorld"]
   });
   await publisher.open();
-  await publisher.send("topic.helloWorld", "Hello World");
+  await publisher.send("Hello World");
   await publisher.close();
 }
 
