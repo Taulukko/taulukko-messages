@@ -24,8 +24,12 @@ npm install taulukko-messages
 ```javascript
 import { Server } from 'taulukko-messages';
 
-async function initServer(options = {}) {
-  const server = Server.create(options);
+async function initServer() {
+
+  const server = Server.create({
+    host:"localhost",
+    port:7777
+  });
   await server.open();
   return server;
 }
