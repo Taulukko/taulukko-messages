@@ -1,4 +1,4 @@
-import {Data} from "@common/data";
+import {Data} from "src/common/data";
 
 
 export class Server {

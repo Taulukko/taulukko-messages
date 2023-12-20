@@ -1,4 +1,4 @@
-import  {Server,Publisher,Subscriber,Message} from 'index';
+import  {Server,Publisher,Subscriber,Message} from '../index';
 
 async function initServer(options={}){
 
@@ -29,32 +29,6 @@ test('init Server',async  () => {
  
 });
 
-
-test('publish a string message for all',async  () => {
-  const server = await initServer(); 
- 
-  let countMessages=0;
-
-  const subscriber = await Subscriber.create({
-    server:"taulukko://localhost:7777",
-    topics:["topic.helloWorld","unexistentTopic"],
-    handler:(message:Message)=>{
-      countMessages++;
-      expect(["topic.helloWorld","unexistentTopic"] ).toContain(message.topic);
-      expect(message.data).toBe("Hello World");
-      expect(countMessages).toBe(1);
-    }
-  }); 
-
-  await subscriber.open();
-
-  await server.sendAll("topic.helloWorld","test");
-  await server.sendAll(null,"test2");
-
-  await subscriber.close();
-  
-  await server.close();
-});
 
 
 test('publish a string message',async  () => {
@@ -109,3 +83,29 @@ test('publish a string message',async  () => {
   await server.close();
 });
  
+
+test('publish a string message for all',async  () => {
+  const server = await initServer(); 
+ 
+  let countMessages=0;
+
+  const subscriber = await Subscriber.create({
+    server:"taulukko://localhost:7777",
+    topics:["topic.helloWorld","unexistentTopic"],
+    handler:(message:Message)=>{
+      countMessages++;
+      expect(["topic.helloWorld","unexistentTopic"] ).toContain(message.topic);
+      expect(message.data).toBe("Hello World");
+      expect(countMessages).toBe(1);
+    }
+  }); 
+
+  await subscriber.open();
+
+  await server.sendAll("topic.helloWorld","test");
+  await server.sendAll(null,"test2");
+
+  await subscriber.close();
+  
+  await server.close();
+});
