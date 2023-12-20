@@ -5,12 +5,27 @@
 Taulukko Messages is a lightweight, efficient, and embedded JavaScript messaging library designed to facilitate communication between servers and components through a publish/subscribe model. This library is ideal for applications that require a reliable messaging system.
 
 ### Features
+
 - **Ease of Configuration**: Quickly set up message servers with a simple set of options.
 - **Flexible Publishing and Subscription**: Send messages to multiple topics and easily subscribe to receive updates.
 - **Efficient Message Handling**: Deal with received messages using an intuitive message handler system.
 - **High Performance**: Designed to handle high volumes of messages with low latency.
 
+### Project Goals
+
+- Provide a simple way to learn and implement messaging systems.
+- Offer an easy-to-integrate, embedded messaging system solution.
+- Ideal for small-scale projects seeking to avoid unnecessary complexities.
+- Supports handling thousands of messages per second efficiently.
+
+### Project Limitations
+
+- Does not support multi-server architectures.
+- Lacks persistence; all data is lost if the server shuts down.
+- Designed for vertical scaling, best suited for projects with a single server and a steady, controlled number of clients.
+
 ### Installation
+
 You can install Taulukko Messages via NPM:
 
 ```bash
