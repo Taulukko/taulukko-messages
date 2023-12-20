@@ -1,11 +1,11 @@
 import {Data} from "./data";
 
 export class Publisher {
-    static create(options: {}):Publisher {
+    static create(options: any):Publisher {
       throw new Error('Method not implemented.');
     }
     
-    async open(){}
+    async open(options:any){}
     async close(){}
     public data():Data  {
       throw new Error('Method not implemented.');

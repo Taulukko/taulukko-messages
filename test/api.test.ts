@@ -69,7 +69,9 @@ test('publish a string message',async  () => {
   expect(server.publishers.length).toBe(1);
   expect(server.publishers[0].status).toBe("CREATED");
 
-  await publisher.open();
+  await publisher.open({
+    topics:["topic.helloWorld","unexistentTopic"]
+  });
 
   expect(server.publishers[0].status).toBe("ONLINE");
 

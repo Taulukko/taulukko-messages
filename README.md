@@ -8,7 +8,7 @@ Taulukko Messages is a lightweight, efficient, and embedded JavaScript messaging
 - **Ease of Configuration**: Quickly set up message servers with a simple set of options.
 - **Flexible Publishing and Subscription**: Send messages to multiple topics and easily subscribe to receive updates.
 - **Efficient Message Handling**: Deal with received messages using an intuitive message handler system.
-- **High Performance and Scalability**: Designed to handle high volumes of messages with low latency.
+- **High Performance**: Designed to handle high volumes of messages with low latency.
 
 ### Installation
 You can install Taulukko Messages via NPM:
