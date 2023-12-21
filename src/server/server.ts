@@ -1,5 +1,5 @@
-import { TaulukkoProvider } from "src/server/taulukko";
-import { Provider } from "src/common/provider";
+import { TaulukkoProvider } from "./taulukko";
+import { Provider } from "../common/provider";
 import { ServerData } from "./server-data";
 
 export class Server implements Provider {

@@ -1,10 +1,10 @@
  
-import {Provider} from "src/common/provider"; 
+import {Provider} from "../common/provider"; 
 import { ServerData } from './server-data';
 
 export class TaulukkoProvider implements Provider {
   constructor(options:any){}
-  
+
   open() {
     throw new Error('Method not implemented.');
   }
