@@ -1,5 +1,5 @@
 
-export interface  Data {
+export interface Data {
   status:string;
   online:boolean;
   offline:boolean;

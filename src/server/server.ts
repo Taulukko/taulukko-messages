@@ -1,7 +1,7 @@
-import {Data} from "@common/data";
-import {Rabbit} from "./strategy/rabbit";
-import { Taulukko } from "./strategy/taulukko";
-import { Provider } from "@common/provider";
+import {Data} from "src/common/data";
+import {Rabbit} from "src/strategy/rabbit";
+import { Taulukko } from "src/strategy/taulukko";
+import { Provider } from "src/provider";
 
 export class Server {
   provider: Provider
