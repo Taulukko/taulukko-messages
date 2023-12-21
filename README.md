@@ -42,7 +42,6 @@ import { Server } from 'taulukko-messages';
 async function initServer() {
 
   const server = Server.create({
-    host:"localhost",
     port:7777
   });
   await server.open();

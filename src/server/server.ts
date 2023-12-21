@@ -1,24 +1,16 @@
-import {Data} from "src/common/data";
-import {Rabbit} from "src/strategy/rabbit";
-import { Taulukko } from "src/strategy/taulukko";
-import { Provider } from "src/provider";
+import { TaulukkoProvider } from "src/server/taulukko";
+import { Provider } from "src/common/provider";
+import { ServerData } from "./server-data";
 
-export class Server {
-  provider: Provider
+export class Server implements Provider {
+  provider: Provider;
 
-  constructor() {
-    const providers = [new Taulukko(), new Rabbit()]
-    // TODO: get name from environment variable to send to canHandle
-    this.provider = providers.find((strategy) => strategy.canHandle("default"));
-    if (this.provider) {
-      this.provider.run()
-    } else {
-      throw new Error("Provider not found.");
-    }
+  private constructor(options: any) {
+    this.provider = options.provider? options.provider: new TaulukkoProvider(options) ;
   }
 
-  static create(options: {}) : Server{
-    throw new Error('Method not implemented.');
+  static create(options: any = {} ) : Server{
+    return new Server(options);
   }
   
   public async open(){}
@@ -40,8 +32,5 @@ export class Server {
     
 };
   
-export interface ServerData extends Data {
-  port:number;
-  host:string;
-}
+
   
