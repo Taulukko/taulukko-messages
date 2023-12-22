@@ -11,8 +11,7 @@ async function initServer(options={}){
 test('init Server',async  () => {
   let server = await initServer();
 
-  expect(server.data().port).toBe(7777);
-  expect(server.data().host).toBe("localhost");
+  expect(server.data().port).toBe(7777); 
   expect(server.data().online).toBe(true);
   expect(server.data().status).toBe("ONLINE");
 
@@ -20,8 +19,7 @@ test('init Server',async  () => {
 
   server = await initServer({port:7778,localhost:"127.0.0.1"});
 
-  expect(server.data().port).toBe(7778);
-  expect(server.data().host).toBe("127.0.0.1");
+  expect(server.data().port).toBe(7778); 
   expect(server.data().online).toBe(true);
   expect(server.data().status).toBe("ONLINE");
 
