@@ -1,4 +1,4 @@
-import { ServerData } from "src/server/server-data"; 
+import { ServerData } from "../server/server-data"; 
  
 export interface Provider {
   open():any;

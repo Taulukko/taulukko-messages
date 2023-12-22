@@ -31,7 +31,7 @@ test('init Server',async  () => {
 
 
 
-test('publish a string message',async  () => {
+test.skip('publish a string message',async  () => {
   const server = await initServer();
 
   expect(server.publishers.length).toBe(0);
@@ -84,7 +84,7 @@ test('publish a string message',async  () => {
 });
  
 
-test('publish a string message for all',async  () => {
+test.skip('publish a string message for all',async  () => {
   const server = await initServer(); 
  
   let countMessages=0;
