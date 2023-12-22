@@ -4,13 +4,18 @@ import { ServerData } from './server-data';
 import {serverStatus} from "./names"; 
 import { logerNames} from "./names"; 
 import { loggerFactory } from "../common/logger"; 
- 
+
+import * as http from "http";
+import * as socketIo from "socket.io"; 
+
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 export class TaulukkoProvider implements Provider {
   options:TaulukkoProviderOptions;
   status:string;
+  server:http.Server;
+  io:socketIo.Server;
  
 
   constructor(options:any){
@@ -20,16 +25,40 @@ export class TaulukkoProvider implements Provider {
     this.status = serverStatus.SERVER_STATUS_STARTING;
   }
 
-  open() {
-    this.status = serverStatus.SERVER_STATUS_ONLINE;
-    logger.trace("TaulukkoProvider start with options : " , this.options);
+    open():Promise<any> {
+      logger.info("TaulukkoProvider starting with options : " , this.options);
+      const ret = new Promise<any>((resolve,reject)=>{
+        this.server = http.createServer((req, res) => {       
+          res.end('Taulukko Message Server is Running');
+        });
+        this.server.listen( this.options.port, () => {
+          logger.info("TaulukkoProvider listen port : " , this.options.port);
+          this.status = serverStatus.SERVER_STATUS_ONLINE;
+          resolve({});
+        });
+        this.io = new socketIo.Server(this.server);
+        
+        this.io.on('connection', (socket) => {
+          console.log('Um usuário se conectou');
+    
+          socket.on('disconnect', () => {
+          console.log('Um usuário se desconectou');
+          });
+    
+          socket.emit('hello', 'Hello World from Socket.IO');
+      });
+   
+    });
+    return ret;
   }
-  close() {
+  async close() {
+    this.io.close();
+    this.server.close();
     this.status = serverStatus.SERVER_STATUS_STOPED;
     logger.trace("TaulukkoProvider ends ");
 
   }
-  forceClose() {
+  async forceClose() {
     try{
       this.close();
     }
@@ -52,7 +81,7 @@ export class TaulukkoProvider implements Provider {
   subscribers(): any[] {
     throw new Error('Method not implemented.');
   }
-  sendAll(topic: string, data: any) {
+  async sendAll(topic: string, data: any) {
     throw new Error('Method not implemented.');
   } 
 }

@@ -10,7 +10,7 @@ class Logger {
   options:LoggerOptions;
 
   constructor(options:any){
-    const defaults = { defaultLevel: LogLevel.ERROR };
+    const defaults = { defaultLevel: LogLevel.INFO };
     options = Object.assign({}, defaults, options);
     this.options = options as LoggerOptions;
   }
