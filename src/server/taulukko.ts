@@ -1,7 +1,12 @@
  
 import {Provider} from "../common/provider"; 
 import { ServerData } from './server-data';
-import * as serverStatus from "./server"; 
+import {serverStatus} from "./names"; 
+import { logerNames} from "./names"; 
+import { loggerFactory } from "../common/logger"; 
+ 
+
+const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 export class TaulukkoProvider implements Provider {
   options:TaulukkoProviderOptions;
@@ -17,9 +22,12 @@ export class TaulukkoProvider implements Provider {
 
   open() {
     this.status = serverStatus.SERVER_STATUS_ONLINE;
+    logger.trace("TaulukkoProvider start with options : " , this.options);
   }
   close() {
     this.status = serverStatus.SERVER_STATUS_STOPED;
+    logger.trace("TaulukkoProvider ends ");
+
   }
   forceClose() {
     try{
@@ -29,11 +37,14 @@ export class TaulukkoProvider implements Provider {
       //TODO:LOG
       this.status = serverStatus.SERVER_STATUS_STOPED;
     }
+    logger.trace("TaulukkoProvider ends (forced) ");
   }
   data(): ServerData {
-    return {port:this.options.port, status: this.status ,
+    const ret = {port:this.options.port, status: this.status ,
       online:this.status==serverStatus.SERVER_STATUS_ONLINE,
       offline:this.status!=serverStatus.SERVER_STATUS_ONLINE};
+      logger.trace("get data ", ret);
+      return ret;
   }
   publishers(): any[] {
     throw new Error('Method not implemented.');

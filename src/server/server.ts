@@ -1,6 +1,12 @@
 import { TaulukkoProvider } from "./taulukko";
 import { Provider } from "../common/provider";
 import { ServerData } from "./server-data";
+import { loggerFactory } from "src/common/logger"; 
+import { logerNames } from "./names";
+
+
+
+const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 export class Server implements Provider {
   provider: Provider;
@@ -10,17 +16,25 @@ export class Server implements Provider {
   }
 
   static create(options: any = {} ) : Server{
-    return new Server(options);
+    const server=  new Server(options);
+    logger.trace("New server created ", server);
+    return server;
   }
   
-  public async open(){
-    return this.provider.open();
+  public async open() {
+    const ret =  this.provider.open();
+    logger.trace("Server started on port: ", this.provider.data().port);
+    return ret;
   }
   public async close(){
-    return this.provider.close();
+    const ret =  this.provider.close();
+    logger.trace("Server stoped ");
+    return ret
   }
   public async forceClose(){
-    return this.provider.forceClose();
+    const ret = this.provider.forceClose();
+    logger.trace("Server stoped (forced)");
+    return ret;
   }
   public data():ServerData  {
     return this.provider.data();
@@ -38,9 +52,6 @@ export class Server implements Provider {
     
 };
   
-export const SERVER_STATUS_STARTING = "STARTING";
-export const SERVER_STATUS_ONLINE = "ONLINE";
-export const SERVER_STATUS_FAIL = "FAIL";
-export const SERVER_STATUS_RESTARTING = "RESTARTING";
-export const SERVER_STATUS_STOPED = "STOPED";
+
+
 
