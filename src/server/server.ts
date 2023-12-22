@@ -1,8 +1,9 @@
-import { TaulukkoProvider } from "./taulukko";
-import { Provider } from "../common/provider";
+import { DefaultProvider } from "../provider/default-provider";
+import { Provider } from "../provider/provider";
 import { ServerData } from "./server-data";
-import { loggerFactory } from "src/common/logger"; 
-import { logerNames } from "./names";
+import { loggerFactory } from "../common/logger"; 
+import { logerNames ,LogLevel} from "./names";
+
 
 
 
@@ -10,9 +11,16 @@ const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 export class Server implements Provider {
   provider: Provider;
+  options: ServerOptions;
 
   private constructor(options: any) {
-    this.provider = options.provider? options.provider: new TaulukkoProvider(options) ;
+    this.provider = options.provider? options.provider: new DefaultProvider(options) ;
+
+    const defaults = { provider:  new DefaultProvider(options) , defaultLogLevel: LogLevel.INFO };
+    options = Object.assign({}, defaults, options);
+    this.options = options as ServerOptions;
+    logger.options.defaultLevel = this.options.defaultLogLevel;
+    console.log(logger.options.defaultLevel,this.options.defaultLogLevel);
   }
 
   static create(options: any = {} ) : Server{
@@ -52,6 +60,9 @@ export class Server implements Provider {
     
 };
   
-
+interface ServerOptions{
+  defaultLogLevel:LogLevel,
+  provider:Provider
+}
 
 

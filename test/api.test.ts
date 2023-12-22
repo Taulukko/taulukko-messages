@@ -1,8 +1,10 @@
 
 import  {Server,Publisher,Subscriber,Message} from '../index';
+import { LogLevel } from 'src/server/names';
 
 async function initServer(options={}){
-
+  const defaults = {defaultLogLevel:LogLevel.ERROR};
+  options = Object.assign({}, defaults, options);
   const server  = await Server.create(options);
   await server.open();
   return server;

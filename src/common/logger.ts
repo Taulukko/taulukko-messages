@@ -1,10 +1,4 @@
-export enum  LogLevel{
-  TRACE=5,
-  DEBUG=4,
-  INFO=3,
-  ERROR=2,
-  CRITICAL=1 
-}
+import { LogLevel } from "src/server/names";
 
 class Logger {
   options:LoggerOptions;
@@ -48,10 +42,8 @@ class Logger {
     return true;
   }
   public log(level:LogLevel,message?: any, ...optionalParams: any[]){
-    if(!this.isLesserOrEqualThan(this.options.defaultLevel,level))
-    {
-      return;
-    }
+    //console.log(this.options,level);
+  
     if(message)
     {
       console.log(message,optionalParams);
@@ -62,6 +54,13 @@ class Logger {
   }
   private common(level:LogLevel, message?: any, ...optionalParams: any[])
   {
+    //console.log("common level before " ,level,this.options.defaultLevel);
+    if(!this.isLesserOrEqualThan(this.options.defaultLevel,level))
+    {
+      //console.log("common level exit " ,level,this.options.defaultLevel);
+      return;
+    }
+    //console.log("common level after " ,level,this.options.defaultLevel);
     if(message)
     {
       this.log(level,message,...optionalParams);
@@ -72,6 +71,7 @@ class Logger {
   }
   public trace(message?: any, ...optionalParams: any[])
   {
+    //console.log("trace level " , LogLevel.TRACE);
     this.common(LogLevel.TRACE,message,...optionalParams);
   }
   public debug(message?: any, ...optionalParams: any[])
