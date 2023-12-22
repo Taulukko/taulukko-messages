@@ -1,11 +1,11 @@
 import { ServerData } from "../server/server-data"; 
  
 export interface Provider {
-  open():any;
-  close():any;
-  forceClose():any;
+  close():any; 
   data():ServerData;
+  forceClose():any;
+  open():any;
   publishers():Array<any>;
   subscribers():Array<any>;
-  sendAll(topic:string,data:any):any;    
+  sendAll(topic:string,data:any):any;
 }

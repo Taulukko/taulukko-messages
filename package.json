@@ -32,7 +32,9 @@
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "source-map-support": "^0.5.16",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@google-cloud/nodejs-repo-tools": "^3.3.0",
