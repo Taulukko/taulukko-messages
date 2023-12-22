@@ -1,21 +1,39 @@
  
 import {Provider} from "../common/provider"; 
 import { ServerData } from './server-data';
+import * as serverStatus from "./server"; 
 
 export class TaulukkoProvider implements Provider {
-  constructor(options:any){}
+  options:TaulukkoProviderOptions;
+  status:string;
+ 
+
+  constructor(options:any){
+    const defaults = { port: 7777 };
+    options = Object.assign({}, defaults, options);
+    this.options = options as TaulukkoProviderOptions;
+    this.status = serverStatus.SERVER_STATUS_STARTING;
+  }
 
   open() {
-    throw new Error('Method not implemented.');
+    this.status = serverStatus.SERVER_STATUS_ONLINE;
   }
   close() {
-    throw new Error('Method not implemented.');
+    this.status = serverStatus.SERVER_STATUS_STOPED;
   }
   forceClose() {
-    throw new Error('Method not implemented.');
+    try{
+      this.close();
+    }
+    catch{
+      //TODO:LOG
+      this.status = serverStatus.SERVER_STATUS_STOPED;
+    }
   }
   data(): ServerData {
-    throw new Error('Method not implemented.');
+    return {port:this.options.port, status: this.status ,
+      online:this.status==serverStatus.SERVER_STATUS_ONLINE,
+      offline:this.status!=serverStatus.SERVER_STATUS_ONLINE};
   }
   publishers(): any[] {
     throw new Error('Method not implemented.');
@@ -26,4 +44,8 @@ export class TaulukkoProvider implements Provider {
   sendAll(topic: string, data: any) {
     throw new Error('Method not implemented.');
   } 
+}
+
+interface TaulukkoProviderOptions {
+  port:number;
 }

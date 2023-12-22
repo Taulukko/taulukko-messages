@@ -13,24 +13,34 @@ export class Server implements Provider {
     return new Server(options);
   }
   
-  public async open(){}
-  public async close(){}
-  public async forceClose(){}
+  public async open(){
+    return this.provider.open();
+  }
+  public async close(){
+    return this.provider.close();
+  }
+  public async forceClose(){
+    return this.provider.forceClose();
+  }
   public data():ServerData  {
-    throw new Error('Method not implemented.');
+    return this.provider.data();
   }
   public publishers():Array<any>{
-    throw new Error('Method not implemented.');
+    return this.provider.publishers();
   }
   public subscribers():Array<any>{
-    throw new Error('Method not implemented.');
+    return this.provider.subscribers();
   }
 
   public async sendAll(topic:string,data:any){
-    throw new Error('Method not implemented.');
+    return this.provider.sendAll(topic,data);
   }
     
 };
   
+export const SERVER_STATUS_STARTING = "STARTING";
+export const SERVER_STATUS_ONLINE = "ONLINE";
+export const SERVER_STATUS_FAIL = "FAIL";
+export const SERVER_STATUS_RESTARTING = "RESTARTING";
+export const SERVER_STATUS_STOPED = "STOPED";
 
-  
