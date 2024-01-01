@@ -5,7 +5,8 @@ import * as http from "http";
 import * as socketIo from "socket.io"; 
 
 import { KeyTool,StringsUtil } from "taulukko-commons/util";
-import { WSServerOptions } from "./";
+import { WSServerOptions, WebSocket } from "./";
+import { validateStateChange } from "../common/service-utils";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -36,26 +37,10 @@ export class WSServer   {
     return this._state;
   }
 
-  
-  private validateStateChange(value:string):string{
-    let valid:boolean = true;
-    if(value==serviceStatus.STARTING && this._state != serviceStatus.RESTARTING)
-    {
-        valid = false;
-    }
-    if(value==serviceStatus.ONLINE && this._state != serviceStatus.STARTING)
-    {
-      valid=false;
-    } 
-    if(valid)
-    {
-      return "OK";
-    }
-    return `Invalid State active : ${this._state} new : ${value}` ;
-  }
+ 
 
   set state(value:string){
-    const validResult = this.validateStateChange(value);
+    const validResult = validateStateChange(this._state,value);
 
     if(validResult!="OK")
     {
@@ -111,10 +96,10 @@ export class WSServer   {
          
          });
    
-    });
-    
-    return ret;
-  };
+      });
+      
+      return ret;
+    };
 
   _bindEvents = async  (socket:socketIo.Socket)=>{
     const websocket = new  WebSocket({socket,id:this.id});
@@ -155,48 +140,6 @@ export class WSServer   {
 
   };
 }
+ 
 
-
-
-
-export class WebSocket { 
-  private socket ;
-  client: WebSocketClient;
-  server: WebSocketServer;
-  constructor(options:WebSocketOptions)
-  {
-    const clientOptions:WebSocketOptions = {...options};
-    clientOptions.id =  (options.socket.client.id ) as string;
-    this.client = new WebSocketClient(clientOptions);
-    this.server = new WebSocketServer(options);
-    this.socket = options.socket;
-  }
-
-  emit = async (event:string, ...args:any)=>
-  {
-    logger.trace("WSSocket emit : " , event, args); 
-    const socket:socketIo.Socket = this.socket;
-    socket.emit(event,...args);
-  };
-
-  send = (...args:any)=>
-  {
-    logger.trace("WSSocket send : " , args); 
-    const socket:socketIo.Socket = this.socket;
-    socket.send(...args);
-  };
-}
-
-export class WebSocketClient { 
-  id: string;
-  constructor(options:WebSocketOptions){
-    this.id = options.id;
-  }
-}
-
-export class  WebSocketServer {
-  id:string;
-  constructor(options:WebSocketOptions){ 
-    this.id = options.id;
-  }
-}
+ 

@@ -1,6 +1,6 @@
-import { WebSocket } from "./";
+import { WebSocket } from ".";
 
-export interface WSServerOptions {
+export interface WSClientOptions {
     port:number;
     defaultMessage:string;
     showDefaultMessage:boolean;
