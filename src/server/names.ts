@@ -1,7 +1,7 @@
 export var logerNames={LOGGER_DEFAULT:"default"};
 
-export var serverStatus = {SERVER_STATUS_STARTING : "STARTING",SERVER_STATUS_ONLINE:"ONLINE",SERVER_STATUS_FAIL:"FAIL",SERVER_STATUS_RESTARTING:"RESTARTING",
-SERVER_STATUS_STOPED:"STOPED"} ;
+export var serverStatus = {STARTING : "STARTING",ONLINE:"ONLINE",FAIL:"FAIL",RESTARTING:"RESTARTING",
+STOPED:"STOPED"} ;
 
 export enum  LogLevel{
     TRACE=5,
@@ -10,3 +10,7 @@ export enum  LogLevel{
     ERROR=2,
     CRITICAL=1 
   }
+
+  
+export var protocolNames = {CONNECTION_OK: "taulukko.connectionOK",CLIENT_ONLINE: "taulukko.clientOnline",REGISTERED:"taulukko.clientRegistered"} ;
+export var clientTypes = {PUBLISHER: "Publisher",SUBSCRIBER: "Subscriber"} ;

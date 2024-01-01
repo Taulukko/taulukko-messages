@@ -41,9 +41,7 @@ import { Server } from 'taulukko-messages';
 
 async function initServer() {
 
-  const server = Server.create({
-    port:7777
-  });
+  const server = Server.create();
   await server.open();
   return server;
 }
@@ -56,25 +54,29 @@ import { Publisher, Subscriber, Message } from 'taulukko-messages';
 
 //Publishing
 async function publishMessage() {
-  const publisher = Publisher.create({
-    server: "taulukko://localhost:7777",
+  const publisher = Publisher.create({ 
     topics: ["topic.helloWorld"]
   });
   await publisher.open();
+   //...
   await publisher.send("Hello World");
+   //...
   await publisher.close();
 }
 
 // Subscribing
 async function subscribeToTopic() {
-  const subscriber = Subscriber.create({
-    server: "taulukko://localhost:7777",
+  const subscriber = Subscriber.create({ 
     topics: ["topic.helloWorld"],
-    handler: (message: Message) => {
-      console.log(`Received message on ${message.topic}: ${message.data}`);
-    }
   });
   await subscriber.open();
+
+  subscriber.on( (message: Message) => {
+      console.log(`Received message on ${message.topic}: ${message.data}`);
+    });
+
+  //...
+   await subscriber.close();
 }
 ```
 ### Documentation
@@ -89,7 +91,7 @@ This is an open source project and contributions are welcome! If you would like 
 
 ### License
 
-This project is licensed under the Creative Commons MIT License - see the LICENSE.md file for more details.
+This project is licensed under the Creative Commons MIT License - see the LICENSE file for more details.
 
 ---
 

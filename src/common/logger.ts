@@ -1,4 +1,4 @@
-import { LogLevel } from "src/server/names";
+import { LogLevel } from "../server/names";
 
 class Logger {
   options:LoggerOptions;
@@ -41,18 +41,18 @@ class Logger {
     }
     return true;
   }
-  public log(level:LogLevel,message?: any, ...optionalParams: any[]){
+  public log(level:LogLevel,message?: any, ...optionalParams: any){
     //console.log(this.options,level);
   
     if(message)
     {
-      console.log(message,optionalParams);
+      console.log(message,...optionalParams);
     }
     else{
       console.log(...optionalParams);
     }
   }
-  private common(level:LogLevel, message?: any, ...optionalParams: any[])
+  private common(level:LogLevel, message?: any, ...optionalParams: any)
   {
     //console.log("common level before " ,level,this.options.defaultLevel);
     if(!this.isLesserOrEqualThan(this.options.defaultLevel,level))
@@ -69,44 +69,44 @@ class Logger {
       this.log(level,...optionalParams);
     }
   }
-  public trace(message?: any, ...optionalParams: any[])
+  public trace(message?: any, ...optionalParams: any)
   {
-    //console.log("trace level " , LogLevel.TRACE);
+    //console.log("trace level " , LogLevel.TRACE,this.options);
     this.common(LogLevel.TRACE,message,...optionalParams);
   }
-  public debug(message?: any, ...optionalParams: any[])
+  public debug(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.DEBUG,message,...optionalParams);
   }
-  public info(message?: any, ...optionalParams: any[])
+  public info(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.INFO,message,...optionalParams);
   }
-  public error(message?: any, ...optionalParams: any[])
+  public error(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.ERROR,message,...optionalParams);
   }
-  public critical(message?: any, ...optionalParams: any[])
+  public critical(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.CRITICAL,message,...optionalParams);
   }
-  public log5(message?: any, ...optionalParams: any[])
+  public log5(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.TRACE,message,...optionalParams);
   }
-  public log4(message?: any, ...optionalParams: any[])
+  public log4(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.DEBUG,message,...optionalParams);
   }
-  public log3(message?: any, ...optionalParams: any[])
+  public log3(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.INFO,message,...optionalParams);
   }
-  public log2(message?: any, ...optionalParams: any[])
+  public log2(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.ERROR,message,...optionalParams);
   }
-  public log1(message?: any, ...optionalParams: any[])
+  public log1(message?: any, ...optionalParams: any)
   {
     this.common(LogLevel.CRITICAL,message,...optionalParams);
   }

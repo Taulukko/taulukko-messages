@@ -1,26 +1,26 @@
-import { DefaultProvider } from "../provider/default-provider";
-import { Provider } from "../provider/provider";
+import { DefaultServerProvider } from "./provider/default-server-provider";
+import { ServerProvider } from "./provider/server-provider";
 import { ServerData } from "./server-data";
 import { loggerFactory } from "../common/logger"; 
 import { logerNames ,LogLevel} from "./names";
+import { ClientData } from "./client-data";
 
 
 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
-export class Server implements Provider {
-  provider: Provider;
+export class Server implements ServerProvider { 
   options: ServerOptions;
 
   private constructor(options: any) {
-    this.provider = options.provider? options.provider: new DefaultProvider(options) ;
+    const defaultProvider:ServerProvider =   new DefaultServerProvider(options) ; 
 
-    const defaults = { provider:  new DefaultProvider(options) , defaultLogLevel: LogLevel.INFO };
+    const defaults = { provider:  defaultProvider , defaultLogLevel: LogLevel.INFO };
     options = Object.assign({}, defaults, options);
     this.options = options as ServerOptions;
-    logger.options.defaultLevel = this.options.defaultLogLevel;
-    console.log(logger.options.defaultLevel,this.options.defaultLogLevel);
+    logger.options.defaultLevel = this.options.defaultLogLevel; 
+    logger.trace(logger.options.defaultLevel,this.options.defaultLogLevel);
   }
 
   static create(options: any = {} ) : Server{
@@ -30,39 +30,39 @@ export class Server implements Provider {
   }
   
   public async open() {
-    const ret =  this.provider.open();
-    logger.trace("Server started on port: ", this.provider.data().port);
+    const ret =  this.options.provider.open();
+    logger.trace("Server started on port: ", this.options.provider.data.port);
     return ret;
   }
   public async close(){
-    const ret =  this.provider.close();
+    const ret =  this.options.provider.close();
     logger.trace("Server stoped ");
     return ret
   }
   public async forceClose(){
-    const ret = this.provider.forceClose();
+    const ret = this.options.provider.forceClose();
     logger.trace("Server stoped (forced)");
     return ret;
   }
-  public data():ServerData  {
-    return this.provider.data();
+  public get data():ServerData  {
+    return this.options.provider.data;
   }
-  public publishers():Array<any>{
-    return this.provider.publishers();
+  public get publishers():Array<ClientData>{
+    return this.options.provider.publishers;
   }
-  public subscribers():Array<any>{
-    return this.provider.subscribers();
+  public get subscribers():Array<ClientData>{
+    return this.options.provider.subscribers;
   }
 
   public async sendAll(topic:string,data:any){
-    return this.provider.sendAll(topic,data);
+    return this.options.provider.sendAll(topic,data);
   }
     
 };
   
 interface ServerOptions{
   defaultLogLevel:LogLevel,
-  provider:Provider
+  provider:ServerProvider
 }
 
 

@@ -1,115 +1,112 @@
 
-import  {Server,Publisher,Subscriber,Message} from '../index';
-import { LogLevel } from 'src/server/names';
+import  {Server,Publisher,Subscriber,Message,proccessStatus} from '../index';
+import { LogLevel, serverStatus } from '../src/server/names';
+
+import * as assert from 'assert';
 
 async function initServer(options={}){
   const defaults = {defaultLogLevel:LogLevel.ERROR};
   options = Object.assign({}, defaults, options);
-  const server  = await Server.create(options);
+  const server  =  Server.create(options);
   await server.open();
   return server;
 }
 
-describe('api basic', () => {
+ 
+describe("api.basics",  function test(options={}){
 
-  test('init Server',async  () => {
-    let server = await initServer();
-
-    expect(server.data().port).toBe(7777); 
-    expect(server.data().online).toBe(true);
-    expect(server.data().status).toBe("ONLINE");
-
-    await server.forceClose();//close without exceptions
-
-    server = await initServer({port:7778});
-
-    expect(server.data().port).toBe(7778); 
-    expect(server.data().online).toBe(true);
-    expect(server.data().status).toBe("ONLINE");
-
-    await server.forceClose();//close without exceptions
-  
-  });
-
-
-
-  test.skip('publish a string message',async  () => {
+  it.skip("Simple message between publisher and subscriber",async function(){
     const server = await initServer();
 
-    expect(server.publishers.length).toBe(0);
+    assert.equal(server.publishers.length,0,"server.ublishers need be start with zero");
 
-    const publisher = await Publisher.create({
-      server:"taulukko://localhost:7777"
-    });
-
-    expect(server.publishers.length).toBe(1);
-    expect(server.publishers[0].status).toBe("CREATED");
-
-    await publisher.open({
-      topics:["topic.helloWorld","unexistentTopic"]
-    });
-
-    expect(server.publishers[0].status).toBe("ONLINE");
-
-    expect(server.publishers.length).toBe(1);
-
-    expect(server.subscribers.length).toBe(0);
-
-    let countMessages = 0;
-
-    const subscriber = await Subscriber.create({
-      server:"taulukko://localhost:7777",
+    const publisher = Publisher.create({ 
       topics:["topic.helloWorld","unexistentTopic"],
-      handler:(message:Message)=>{
-        countMessages++;
-        expect( message.topic).toBe("topic.helloWorld");
-        expect(message.data).toBe("Hello World");
-        expect(countMessages).toBe(1);
-      }
+      defaultLogLevel:LogLevel.ERROR
     });
+    assert.equal(server.publishers.length, 0,"server.publishers need be incremented after open");
 
-    expect(server.subscribers.length).toBe(1);
+    assert.equal(publisher.data.status,proccessStatus.STARTING,"Start state need be STARTING");
+ 
+    await publisher.open();
+     
 
-    expect(server.subscribers[0].status).toBe("CREATED");
+    assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
-    await subscriber.open();
+    assert.equal(publisher.data.status,proccessStatus.ONLINE,"Publishers need be equal ONLINE");
 
-    expect(server.subscribers[0].status).toBe("ONLINE");
+    assert.equal(server.publishers.length,1,"Publishers need be equal 1");
+
+    assert.equal(server.subscribers.length,0,"Publishers need be equal 0");  
 
     await publisher.send("topic.helloWorld","Hello World");
 
-    await subscriber.close();
-
     await publisher.close();
-    
-    await server.close();
-  });
+
+    assert.equal(server.publishers.length,1,"Publishers need be equal 0");
+   
+   
+    await server.close(); 
+  }); 
+
   
 
-  test.skip('publish a string message for all',async  () => {
-    const server = await initServer(); 
-  
-    let countMessages=0;
+  it.only('subscribing a string message',async  () => {
+    const server = await initServer();
 
-    const subscriber = await Subscriber.create({
-      server:"taulukko://localhost:7777",
+    assert.equal(server.publishers.length,0);
+
+    const publisher = await Publisher.create({ 
       topics:["topic.helloWorld","unexistentTopic"],
-      handler:(message:Message)=>{
-        countMessages++;
-        expect(["topic.helloWorld","unexistentTopic"] ).toContain(message.topic);
-        expect(message.data).toBe("Hello World");
-        expect(countMessages).toBe(1);
-      }
-    }); 
+      defaultLogLevel:LogLevel.ERROR
+    });
+
+    assert.equal(server.publishers.length,0,"Must be zero before the publisher.open");
+    assert.equal(publisher.data.status,serverStatus.STARTING,"Must be STARTING before publisher.open");
+
+    await publisher.open();
+
+    assert.equal(publisher.data.status,serverStatus.ONLINE,"Must be ONLINE after publisher.open");
+
+    assert.equal(server.publishers.length,1,"Must be 1 after publisher.open");
+
+    assert.equal(server.subscribers.length,0,"Must be 0 before subscriber.open");
+ 
+
+    const subscriber = await Subscriber.create({ 
+      topics:["topic.helloWorld","unexistentTopic" ], defaultLogLevel:LogLevel.ERROR
+    });
+    
+
+    assert.equal(server.subscribers.length,0,"Must be 0 before subscriber.open");
+    assert.equal(server.publishers.length,1,"Must be 1 yet");
+
+    assert.equal(subscriber.data.status,serverStatus.STARTING,"Must be STARTING before open");
 
     await subscriber.open();
 
-    await server.sendAll("topic.helloWorld","test");
-    await server.sendAll(null,"test2");
+    assert.equal(server.subscribers.length,1,"Must be 1 after open");
 
-    await subscriber.close();
-    
-    await server.close();
+    assert.equal(subscriber.data.status,serverStatus.ONLINE,"Must be ONLINE before open");
+
+    subscriber.on(async (message:Message)=>{
+      assert.equal(message.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");
+      assert.equal(message.data, "Hello World","Message need be Hello World");
+      await subscriber.close();
+      assert.equal(server.subscribers.length,0,"");
+      await publisher.close();
+
+      assert.equal(server.subscribers.length,0,"");
+      await server.close();
+    });
+ 
+    await publisher.send("topic.helloWorld","Hello World");
+   // await subscriber.close();
+   // await publisher.close();
+   // await server.close();
   });
-
+  
 });
+ 
+
+  

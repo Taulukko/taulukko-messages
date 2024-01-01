@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "CommonJS",
+    "skipLibCheck": true,
     "baseUrl": "./" ,
     /*"paths": {
       "@server/*": ["src/server/*"], 

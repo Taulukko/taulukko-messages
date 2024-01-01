@@ -16,17 +16,21 @@ io.on('connection', (socket) => {
     console.log('Um usuário se conectou');
 
     socket.on('disconnect', () => {
-    console.log('Um usuário se desconectou');
+        console.log('Um usuário se desconectou');
     });
 
-    socket.emit('hello', 'Hello World from Socket.IO');
+    socket.on('helloFromClient', (text) => {
+        console.log('server receive hello from client ',text);
+    });
+    
+    socket.emit("helloFromServer","world");
 });
 
 const PORT = 3000;
 server.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
-
+ 
 
 const clientio =  clientSocketIO.connect("http://localhost:3000");
 
@@ -38,7 +42,10 @@ clientio.on('connect', () => {
     
     // Recebe uma mensagem do servidor
     clientio.on('helloFromServer', (msg) => {
-        console.log(msg);
+        console.log('client receive hello from server',msg);
     });
-    });
+ 
+});
 
+   
+   
