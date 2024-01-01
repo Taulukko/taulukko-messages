@@ -1,11 +1,11 @@
  
 import {PublisherProvider} from "./publisher-provider";  
-import {serverStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
+import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
 import { loggerFactory } from "../../common/logger";
 import { WSServerOptions, WebSocket } from "../../server/ws-server";
 
 import * as io from "socket.io-client";
-import { ProviderData } from "../provider-data";
+import { PearData } from "src/common/pear-data"; 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -19,7 +19,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
   constructor(options:any){
     const defaults = { port: 7777 ,topics:new Array()};
     this.options = Object.assign({}, defaults, options); 
-    this.status = serverStatus.STARTING;
+    this.status = serviceStatus.STARTING;
   }
 
   send(...data: any) {
@@ -29,7 +29,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
   }
 
   open =   () :Promise<any>  => {
-    if(this.status!=serverStatus.STARTING){
+    if(this.status!=serviceStatus.STARTING){
       throw Error("Publisher already started");
     }
     logger.info("Taulukko Publisher Provider starting with options : " , this.options);
@@ -78,18 +78,18 @@ export class DefaultPublisherProvider implements PublisherProvider {
   onTaulukkoServerRegisteredClient = async (resolve)=>{
     return  (async (websocket:WebSocket)=>{
         logger.trace("Taulukko Publisher Provider onTaulukkoServerRegisteredClient ",websocket); 
-        this.status = serverStatus.ONLINE; 
+        this.status = serviceStatus.ONLINE; 
         resolve(); 
       });
   };
 
   close = async () =>  {
     
-    if(this.status!=serverStatus.ONLINE){
+    if(this.status!=serviceStatus.ONLINE){
       throw Error("Publisher isnt open");
     } 
     this.client.close();
-    this.status = serverStatus.STOPED;
+    this.status = serviceStatus.STOPED;
     logger.trace("Taulukko Publisher Provider ends ");
   };
 
@@ -102,15 +102,15 @@ export class DefaultPublisherProvider implements PublisherProvider {
       logger.trace("Taulukko Publisher Provider error ");
     
     }
-    this.status = serverStatus.STOPED;
+    this.status = serviceStatus.STOPED;
      
     
   };
 
-  get data() :ProviderData {
+  get data() :PearData {
     const ret = {port:this.options.port, status: this.status ,
-      online:this.status==serverStatus.ONLINE,
-      offline:this.status!=serverStatus.ONLINE,topics:this.options.topics};
+      online:this.status==serviceStatus.ONLINE,
+      offline:this.status!=serviceStatus.ONLINE,topics:this.options.topics};
       logger.trace("get data ", ret);
       return ret;
   }

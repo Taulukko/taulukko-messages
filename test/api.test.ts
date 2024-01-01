@@ -1,6 +1,6 @@
 
 import  {Server,Publisher,Subscriber,Message,proccessStatus} from '../index';
-import { LogLevel, serverStatus } from '../src/server/names';
+import { LogLevel, serviceStatus } from '../src/server/names';
 
 import * as assert from 'assert';
 
@@ -62,11 +62,11 @@ describe("api.basics",  function test(options={}){
     });
 
     assert.equal(server.publishers.length,0,"Must be zero before the publisher.open");
-    assert.equal(publisher.data.status,serverStatus.STARTING,"Must be STARTING before publisher.open");
+    assert.equal(publisher.data.status,serviceStatus.STARTING,"Must be STARTING before publisher.open");
 
     await publisher.open();
 
-    assert.equal(publisher.data.status,serverStatus.ONLINE,"Must be ONLINE after publisher.open");
+    assert.equal(publisher.data.status,serviceStatus.ONLINE,"Must be ONLINE after publisher.open");
 
     assert.equal(server.publishers.length,1,"Must be 1 after publisher.open");
 
@@ -81,13 +81,13 @@ describe("api.basics",  function test(options={}){
     assert.equal(server.subscribers.length,0,"Must be 0 before subscriber.open");
     assert.equal(server.publishers.length,1,"Must be 1 yet");
 
-    assert.equal(subscriber.data.status,serverStatus.STARTING,"Must be STARTING before open");
+    assert.equal(subscriber.data.status,serviceStatus.STARTING,"Must be STARTING before open");
 
     await subscriber.open();
 
     assert.equal(server.subscribers.length,1,"Must be 1 after open");
 
-    assert.equal(subscriber.data.status,serverStatus.ONLINE,"Must be ONLINE before open");
+    assert.equal(subscriber.data.status,serviceStatus.ONLINE,"Must be ONLINE before open");
 
     subscriber.on(async (message:Message)=>{
       assert.equal(message.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");

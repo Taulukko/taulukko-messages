@@ -6,7 +6,7 @@ import { Data } from "./src/common/data";
 import { ServerProvider } from "./src/server/provider/server-provider";
 import { ServerData } from "./src/server/server-data";
 
-import { serverStatus as proccessStatus } from "./src/server/names";
+import { serviceStatus as proccessStatus } from "./src/server/names";
 
 export {Data,Message,Publisher,Subscriber,Server,ServerProvider as Provider,ServerData,proccessStatus}; 
  

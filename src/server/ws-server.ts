@@ -1,4 +1,4 @@
-import { logerNames, serverStatus} from "../server/names"; 
+import { logerNames, serviceStatus} from "../server/names"; 
 import { loggerFactory } from "../common/logger"; 
 
 import * as http from "http";
@@ -17,7 +17,7 @@ export class WSServer   {
   io:socketIo.Server;
   internalSocketsByClientId:Map<string,socketIo.Socket> = new Map();
   globalEvents:Map<string,(...args:any)=>void> = new Map();
-  _state:string = serverStatus.STARTING;
+  _state:string = serviceStatus.STARTING;
 
 
   constructor(options:any){
@@ -35,11 +35,11 @@ export class WSServer   {
   
   private validateStateChange(value:string):string{
     let valid:boolean = true;
-    if(value==serverStatus.STARTING && this._state != serverStatus.RESTARTING)
+    if(value==serviceStatus.STARTING && this._state != serviceStatus.RESTARTING)
     {
         valid = false;
     }
-    if(value==serverStatus.ONLINE && this._state != serverStatus.STARTING)
+    if(value==serviceStatus.ONLINE && this._state != serviceStatus.STARTING)
     {
       valid=false;
     } 
@@ -63,7 +63,7 @@ export class WSServer   {
 
     open = ():Promise<any> => {
       const me = this;
-      if(me.state!=serverStatus.STARTING)
+      if(me.state!=serviceStatus.STARTING)
       {
         throw Error("State need be STARTING");
       }
@@ -78,7 +78,7 @@ export class WSServer   {
         }); 
         me.server.listen( me.options.port, () => {
           logger.trace("WSServer listen port : " , me.options.port);
-          me.state = serverStatus.ONLINE; 
+          me.state = serviceStatus.ONLINE; 
           resolve({});
         }); 
         me.io = new socketIo.Server(me.server); 
@@ -141,13 +141,13 @@ export class WSServer   {
 
    close = async() => { 
     logger.trace("WSServer close ");
-    if(this.state!=serverStatus.ONLINE)
+    if(this.state!=serviceStatus.ONLINE)
     {
       throw Error("State need be ONLINE");
     }
     this.io.close();
     this.server.close();  
-    this.state = serverStatus.STOPED;
+    this.state = serviceStatus.STOPED;
 
   };
 }

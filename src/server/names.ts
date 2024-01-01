@@ -1,6 +1,6 @@
 export var logerNames={LOGGER_DEFAULT:"default"};
 
-export var serverStatus = {STARTING : "STARTING",ONLINE:"ONLINE",FAIL:"FAIL",RESTARTING:"RESTARTING",
+export var serviceStatus = {STARTING : "STARTING",ONLINE:"ONLINE",FAIL:"FAIL",RESTARTING:"RESTARTING",
 STOPED:"STOPED"} ;
 
 export enum  LogLevel{

@@ -1,12 +1,12 @@
  
 import {SubscriberProvider} from "./subscriber-provider";  
-import {serverStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
+import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
 import { loggerFactory } from "../../common/logger";
 import {  WSServerOptions, WebSocket } from "../../server/ws-server";
 
 import * as io from "socket.io-client";
-import { Message } from "src/common/message";
-import { ClientData } from "src/server/client-data";
+import { Message } from "src/common/message";  
+import { PearData } from "src/common/pear-data";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -20,7 +20,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   constructor(options:any){
     const defaults = { port: 7777, topics:new Array()};
     this.options = Object.assign({}, defaults, options); 
-    this.status = serverStatus.STARTING;
+    this.status = serviceStatus.STARTING;
   }
   on = async (listener:    (message: Message) => Promise<any>)=> {
     logger.trace("Taulukko Subscriber Provider on: inserting a new listener " );
@@ -32,7 +32,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     };
  
   open = async   () :Promise<any>  => {
-    if(this.status!=serverStatus.STARTING){
+    if(this.status!=serviceStatus.STARTING){
       throw Error("Subscriber already started");
     }
     logger.info("Taulukko Subscriber Provider starting with options : " , this.options);
@@ -81,18 +81,18 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   onTaulukkoServerRegisteredClient = async (resolve)=>{
     return  (async (websocket:WebSocket)=>{
         logger.trace("Taulukko Subscriber Provider onTaulukkoServerRegisteredClient ",websocket); 
-        this.status = serverStatus.ONLINE; 
+        this.status = serviceStatus.ONLINE; 
         resolve(); 
       });
   };
 
   close = async () =>  {
     
-    if(this.status!=serverStatus.ONLINE){
+    if(this.status!=serviceStatus.ONLINE){
       throw Error("Subscriber isnt open");
     } 
     this.client.close();
-    this.status = serverStatus.STOPED;
+    this.status = serviceStatus.STOPED;
     logger.trace("Taulukko Subscriber Provider ends ");
   };
 
@@ -105,15 +105,15 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
       logger.trace("Taulukko Subscriber Provider error ");
     
     }
-    this.status = serverStatus.STOPED;
+    this.status = serviceStatus.STOPED;
     
     
   };
 
-  get data (): ClientData {
+  get data (): PearData {
     const ret = {port:this.options.port, status: this.status ,
-      online:this.status==serverStatus.ONLINE,
-      offline:this.status!=serverStatus.ONLINE,id:this.id,topics:this.options.topics};
+      online:this.status==serviceStatus.ONLINE,
+      offline:this.status!=serviceStatus.ONLINE,id:this.id,topics:this.options.topics};
       logger.trace("get data ", ret);
       return ret;
   }

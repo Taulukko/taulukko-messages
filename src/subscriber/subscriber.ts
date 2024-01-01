@@ -4,6 +4,7 @@ import { loggerFactory } from "../common/logger";
 import { DefaultSubscriberProvider } from "./provider/default-subscriberprovider";
 import { SubscriberProvider } from "./provider/subscriber-provider";
 import { Message } from "src/common/message";
+import { ClientData } from "src/server/client-data";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 export class Subscriber {

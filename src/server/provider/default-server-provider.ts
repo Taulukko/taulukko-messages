@@ -2,12 +2,10 @@
 import {  ServerProvider } from "./server-provider";
 import { ClientData } from "../client-data"; 
 import { ServerData } from '../server-data';
-import {serverStatus} from "../names"; 
+import {serviceStatus} from "../names"; 
 import { logerNames,protocolNames,clientTypes} from "../names"; 
 import { loggerFactory } from "../../common/logger";
-import { WSServer, WSServerOptions, WebSocket  } from "../ws-server";
-import { Publisher } from "../../publisher/publisher"; 
-import { Subscriber } from "../../subscriber/subscriber";
+import { WSServer, WSServerOptions, WebSocket  } from "../ws-server"; 
 import { ClientOnlineDTO } from "../server-protocols-dtos";
 
 
@@ -28,7 +26,7 @@ export class DefaultServerProvider implements ServerProvider {
     this.options.onConnection = this.onWSSocketConnection;
     this.options.onDisconnect = this.onWSDisconect;
     this.wsServer = new WSServer(options);
-    this.status = serverStatus.STARTING;
+    this.status = serviceStatus.STARTING;
   }
 
   private onWSSocketConnection(socket:WebSocket){
@@ -44,10 +42,6 @@ export class DefaultServerProvider implements ServerProvider {
     logger.info("Taulukko Server Provider starting with options : " , this.options);
     await  this.wsServer.open();
 
-    console.log("Ouvindo ",protocolNames.CLIENT_ONLINE);
-
- 
-    
     await this.wsServer.on(protocolNames.CLIENT_ONLINE,(socket:WebSocket, data:ClientOnlineDTO)=>{
 
       let list:Array<ClientData> = this.publisherList;
@@ -63,12 +57,12 @@ export class DefaultServerProvider implements ServerProvider {
       console.log("client online:",data);
     }); 
 
-    this.status = serverStatus.ONLINE;
+    this.status = serviceStatus.ONLINE;
   }
 
   async close() {
     await this.wsServer.close();
-    this.status = serverStatus.STOPED;
+    this.status = serviceStatus.STOPED;
     logger.trace("Taulukko Server Provider ends ");
   }
   async forceClose() {
@@ -77,14 +71,14 @@ export class DefaultServerProvider implements ServerProvider {
     }
     catch{
       //TODO:LOG
-      this.status = serverStatus.STOPED;
+      this.status = serviceStatus.STOPED;
     }
     logger.trace("Taulukko Server Provider ends (forced) ");
   }
   get data(): ServerData {
     const ret = {port:this.options.port, status: this.status ,
-      online:this.status==serverStatus.ONLINE,
-      offline:this.status!=serverStatus.ONLINE};
+      online:this.status==serviceStatus.ONLINE,
+      offline:this.status!=serviceStatus.ONLINE};
       logger.trace("get data ", ret);
       return ret;
   }

@@ -3,6 +3,7 @@ import {Data} from "../common/data";
 import { loggerFactory } from "../common/logger";  
 import { PublisherProvider } from "./provider/publisher-provider";
 import { DefaultPublisherProvider } from "./provider/default-publisher-provider";
+import { PearData } from "src/common/pear-data";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 export class Publisher {
@@ -38,7 +39,7 @@ export class Publisher {
     async close(){
       await this.provider.close();
     }
-    get data():Data  {
+    get data():PearData  {
       return this.provider.data;
     }
     async send( ...data:any){
