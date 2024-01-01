@@ -2,7 +2,7 @@
 import {SubscriberProvider} from "./subscriber-provider";  
 import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
 import { loggerFactory } from "../../common/logger";
-import {  WSServerOptions, WebSocket } from "../../server/ws-server";
+import {  WSServerOptions, WebSocket } from "../../ws";
 
 import * as io from "socket.io-client";
 import { Message } from "src/common/message";  

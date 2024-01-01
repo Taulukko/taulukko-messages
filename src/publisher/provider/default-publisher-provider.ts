@@ -2,8 +2,7 @@
 import {PublisherProvider} from "./publisher-provider";  
 import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
 import { loggerFactory } from "../../common/logger";
-import { WSServerOptions, WebSocket } from "../../server/ws-server";
-
+import {WebSocket, WSServerOptions } from "../../ws/";
 import * as io from "socket.io-client";
 import { PearData } from "src/common/pear-data"; 
 

@@ -4,8 +4,7 @@ import { ServerData } from '../server/server-data';
 import {serviceStatus} from "../server/names"; 
 import { logerNames} from "../server/names"; 
 import { loggerFactory } from "../common/logger";
-import { WSServer, WSServerOptions } from "src/server/ws-server";
-
+import { WSServer,WSServerOptions } from "../ws"; 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -19,7 +18,7 @@ export class DefaultProvider implements Provider {
     const defaults = { port: 7777, defaultMessage:"Taulukko Message Server is Running" ,showDefaultMessage:true};
     options = Object.assign({}, defaults, options);
     this.options = options as TaulukkoProviderOptions;
-    this.wsServer = new WSServer(options);
+    this.wsServer = WSServer.create(options);
     this.status = serviceStatus.STARTING;
   }
 

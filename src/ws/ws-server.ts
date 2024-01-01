@@ -5,6 +5,7 @@ import * as http from "http";
 import * as socketIo from "socket.io"; 
 
 import { KeyTool,StringsUtil } from "taulukko-commons/util";
+import { WSServerOptions } from "./";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -20,13 +21,16 @@ export class WSServer   {
   _state:string = serviceStatus.STARTING;
 
 
-  constructor(options:any){
-   
+  private constructor(options:any){
     const defaults = { port: 7777, showDefaultMessage:true, defaultMessage:"WSServer Server is Running"};
     options = Object.assign({}, defaults, options);
     this.options = options as WSServerOptions;
     this.id =  new StringsUtil().right(keyTool.build(1, 1),6); 
   }
+
+  static create = (options:any):WSServer=>{
+    return new WSServer(options);
+  };
 
   get state():string{
     return this._state;
@@ -152,13 +156,7 @@ export class WSServer   {
   };
 }
 
-export interface WSServerOptions {
-  port:number;
-  defaultMessage:string;
-  showDefaultMessage:boolean;
-  onConnection:(socket:WebSocket)=>void;
-  onDisconnect:(socket:WebSocket)=>void;
-}
+
 
 
 export class WebSocket { 
@@ -167,7 +165,9 @@ export class WebSocket {
   server: WebSocketServer;
   constructor(options:WebSocketOptions)
   {
-    this.client = new WebSocketClient({id:options.socket.client.id});
+    const clientOptions:WebSocketOptions = {...options};
+    clientOptions.id =  (options.socket.client.id ) as string;
+    this.client = new WebSocketClient(clientOptions);
     this.server = new WebSocketServer(options);
     this.socket = options.socket;
   }
@@ -189,20 +189,14 @@ export class WebSocket {
 
 export class WebSocketClient { 
   id: string;
-  constructor(options:WebSocketOptionsBase){
+  constructor(options:WebSocketOptions){
     this.id = options.id;
   }
 }
 
-interface WebSocketOptionsBase{
-  id:string;
-}
-interface WebSocketOptions extends WebSocketOptionsBase{
-  socket:any;
-}
 export class  WebSocketServer {
   id:string;
-  constructor(options:WebSocketOptionsBase){ 
+  constructor(options:WebSocketOptions){ 
     this.id = options.id;
   }
 }

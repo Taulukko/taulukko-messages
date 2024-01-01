@@ -5,7 +5,7 @@ import { ServerData } from '../server-data';
 import {serviceStatus} from "../names"; 
 import { logerNames,protocolNames,clientTypes} from "../names"; 
 import { loggerFactory } from "../../common/logger";
-import { WSServer, WSServerOptions, WebSocket  } from "../ws-server"; 
+import { WSServer, WSServerOptions, WebSocket  } from "../../ws/"; 
 import { ClientOnlineDTO } from "../server-protocols-dtos";
 
 
@@ -25,7 +25,7 @@ export class DefaultServerProvider implements ServerProvider {
     this.options = options as TaulukkoProviderOptions;
     this.options.onConnection = this.onWSSocketConnection;
     this.options.onDisconnect = this.onWSDisconect;
-    this.wsServer = new WSServer(options);
+    this.wsServer = WSServer.create(options);
     this.status = serviceStatus.STARTING;
   }
 
