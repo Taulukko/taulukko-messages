@@ -2,8 +2,7 @@
 import {PublisherProvider} from "./publisher-provider";  
 import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
 import { loggerFactory } from "../../common/logger";
-import {WebSocket, WSServerOptions } from "../../ws/";
-import * as io from "socket.io-client";
+import {WebSocket, WSClient, WSServerOptions } from "../../ws/"; 
 import { PearData } from "src/common/pear-data"; 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
@@ -11,7 +10,7 @@ const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 export class DefaultPublisherProvider implements PublisherProvider {
   options:TaulukkoProviderOptions;
   status:string; 
-  client:io.Socket;
+  client:WSClient;
   id:string;
  
 

@@ -5,6 +5,7 @@ import * as socketIo from "socket.io";
 import { KeyTool, StringsUtil } from "taulukko-commons";
 import { loggerFactory } from "../common/logger";
 
+import * as io from "socket.io-client";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 const keytool = new KeyTool();
@@ -12,7 +13,7 @@ const keytool = new KeyTool();
 export class WSClient   {
     id:string;
     options:WSClientOptions; 
-    io:socketIo.Server;
+    client:io.Socket;
     internalSocketsByClientId:Map<string,socketIo.Socket> = new Map();
     globalEvents:Map<string,(...args:any)=>void> = new Map();
     _state:string = serviceStatus.STARTING;
@@ -53,7 +54,13 @@ export class WSClient   {
     }
     logger.trace("WSClient starting with options : " , this.options);
     const ret = new Promise<any>((resolve,reject)=>{ 
-      this.state = serviceStatus.ONLINE;
+      this.client = io.connect("http://localhost:7777");
+      this.client.on('connect', () => {
+        logger.trace("WSClient connection with server sucefull ");
+        this.state = serviceStatus.ONLINE;
+        resolve({});
+      });
+      
      });
   
     return ret;
@@ -65,8 +72,12 @@ export class WSClient   {
     {
       throw Error("State need be ONLINE");
     }
-   
+    this.client.close();
     this.state = serviceStatus.STOPED;
 
+  };
+
+  emit =async  (event:string,...data) =>{
+     this.client.emit(event,...data);
   };
 }

@@ -15,7 +15,7 @@ async function initServer(options={}){
  
 describe("api.basics",  function test(options={}){
 
-  it.skip("Simple message between publisher and subscriber",async function(){
+  it("Simple message between publisher and subscriber",async function(){
     const server = await initServer();
 
     assert.equal(server.publishers.length,0,"server.ublishers need be start with zero");
@@ -51,7 +51,7 @@ describe("api.basics",  function test(options={}){
 
   
 
-  it.only('subscribing a string message',async  () => {
+  it('subscribing a string message',async  () => {
     const server = await initServer();
 
     assert.equal(server.publishers.length,0);
