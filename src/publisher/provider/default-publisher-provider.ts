@@ -1,8 +1,7 @@
- 
-import {PublisherProvider} from "./publisher-provider";  
+ import {PublisherProvider} from "./publisher-provider";  
 import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
 import { loggerFactory } from "../../common/logger";
-import {WebSocket, WSClient, WSServerOptions } from "../../ws/"; 
+import {WSClient ,WebSocket, WSServerOptions } from "../../ws/"; 
 import { PearData } from "src/common/pear-data"; 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
@@ -14,11 +13,15 @@ export class DefaultPublisherProvider implements PublisherProvider {
   id:string;
  
 
-  constructor(options:any){
+  private constructor(options:any){
     const defaults = { port: 7777 ,topics:new Array()};
     this.options = Object.assign({}, defaults, options); 
     this.status = serviceStatus.STARTING;
   }
+
+  static create = (options:any):DefaultPublisherProvider=>{
+    return new DefaultPublisherProvider(options);
+  };
 
   send(...data: any) {
     this.options.topics.forEach((item,index)=>{
@@ -26,30 +29,28 @@ export class DefaultPublisherProvider implements PublisherProvider {
     }); 
   }
 
-  open =   () :Promise<any>  => {
+  open = async  ()   => {
+      
     if(this.status!=serviceStatus.STARTING){
       throw Error("Publisher already started");
     }
     logger.info("Taulukko Publisher Provider starting with options : " , this.options);
-
-    const ret = new Promise((resolve,reject)=>{
     
+    const ret = new Promise(async (resolve,reject)=>{
 
       logger.trace("Taulukko Publisher Provider preparing the connection with websocket " );
 
-      this.client = io.connect("http://localhost:7777");
-
+      this.client = WSClient.create(this.options);
+      await this.client.open();
       logger.trace("Taulukko Publisher Provider get connection with server ");
 
       
-      this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
+      await this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
         this.client.on(protocolNames.CONNECTION_OK,onTaulukkoServerConnectionOK );
       });
-
-      this.onTaulukkoServerRegisteredClient(resolve).then((onTaulukkoServerRegisteredClient)=>{
+      await  this.onTaulukkoServerRegisteredClient(resolve).then((onTaulukkoServerRegisteredClient)=>{
         this.client.on(protocolNames.REGISTERED,onTaulukkoServerRegisteredClient );
       });
-
       logger.trace("Taulukko Publisher Provider listen connection ok from server ");
 
      
@@ -60,25 +61,29 @@ export class DefaultPublisherProvider implements PublisherProvider {
       logger.trace("Taulukko Publisher Provider finish open, waiting for the connection ");
     
     });
+    
     return ret;
   };
 
-  onTaulukkoServerConnectionOK = async (resolve)=>{
+  onTaulukkoServerConnectionOK = async (_: any)=>{
     return  (async (websocket:WebSocket)=>{
         logger.trace("Taulukko Publisher Provider onTaulukkoServerConnectionOK ",websocket);
         this.id = websocket.client.id;
         logger.trace( "this.socket",this.client,this.client.emit,protocolNames.CLIENT_ONLINE,clientTypes.PUBLISHER,this);
         await this.client.emit(protocolNames.CLIENT_ONLINE,{type: clientTypes.PUBLISHER,id:this.id,topics:this.data.topics});
-         
       });
   };
 
-  onTaulukkoServerRegisteredClient = async (resolve)=>{
-    return  (async (websocket:WebSocket)=>{
+  onTaulukkoServerRegisteredClient = async (resolve: (ret:any)=>void )=>{
+    const ret =  (async (websocket:WebSocket)=>{
+    
         logger.trace("Taulukko Publisher Provider onTaulukkoServerRegisteredClient ",websocket); 
-        this.status = serviceStatus.ONLINE; 
-        resolve(); 
+        this.status = serviceStatus.ONLINE;
+     
+        resolve({}); 
+    
       });
+      return  ret;
   };
 
   close = async () =>  {

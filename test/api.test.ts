@@ -15,15 +15,25 @@ async function initServer(options={}){
  
 describe("api.basics",  function test(options={}){
 
-  it("Simple message between publisher and subscriber",async function(){
+  it("Open server ",async function(){
     const server = await initServer();
 
     assert.equal(server.publishers.length,0,"server.ublishers need be start with zero");
+   
+    await server.close(); 
+  }); 
+
+  it("Open publisher ",async function(){
+    const server = await initServer();
+
+    assert.equal(server.publishers.length,0,"server.ublishers need be start with zero");
+
 
     const publisher = Publisher.create({ 
       topics:["topic.helloWorld","unexistentTopic"],
       defaultLogLevel:LogLevel.ERROR
     });
+
     assert.equal(server.publishers.length, 0,"server.publishers need be incremented after open");
 
     assert.equal(publisher.data.status,proccessStatus.STARTING,"Start state need be STARTING");
@@ -51,7 +61,7 @@ describe("api.basics",  function test(options={}){
 
   
 
-  it('subscribing a string message',async  () => {
+  it.only('Open subscriber and receiving a string message',async  () => {
     const server = await initServer();
 
     assert.equal(server.publishers.length,0);

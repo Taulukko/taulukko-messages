@@ -53,8 +53,8 @@ export class DefaultServerProvider implements ServerProvider {
       logger.trace(`Taulukko Server Provider receive a ${data.type} connection : ` ,socket,data);
       const clientData:ClientData  = {id:data.id,topics:data.topics} ;
       list.push(clientData);
+
       socket.emit(protocolNames.REGISTERED,{client:socket.client, server:socket.server});    
-      console.log("client online:",data);
     }); 
 
     this.status = serviceStatus.ONLINE;

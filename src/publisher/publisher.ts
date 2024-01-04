@@ -10,10 +10,10 @@ export class Publisher {
   options: PublisherOptions;
 
     private constructor(options: any) {
-      this.provider = options.provider? options.provider: new DefaultPublisherProvider(options) ;
+      this.provider = options.provider? options.provider:   DefaultPublisherProvider.create(options) ;
 
       const defaults = { 
-        provider:  new DefaultPublisherProvider(options) , 
+        provider:    DefaultPublisherProvider.create(options) , 
         defaultLogLevel: LogLevel.INFO,
         server:"taulukko:\\localhost:7777",
         topics: new Array()};
@@ -32,8 +32,8 @@ export class Publisher {
     
     async open(){
       logger.trace("Publisher open ");
-      return await this.provider.open();
-     return;
+      const ret = await this.provider.open();
+      return ret; 
     }
     async close(){
       await this.provider.close();
