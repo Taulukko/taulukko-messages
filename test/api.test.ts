@@ -103,27 +103,21 @@ describe("api.basics",  function test(options={}){
     assert.equal(subscriber.data.status,serviceStatus.ONLINE,"Must be ONLINE before open");
 
     await subscriber.on(async (message:Message)=>{
-      console.log("receive.1");
       try{
         assert.equal(message.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");
         assert.equal(message.data, "Hello World","Message need be Hello World");
-        console.log("receive.2");
         assert.equal(server.subscribers.length,1,"subscribers need be 1 into the server");
         assert.equal(server.publishers.length,1,"publisher need be 1 into the server");
 
         await subscriber.close();
         assert.equal(server.subscribers.length,0,"subscribers need be 0 into the server after subscriber close");
         assert.equal(server.publishers.length,1,"publisher need be 1 into the server after subscriber close");
-        console.log("receive.3");
         await publisher.close();
-        console.log("receive.4");
         assert.equal(server.subscribers.length,0,"subscribers need be 0 into the server after publisher close");
         assert.equal(server.publishers.length,0,"publisher need be 0 into the server  after subscriber close");
         await server.close();
-        console.log("receive.5"); 
       }catch(e){
         lastError=e;
-        console.log("error ",e);
         await subscriber.forceClose();
         await publisher.forceClose();
         await server.forceClose(); 

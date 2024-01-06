@@ -10,6 +10,7 @@ import { PearData } from "src/common/pear-data";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
+
 export class DefaultSubscriberProvider implements SubscriberProvider {
 
   options:TaulukkoProviderOptions;
@@ -27,7 +28,6 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     logger.trace("Taulukko Subscriber Provider on: inserting a new listener " );
      
     await this.client.on( protocolNames.NEW_MESSAGE,(message:Message)=>{
-      console.log("Subscriber:onNewMessage");
       listener(message)
     });  
     };
@@ -38,7 +38,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     }
     logger.info("Taulukko Subscriber Provider starting with options : " , this.options);
 
-    const ret = new Promise((resolve,reject)=>{
+    const ret = new Promise(async (resolve,reject)=>{
     
 
       logger.trace("Taulukko Subscriber Provider preparing the connection with websocket " );
@@ -48,14 +48,17 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
       logger.trace("Taulukko Subscriber Provider get connection with server ");
        
       
-      this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
+      await this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
         this.client.on(protocolNames.CONNECTION_OK,onTaulukkoServerConnectionOK );
       });
 
-      this.onTaulukkoServerRegisteredClient(resolve).then((onTaulukkoServerRegisteredClient)=>{
+      await this.onTaulukkoServerRegisteredClient(resolve).then((onTaulukkoServerRegisteredClient)=>{
         this.client.on(protocolNames.REGISTERED,onTaulukkoServerRegisteredClient );
       });
 
+      await this.onTaulukkoServerUnregisteredClient(resolve).then((onTaulukkoServerUnregisteredClient)=>{
+        this.client.on(protocolNames.UNREGISTERED,onTaulukkoServerUnregisteredClient );
+      });
   
       logger.trace("Taulukko Subscriber Provider listen connection ok from server ");
 
@@ -88,17 +91,36 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
         resolve(); 
       });
   };
-  
- 
 
-  close = async () =>  {
-    
-    if(this.status!=serviceStatus.ONLINE){
-      throw Error("Subscriber isnt open");
-    }
-    this.client.close();
-    this.status = serviceStatus.STOPED;
-    logger.trace("Taulukko Subscriber Provider ends");
+  
+  onTaulukkoServerUnregisteredClient = async (resolve: (ret:any)=>void )=>{
+    const ret =  (async (websocket:WebSocket)=>{
+        logger.trace("Taulukko Publisher Provider onTaulukkoServerRegisteredClient ",websocket); 
+        this.status = serviceStatus.STOPED;
+     
+        resolve({}); 
+
+      });
+      return  ret;
+  };
+  
+  close = () : Promise<void> =>  {
+    const ret : Promise<void> = new Promise(async (resolve,reject)=>{
+      if(this.status!=serviceStatus.ONLINE){
+        throw Error("Subscriber isnt open");
+      }
+      await this.client.emit(protocolNames.CLIENT_OFFLINE,clientTypes.SUBSCRIBER, this.id);
+      const handle = setInterval(async ()=>{
+        if(this.status == serviceStatus.STOPED)
+        {
+          clearInterval(handle);
+          await this.client.close();
+          resolve();
+        }
+      },100); 
+      logger.trace("Taulukko Subscriber Provider ends");
+    });
+   return ret;
   };
 
   forceClose = async () => {

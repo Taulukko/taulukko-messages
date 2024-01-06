@@ -1,5 +1,11 @@
 import { ClientData } from "./client-data";
 
-export interface ClientOnlineDTO extends ClientData{
-    type:string;
-  }
+export interface ClientOnLineDTO extends ClientData{
+  type:string;
+}
+
+
+export interface ClientOffLineDTO {
+  type:string;
+  id:string;
+}

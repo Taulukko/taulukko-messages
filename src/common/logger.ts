@@ -42,7 +42,6 @@ class Logger {
     return true;
   }
   public log(level:LogLevel,message?: any, ...optionalParams: any){
-    //console.log(this.options,level);
   
     if(message)
     {
@@ -54,13 +53,10 @@ class Logger {
   }
   private common(level:LogLevel, message?: any, ...optionalParams: any)
   {
-    //console.log("common level before " ,level,this.options.defaultLevel);
     if(!this.isLesserOrEqualThan(this.options.defaultLevel,level))
     {
-      //console.log("common level exit " ,level,this.options.defaultLevel);
       return;
     }
-    //console.log("common level after " ,level,this.options.defaultLevel);
     if(message)
     {
       this.log(level,message,...optionalParams);
@@ -71,7 +67,6 @@ class Logger {
   }
   public trace(message?: any, ...optionalParams: any)
   {
-    //console.log("trace level " , LogLevel.TRACE,this.options);
     this.common(LogLevel.TRACE,message,...optionalParams);
   }
   public debug(message?: any, ...optionalParams: any)

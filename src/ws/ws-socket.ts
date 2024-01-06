@@ -23,12 +23,10 @@ export class WSSocket {
   
     emit = async (event:string, ...args:any)=>
     {
-      console.log("Server:onNewMessage:db2.1",event);
 
       logger.trace("WSSocket emit : " , event, args); 
       const socket:socketIo.Socket = this.socket;
       socket.emit(event,...args);
-      console.log("Server:onNewMessage:db2.2");
 
     };
   

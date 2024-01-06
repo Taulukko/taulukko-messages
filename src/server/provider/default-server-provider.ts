@@ -6,7 +6,7 @@ import {serviceStatus} from "../names";
 import { logerNames,protocolNames,clientTypes} from "../names"; 
 import { loggerFactory } from "../../common/logger";
 import { WSServer, WSServerOptions, WebSocket  } from "../../ws/"; 
-import { ClientOnlineDTO } from "../server-protocols-dtos";
+import { ClientOffLineDTO, ClientOnLineDTO } from "../server-protocols-dtos";
 import { Message } from "src/common/message";
 
 
@@ -39,7 +39,7 @@ export class DefaultServerProvider implements ServerProvider {
     logger.info("Taulukko Server Provider ends Connection : " , socket);
   }
 
-  private onClientOnline = (socket:WebSocket, data:ClientOnlineDTO)=>{
+  private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{
 
     let list:Array<ClientData> = this.publisherList;
 
@@ -54,8 +54,22 @@ export class DefaultServerProvider implements ServerProvider {
     socket.emit(protocolNames.REGISTERED,{client:socket.client, server:socket.server});    
   };
 
+
+  private onClientOffline = (socket:WebSocket, data:ClientOffLineDTO)=>{
+ 
+    logger.trace(`Taulukko Server Provider receive a close ${data.type} connection : ` ,socket,data); 
+    
+    if(data.type==clientTypes.PUBLISHER){
+      this.publisherList = this.publisherList.filter((item)=>item.id!=data.id);
+    }
+    else
+    {
+      this.subscriberList = this.subscriberList.filter((item)=>item.id!=data.id);
+    }
+    socket.emit(protocolNames.UNREGISTERED);
+  };
+ 
   private onNewMessage = (socket:WebSocket, message:Message)=>{
-    console.log("Server:onNewMessage");
 
     let list:Array<ClientData> = this.publisherList;
 
@@ -63,25 +77,19 @@ export class DefaultServerProvider implements ServerProvider {
     if(this.publisherList.map(clientData=>clientData.id).filter(id=>id==publisherId).length == 0){
       logger.error(`A non publisher send a message {publisherId,Message}` ,publisherId,message);
     }
-    console.log("Server:onNewMessage:db1");
     if(this.publisherList.filter(clientData=>clientData.id==publisherId
        && clientData.topics.filter(topic=>topic==message.topic)).length == 0){
       logger.error(`Topic not found for this publisher {publisherId,Message}` ,publisherId, message);
     }
-    console.log("Server:onNewMessage:db2",this.subscriberList,message);
 
     const subscriberForthisTopic = this.subscriberList.filter(
       subscriber=>subscriber.topics.filter(
         (topic)=>{
-          console.log("Server:onNewMessage:db2.1",topic==message.topic,topic,message);
           return topic==message.topic;
         }
         ).length==1);
 
-        console.log("Server:onNewMessage:db3",subscriberForthisTopic);
 
-    subscriberForthisTopic.forEach(async subscriber=>{console.log("filter 1",subscriber);await subscriber.socket.emit(protocolNames.NEW_MESSAGE,message) });
-        console.log("Server:onNewMessage:db4");
 
   };
 
@@ -90,6 +98,8 @@ export class DefaultServerProvider implements ServerProvider {
     await  this.wsServer.open();
 
     await this.wsServer.on(protocolNames.CLIENT_ONLINE,this.onClientOnline); 
+
+    await this.wsServer.on(protocolNames.CLIENT_OFFLINE,this.onClientOffline);
 
     await this.wsServer.on(protocolNames.NEW_MESSAGE,this.onNewMessage); 
 

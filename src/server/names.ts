@@ -16,6 +16,8 @@ export var protocolNames = {
   CONNECTION_OK: "taulukko.connectionOK",
   CLIENT_ONLINE: "taulukko.clientOnline",
   REGISTERED:"taulukko.clientRegistered",
-  NEW_MESSAGE:"taulukko.newMessage"
+  UNREGISTERED:"taulukko.clientUnRegister",
+  NEW_MESSAGE:"taulukko.newMessage",
+  CLIENT_OFFLINE:"taulukko.clientOffline"
 } ;
 export var clientTypes = {PUBLISHER: "Publisher",SUBSCRIBER: "Subscriber"} ;

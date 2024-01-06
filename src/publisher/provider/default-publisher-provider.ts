@@ -8,6 +8,7 @@ import { Message } from "../../common/message";
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 export class DefaultPublisherProvider implements PublisherProvider {
+  
   options:TaulukkoProviderOptions;
   status:string; 
   client:WSClient;
@@ -53,6 +54,9 @@ export class DefaultPublisherProvider implements PublisherProvider {
       await  this.onTaulukkoServerRegisteredClient(resolve).then((onTaulukkoServerRegisteredClient)=>{
         this.client.on(protocolNames.REGISTERED,onTaulukkoServerRegisteredClient );
       });
+      await  this.onTaulukkoServerUnregisteredClient(resolve).then((onTaulukkoServerUnregisteredClient)=>{
+        this.client.on(protocolNames.UNREGISTERED,onTaulukkoServerUnregisteredClient );
+      });
       logger.trace("Taulukko Publisher Provider listen connection ok from server ");
 
      
@@ -88,14 +92,36 @@ export class DefaultPublisherProvider implements PublisherProvider {
       return  ret;
   };
 
-  close = async () =>  {
+  onTaulukkoServerUnregisteredClient = async (resolve: (ret:any)=>void )=>{
+    const ret =  (async (websocket:WebSocket)=>{
+
     
-    if(this.status!=serviceStatus.ONLINE){
-      throw Error("Publisher isnt open");
-    } 
-    this.client.close();
-    this.status = serviceStatus.STOPED;
-    logger.trace("Taulukko Publisher Provider ends ");
+        logger.trace("Taulukko Publisher Provider onTaulukkoServerRegisteredClient ",websocket); 
+        this.status = serviceStatus.STOPED;
+     
+        resolve({}); 
+    
+      });
+      return  ret;
+  };
+ 
+
+  close = () : Promise<void> =>  {
+    const ret : Promise<void> = new Promise(async (resolve,reject)=>{
+      if(this.status!=serviceStatus.ONLINE){
+        throw Error("Subscriber isnt open");
+      }
+      await this.client.emit(protocolNames.CLIENT_OFFLINE,clientTypes.PUBLISHER, this.id);
+      const handle = setInterval(async ()=>{
+        if(this.status == serviceStatus.STOPED)
+        {
+          clearInterval(handle);
+          await this.client.close();
+        }
+      },100); 
+      logger.trace("Taulukko Subscriber Provider ends");
+    });
+   return ret;
   };
 
   forceClose = async () => {
