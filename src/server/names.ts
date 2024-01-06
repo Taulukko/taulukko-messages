@@ -12,5 +12,10 @@ export enum  LogLevel{
   }
 
   
-export var protocolNames = {CONNECTION_OK: "taulukko.connectionOK",CLIENT_ONLINE: "taulukko.clientOnline",REGISTERED:"taulukko.clientRegistered"} ;
+export var protocolNames = {
+  CONNECTION_OK: "taulukko.connectionOK",
+  CLIENT_ONLINE: "taulukko.clientOnline",
+  REGISTERED:"taulukko.clientRegistered",
+  NEW_MESSAGE:"taulukko.newMessage"
+} ;
 export var clientTypes = {PUBLISHER: "Publisher",SUBSCRIBER: "Subscriber"} ;

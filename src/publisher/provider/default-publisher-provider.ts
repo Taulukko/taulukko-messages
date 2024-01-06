@@ -2,7 +2,8 @@
 import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
 import { loggerFactory } from "../../common/logger";
 import {WSClient ,WebSocket, WSServerOptions } from "../../ws/"; 
-import { PearData } from "src/common/pear-data"; 
+import { PearData } from "../../common/pear-data"; 
+import { Message } from "../../common/message";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -25,7 +26,8 @@ export class DefaultPublisherProvider implements PublisherProvider {
 
   send(...data: any) {
     this.options.topics.forEach((item,index)=>{
-      this.client.emit(item,...data);
+      const message:Message = Message.create({topic:item,data});
+      this.client.emit(protocolNames.NEW_MESSAGE,message);
     }); 
   }
 

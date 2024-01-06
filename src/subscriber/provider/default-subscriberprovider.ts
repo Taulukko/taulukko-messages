@@ -11,6 +11,7 @@ import { PearData } from "src/common/pear-data";
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 export class DefaultSubscriberProvider implements SubscriberProvider {
+
   options:TaulukkoProviderOptions;
   status:string; 
   client:io.Socket;
@@ -25,13 +26,15 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   on = async (listener:    (message: Message) => Promise<any>)=> {
     logger.trace("Taulukko Subscriber Provider on: inserting a new listener " );
     this.options.topics.forEach(async(topic,index)=>{
-      await this.client.on(topic,async (...data:any)=>{
-        await listener( {topic,data});
-      } ); 
+      await this.client.on( protocolNames.NEW_MESSAGE,(message:Message)=>{
+        console.log("Subscriber:onNewMessage");
+
+        listener(message)
+      }); 
     });
     };
  
-  open = async   () :Promise<any>  => {
+  open = async () :Promise<any>  => {
     if(this.status!=serviceStatus.STARTING){
       throw Error("Subscriber already started");
     }
@@ -45,7 +48,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
       this.client = io.connect("http://localhost:7777");
 
       logger.trace("Taulukko Subscriber Provider get connection with server ");
-
+       
       
       this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
         this.client.on(protocolNames.CONNECTION_OK,onTaulukkoServerConnectionOK );
@@ -55,6 +58,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
         this.client.on(protocolNames.REGISTERED,onTaulukkoServerRegisteredClient );
       });
 
+  
       logger.trace("Taulukko Subscriber Provider listen connection ok from server ");
 
      
@@ -78,6 +82,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
       });
   };
 
+ 
   onTaulukkoServerRegisteredClient = async (resolve)=>{
     return  (async (websocket:WebSocket)=>{
         logger.trace("Taulukko Subscriber Provider onTaulukkoServerRegisteredClient ",websocket); 
@@ -85,6 +90,8 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
         resolve(); 
       });
   };
+  
+ 
 
   close = async () =>  {
     

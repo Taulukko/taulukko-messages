@@ -67,7 +67,7 @@ describe("api.basics",  function test(options={}){
     assert.equal(server.publishers.length,0);
 
     const publisher = await Publisher.create({ 
-      topics:["topic.helloWorld","unexistentTopic"],
+      topics:["topic.helloWorld"],
       defaultLogLevel:LogLevel.ERROR
     });
 
@@ -100,7 +100,7 @@ describe("api.basics",  function test(options={}){
     assert.equal(subscriber.data.status,serviceStatus.ONLINE,"Must be ONLINE before open");
 
     subscriber.on(async (message:Message)=>{
-      assert.equal(message.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");
+      assert.equal(message.data.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");
       assert.equal(message.data, "Hello World","Message need be Hello World");
       await subscriber.close();
       assert.equal(server.subscribers.length,0,"");
@@ -110,10 +110,7 @@ describe("api.basics",  function test(options={}){
       await server.close();
     });
  
-    await publisher.send("topic.helloWorld","Hello World");
-   // await subscriber.close();
-   // await publisher.close();
-   // await server.close();
+    await publisher.send("Hello World"); 
   });
   
 });

@@ -8,9 +8,14 @@ import { KeyTool,StringsUtil } from "taulukko-commons/util";
 import { WSServerOptions, WebSocket } from "./";
 import { validateStateChange } from "../common/service-utils";
 
-const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
+const LOGGER = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
-const keyTool: KeyTool = new KeyTool();
+const KEY_TOOL: KeyTool = new KeyTool();
+
+//see keytool documentation (head = clusterid+ processid + random)
+const KEY_TOOL_HEAD_SIZE = 13;
+
+
 
 export class WSServer   {
   id:string;
@@ -26,7 +31,8 @@ export class WSServer   {
     const defaults = { port: 7777, showDefaultMessage:true, defaultMessage:"WSServer Server is Running"};
     options = Object.assign({}, defaults, options);
     this.options = options as WSServerOptions;
-    this.id =  new StringsUtil().right(keyTool.build(1, 1),6); 
+    const key:string = KEY_TOOL.build(1, 1);
+    this.id = new StringsUtil().right(key, key.length - KEY_TOOL_HEAD_SIZE);
   }
 
   static create = (options:any):WSServer=>{
@@ -56,7 +62,7 @@ export class WSServer   {
       {
         throw Error("State need be STARTING");
       }
-      logger.trace("WSServer starting with options : " , this.options);
+      LOGGER.trace("WSServer starting with options : " , this.options);
       const ret = new Promise<any>((resolve,reject)=>{ 
         this.server = http.createServer((req, res) => {     
             if(me.options.showDefaultMessage)
@@ -66,7 +72,7 @@ export class WSServer   {
           
         }); 
         me.server.listen( me.options.port, () => {
-          logger.trace("WSServer listen port : " , me.options.port);
+          LOGGER.trace("WSServer listen port : " , me.options.port);
           me.state = serviceStatus.ONLINE; 
           resolve({});
         }); 
@@ -105,22 +111,22 @@ export class WSServer   {
     const websocket = new  WebSocket({socket,id:this.id});
 
     this.globalEvents.forEach((listener,event)=>{
-      logger.trace("WSServer _bindEvents: " ,event, websocket.client.id);
+      LOGGER.trace("WSServer _bindEvents: " ,event, websocket.client.id);
  
       socket.on(event,(...data:any)=>{
-        logger.trace("Evento recebido " ,data);
+        LOGGER.trace("Evento recebido " ,data);
         listener(websocket,...data);
       }); 
     });
   };
 
   on = async  (event:string,listener:(...data:any)=>void) => {
-    logger.trace("WSServer on : " ,event);
+    LOGGER.trace("WSServer on : " ,event);
     this.globalEvents.set(event,listener);
 
     this.internalSocketsByClientId.forEach((socket,key)=>{
       const websocket = new  WebSocket({socket,id:this.id});
-      logger.trace("WSServer on wsclient: " ,event, websocket.client.id);
+      LOGGER.trace("WSServer on wsclient: " ,event, websocket.client.id);
  
       socket.on(event,(...data:any)=>{
         listener(websocket,...data);
@@ -129,7 +135,7 @@ export class WSServer   {
    };
 
    close = async() => { 
-    logger.trace("WSServer close ");
+    LOGGER.trace("WSServer close ");
     if(this.state!=serviceStatus.ONLINE)
     {
       throw Error("State need be ONLINE");
