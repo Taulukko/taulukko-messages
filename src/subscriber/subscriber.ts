@@ -5,9 +5,10 @@ import { DefaultSubscriberProvider } from "./provider/default-subscriberprovider
 import { SubscriberProvider } from "./provider/subscriber-provider";
 import { Message } from "src/common/message";
 import { ClientData } from "src/server/client-data";
+import { PearData } from "src/common/pear-data";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
-export class Subscriber {
+export class Subscriber implements SubscriberProvider {
   provider: SubscriberProvider;
   options: SubscriberOptions;
 
@@ -24,6 +25,7 @@ export class Subscriber {
       logger.options.defaultLevel = this.options.defaultLogLevel;
     }
 
+
     static create(options: any):Subscriber {
       const publisher =  new Subscriber(options);
       
@@ -39,11 +41,15 @@ export class Subscriber {
     async close(){
       await this.provider.close();
     }
-    get data():Data  {
+    get data():PearData  {
       return this.provider.data;
     }
     async on( listener:(message:Message)=>void){
       return await this.provider.on(listener);
+    }
+
+    async forceClose(): Promise<any> {
+      return await this.provider.forceClose();
     }
   }
   

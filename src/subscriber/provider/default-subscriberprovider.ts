@@ -25,13 +25,11 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   }
   on = async (listener:    (message: Message) => Promise<any>)=> {
     logger.trace("Taulukko Subscriber Provider on: inserting a new listener " );
-    this.options.topics.forEach(async(topic,index)=>{
-      await this.client.on( protocolNames.NEW_MESSAGE,(message:Message)=>{
-        console.log("Subscriber:onNewMessage");
-
-        listener(message)
-      }); 
-    });
+     
+    await this.client.on( protocolNames.NEW_MESSAGE,(message:Message)=>{
+      console.log("Subscriber:onNewMessage");
+      listener(message)
+    });  
     };
  
   open = async () :Promise<any>  => {
@@ -97,10 +95,10 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     
     if(this.status!=serviceStatus.ONLINE){
       throw Error("Subscriber isnt open");
-    } 
+    }
     this.client.close();
     this.status = serviceStatus.STOPED;
-    logger.trace("Taulukko Subscriber Provider ends ");
+    logger.trace("Taulukko Subscriber Provider ends");
   };
 
   forceClose = async () => {

@@ -63,16 +63,26 @@ export class DefaultServerProvider implements ServerProvider {
     if(this.publisherList.map(clientData=>clientData.id).filter(id=>id==publisherId).length == 0){
       logger.error(`A non publisher send a message {publisherId,Message}` ,publisherId,message);
     }
-
+    console.log("Server:onNewMessage:db1");
     if(this.publisherList.filter(clientData=>clientData.id==publisherId
        && clientData.topics.filter(topic=>topic==message.topic)).length == 0){
       logger.error(`Topic not found for this publisher {publisherId,Message}` ,publisherId, message);
     }
+    console.log("Server:onNewMessage:db2",this.subscriberList,message);
 
-    this.subscriberList.filter(
+    const subscriberForthisTopic = this.subscriberList.filter(
       subscriber=>subscriber.topics.filter(
-        topic=>topic==message.topic).length==1)
-        .forEach(subscriber=>subscriber.socket.emit(protocolNames.NEW_MESSAGE,message) );
+        (topic)=>{
+          console.log("Server:onNewMessage:db2.1",topic==message.topic,topic,message);
+          return topic==message.topic;
+        }
+        ).length==1);
+
+        console.log("Server:onNewMessage:db3",subscriberForthisTopic);
+
+    subscriberForthisTopic.forEach(async subscriber=>{console.log("filter 1",subscriber);await subscriber.socket.emit(protocolNames.NEW_MESSAGE,message) });
+        console.log("Server:onNewMessage:db4");
+
   };
 
   async open() {

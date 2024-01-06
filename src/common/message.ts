@@ -4,31 +4,29 @@ const keyTool = new KeyTool();
 
 export class Message {
   private options:MessageOptions;
-  private _id:string;
+  public id:string;
+  public topic:string;
+  public data:any;
 
   private constructor(options: MessageOptions){
-    this.options = options;
-    this._id = keyTool.build(1,1);
+    let defaults = {id:keyTool.build(1,1),topics:new Array()};
+    this.options = Object.assign({}, defaults, options);
+    this.id = this.options.id;
+    this.topic = this.options.topic;
+    this.data = this.options.data;
+    
   }
   static create(options: MessageOptions) :Message{
     return new Message(options);
   }
-  
-  get data():any{
-    return this.options.data;
-  }
+   
 
-  get topic():string{
-    return this.options.topic;
-  }
-
-  get id():string{
-    return this._id;
-  }
 }
 
 
 export interface MessageOptions{
+  id?:string;
   topic:string;
   data:any;
 }
+
