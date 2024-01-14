@@ -37,7 +37,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
     if(this.status!=serviceStatus.STARTING){
       throw Error("Publisher already started");
     }
-    logger.info("Taulukko Publisher Provider starting with options : " , this.options);
+    logger.trace("Taulukko Publisher Provider starting with options : " , this.options);
     
     const ret = new Promise(async (resolve,reject)=>{
 

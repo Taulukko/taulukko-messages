@@ -36,7 +36,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     if(this.status!=serviceStatus.STARTING){
       throw Error("Subscriber already started");
     }
-    logger.info("Taulukko Subscriber Provider starting with options : " , this.options);
+    logger.trace("Taulukko Subscriber Provider starting with options : " , this.options);
 
     const ret = new Promise(async (resolve,reject)=>{
     
