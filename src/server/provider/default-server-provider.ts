@@ -31,12 +31,12 @@ export class DefaultServerProvider implements ServerProvider {
   }
 
   private onWSSocketConnection(socket:WebSocket){
-    logger.info("Taulukko Server Provider new Connection : " , socket);
+    logger.trace("Taulukko Server Provider new Connection : " , socket);
     socket.emit(protocolNames.CONNECTION_OK,{client:socket.client, server:socket.server});
   }
 
   private onWSDisconect(socket:WebSocket){
-    logger.info("Taulukko Server Provider ends Connection : " , socket);
+    logger.trace("Taulukko Server Provider ends Connection : " , socket);
   }
 
   private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{
@@ -89,12 +89,13 @@ export class DefaultServerProvider implements ServerProvider {
         }
         ).length==1);
 
-
+    subscriberForthisTopic.forEach(item=>item.socket.emit(protocolNames.NEW_MESSAGE,message));
 
   };
 
   async open() {
-    logger.info("Taulukko Server Provider starting with options : " , this.options);
+    logger.info("Taulukko Server Provider starting with port : " , this.options.port);
+    logger.trace("Taulukko Server Provider starting with options : " , this.options);
     await  this.wsServer.open();
 
     await this.wsServer.on(protocolNames.CLIENT_ONLINE,this.onClientOnline); 
@@ -109,7 +110,7 @@ export class DefaultServerProvider implements ServerProvider {
   async close() {
     await this.wsServer.close();
     this.status = serviceStatus.STOPED;
-    logger.trace("Taulukko Server Provider ends ");
+    logger.info("Taulukko Server Provider is closed ");
   }
   async forceClose() {
     try{

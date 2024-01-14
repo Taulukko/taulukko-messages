@@ -36,7 +36,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     if(this.status!=serviceStatus.STARTING){
       throw Error("Subscriber already started");
     }
-    logger.info("Taulukko Subscriber Provider starting with options : " , this.options);
+    logger.trace("Taulukko Subscriber Provider starting with options : " , this.options);
 
     const ret = new Promise(async (resolve,reject)=>{
     
@@ -62,8 +62,6 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   
       logger.trace("Taulukko Subscriber Provider listen connection ok from server ");
 
-     
-  
       this.client.on('connect', () => {
         logger.trace("Taulukko Subscriber Provider connection with server sucefull ");
       });
@@ -105,11 +103,12 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   };
   
   close = () : Promise<void> =>  {
+
     const ret : Promise<void> = new Promise(async (resolve,reject)=>{
       if(this.status!=serviceStatus.ONLINE){
         throw Error("Subscriber isnt open");
       }
-      await this.client.emit(protocolNames.CLIENT_OFFLINE,clientTypes.SUBSCRIBER, this.id);
+      await this.client.emit(protocolNames.CLIENT_OFFLINE,{type:clientTypes.SUBSCRIBER, id:this.id});
       const handle = setInterval(async ()=>{
         if(this.status == serviceStatus.STOPED)
         {
