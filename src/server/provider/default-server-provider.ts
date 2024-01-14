@@ -2,8 +2,8 @@
 import {  ServerProvider } from "./server-provider";
 import { ClientData } from "../client-data"; 
 import { ServerData } from '../server-data';
-import {serviceStatus} from "../names"; 
-import { logerNames,protocolNames,clientTypes} from "../names"; 
+import {serviceStatus} from "../../common/names"; 
+import { logerNames,protocolNames,clientTypes} from "../../common/names"; 
 import { loggerFactory } from "../../common/logger";
 import { WSServer, WSServerOptions, WebSocket  } from "../../ws/"; 
 import { ClientOffLineDTO, ClientOnLineDTO } from "../server-protocols-dtos";

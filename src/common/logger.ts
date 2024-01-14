@@ -1,4 +1,4 @@
-import { LogLevel } from "../server/names";
+import { LogLevel } from "./names";
 
 class Logger {
   options:LoggerOptions;

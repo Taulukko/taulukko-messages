@@ -1,4 +1,4 @@
-import { LogLevel , logerNames} from "../server/names"; 
+import { LogLevel , logerNames} from "../common/names"; 
 import { loggerFactory } from "../common/logger";  
 import { PublisherProvider } from "./provider/publisher-provider";
 import { DefaultPublisherProvider } from "./provider/default-publisher-provider";

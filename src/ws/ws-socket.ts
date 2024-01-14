@@ -1,6 +1,6 @@
 import { loggerFactory } from "../common/logger";
 import { WebSocketClient, WebSocketServer  } from ".";
-import { logerNames } from "../server/names";
+import { logerNames } from "../common/names";
 import { KeyTool } from "taulukko-commons";
 
 import * as socketIo from "socket.io"; 

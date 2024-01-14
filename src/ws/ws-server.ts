@@ -1,4 +1,4 @@
-import { logerNames, serviceStatus} from "../server/names"; 
+import { logerNames, serviceStatus} from "../common/names"; 
 import { loggerFactory } from "../common/logger"; 
 
 import * as http from "http";

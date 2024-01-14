@@ -1,5 +1,5 @@
 import { validateStateChange } from "../common/service-utils";
-import { logerNames, serviceStatus } from "../server/names";
+import { logerNames, serviceStatus } from "../common/names";
 import { WSClientOptions, WSServerOptions } from "./";
 import * as socketIo from "socket.io";
 import { KeyTool, StringsUtil } from "taulukko-commons";

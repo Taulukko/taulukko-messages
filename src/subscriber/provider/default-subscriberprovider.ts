@@ -1,6 +1,6 @@
  
 import {SubscriberProvider} from "./subscriber-provider";  
-import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
+import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../common/names";  
 import { loggerFactory } from "../../common/logger";
 import {  WSServerOptions, WebSocket } from "../../ws";
 

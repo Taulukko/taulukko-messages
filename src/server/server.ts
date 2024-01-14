@@ -2,7 +2,7 @@ import { DefaultServerProvider } from "./provider/default-server-provider";
 import { ServerProvider } from "./provider/server-provider";
 import { ServerData } from "./server-data";
 import { loggerFactory } from "../common/logger"; 
-import { logerNames ,LogLevel} from "./names";
+import { logerNames ,LogLevel} from "../common/names";
 import { ClientData } from "./client-data";
 
 

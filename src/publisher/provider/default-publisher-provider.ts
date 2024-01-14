@@ -1,5 +1,5 @@
  import {PublisherProvider} from "./publisher-provider";  
-import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../server/names";  
+import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../common/names";  
 import { loggerFactory } from "../../common/logger";
 import {WSClient ,WebSocket, WSServerOptions } from "../../ws/"; 
 import { PearData } from "../../common/pear-data"; 

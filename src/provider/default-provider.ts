@@ -1,8 +1,8 @@
  
 import {Provider} from "./provider"; 
 import { ServerData } from '../server/server-data';
-import {serviceStatus} from "../server/names"; 
-import { logerNames} from "../server/names"; 
+import {serviceStatus} from "../common/names"; 
+import { logerNames} from "../common/names"; 
 import { loggerFactory } from "../common/logger";
 import { WSServer,WSServerOptions } from "../ws"; 
 

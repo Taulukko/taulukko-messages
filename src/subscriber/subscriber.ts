@@ -1,4 +1,4 @@
-import { LogLevel , logerNames} from "../server/names";
+import { LogLevel , logerNames} from "../common/names";
 import {Data} from "../common/data";
 import { loggerFactory } from "../common/logger";
 import { DefaultSubscriberProvider } from "./provider/default-subscriberprovider";

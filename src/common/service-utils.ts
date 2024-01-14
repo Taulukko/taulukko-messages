@@ -1,4 +1,4 @@
-import { serviceStatus } from "../server/names";
+import { serviceStatus } from "./names";
 
 export function validateStateChange(oldState:string,newState:string):string{
     let valid:boolean = true;

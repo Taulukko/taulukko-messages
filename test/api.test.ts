@@ -1,5 +1,5 @@
 import  {Server,Publisher,Subscriber,Message,proccessStatus} from '../index';
-import { LogLevel, serviceStatus } from '../src/server/names';
+import { LogLevel, serviceStatus } from '../src/common/names';
 import { assert } from "chai"; 
 
 

@@ -1,7 +1,7 @@
 
 import { loggers } from "winston";
 import { loggerFactory } from "../src/common/logger"; 
-import { LogLevel,logerNames } from '../src/server/names';
+import { LogLevel,logerNames } from '../src/common/names';
  
 
 describe('logger api', () => {
