@@ -1,8 +1,7 @@
-
 import  {Server,Publisher,Subscriber,Message,proccessStatus} from '../index';
 import { LogLevel, serviceStatus } from '../src/server/names';
+import { assert } from "chai"; 
 
-import * as assert from 'assert';
 
 var semaphore:boolean; 
 var lastError:Error; 
@@ -65,6 +64,8 @@ describe("api.basics",  function test(options={}){
   
 
   it.only('Open subscriber and receiving a string message',async  () => {
+    
+    
     const server = await initServer();
 
     assert.equal(server.publishers.length,0);
@@ -101,39 +102,43 @@ describe("api.basics",  function test(options={}){
     assert.equal(server.subscribers.length,1,"Must be 1 after open");
 
     assert.equal(subscriber.data.status,serviceStatus.ONLINE,"Must be ONLINE before open");
+ 
 
     await subscriber.on(async (message:Message)=>{
       try{
+       
         assert.equal(message.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");
         assert.equal(message.data, "Hello World","Message need be Hello World");
         assert.equal(server.subscribers.length,1,"subscribers need be 1 into the server");
-        assert.equal(server.publishers.length,1,"publisher need be 1 into the server");
-
+        assert.equal(server.publishers.length,1,"publisher need be 1 into the server"); 
         await subscriber.close();
         assert.equal(server.subscribers.length,0,"subscribers need be 0 into the server after subscriber close");
-        assert.equal(server.publishers.length,1,"publisher need be 1 into the server after subscriber close");
-        await publisher.close();
+        assert.equal(server.publishers.length,1,"publisher need be 1 into the server after subscriber close"); 
+        await publisher.close(); 
         assert.equal(server.subscribers.length,0,"subscribers need be 0 into the server after publisher close");
-        assert.equal(server.publishers.length,0,"publisher need be 0 into the server  after subscriber close");
-        await server.close();
+        assert.equal(server.publishers.length,0,"publisher need be 0 into the server  after subscriber close"); 
+        await server.close(); 
       }catch(e){
-        lastError=e;
+        lastError=e; 
         await subscriber.forceClose();
         await publisher.forceClose();
-        await server.forceClose(); 
+        await server.forceClose();  
       }
-      finally{
+      finally{ 
         semaphore = true;
       }
      
-    });
- 
+    }); 
+
     cleanupGlobals();
  
+     
+
     await publisher.send("Hello World"); 
+ 
 
     assert.ifError( await receiveTheMessage()); 
-       
+        
   });
   
 });

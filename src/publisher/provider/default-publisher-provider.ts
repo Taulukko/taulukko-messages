@@ -95,10 +95,8 @@ export class DefaultPublisherProvider implements PublisherProvider {
   onTaulukkoServerUnregisteredClient = async (resolve: (ret:any)=>void )=>{
     const ret =  (async (websocket:WebSocket)=>{
 
-    
         logger.trace("Taulukko Publisher Provider onTaulukkoServerRegisteredClient ",websocket); 
         this.status = serviceStatus.STOPED;
-     
         resolve({}); 
     
       });
@@ -109,17 +107,19 @@ export class DefaultPublisherProvider implements PublisherProvider {
   close = () : Promise<void> =>  {
     const ret : Promise<void> = new Promise(async (resolve,reject)=>{
       if(this.status!=serviceStatus.ONLINE){
-        throw Error("Subscriber isnt open");
+        throw Error("Publisher isnt open");
       }
-      await this.client.emit(protocolNames.CLIENT_OFFLINE,clientTypes.PUBLISHER, this.id);
+      await this.client.emit(protocolNames.CLIENT_OFFLINE,{type:clientTypes.PUBLISHER, id:this.id});
+      
       const handle = setInterval(async ()=>{
         if(this.status == serviceStatus.STOPED)
         {
           clearInterval(handle);
           await this.client.close();
+          resolve();
         }
       },100); 
-      logger.trace("Taulukko Subscriber Provider ends");
+      logger.trace("Taulukko Publisher Provider ends");
     });
    return ret;
   };

@@ -89,7 +89,7 @@ export class DefaultServerProvider implements ServerProvider {
         }
         ).length==1);
 
-
+    subscriberForthisTopic.forEach(item=>item.socket.emit(protocolNames.NEW_MESSAGE,message));
 
   };
 
