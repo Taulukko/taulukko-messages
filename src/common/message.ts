@@ -2,7 +2,7 @@ import { KeyTool } from "taulukko-commons";
 
 const keyTool = new KeyTool();
 
-export class Message {
+export class Message implements MessageDTO{
   private options:MessageOptions;
   public id:string;
   public topic:string;
@@ -20,12 +20,19 @@ export class Message {
     return new Message(options);
   }
    
-
+  get struct():MessageDTO{
+    return {id:this.id,topic:this.topic,data:this.data};
+  };
 }
-
 
 export interface MessageOptions{
   id?:string;
+  topic:string;
+  data:any;
+}
+
+export interface MessageDTO{
+  id:string;
   topic:string;
   data:any;
 }

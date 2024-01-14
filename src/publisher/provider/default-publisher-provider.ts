@@ -28,7 +28,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
   send(...data: any) {
     this.options.topics.forEach((item,index)=>{
       const message:Message = Message.create({topic:item,data});
-      this.client.emit(protocolNames.NEW_MESSAGE,message);
+      this.client.emit(protocolNames.NEW_MESSAGE,message.struct);
     }); 
   }
 
