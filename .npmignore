@@ -1,0 +1,7 @@
+node_modules
+test
+doc
+**/*.ts
+**/*.map
+*-audit.json
+*.log
