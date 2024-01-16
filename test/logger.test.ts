@@ -11,13 +11,13 @@ describe('logger api', () => {
     assert.isNotNull(logger); 
   });
 
-  it('Check if log function obey default level ',async  () => {
+  it('Check if log function obey default level info ',async  () => {
     const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
     const spy = sinon.spy(logger, 'log');
     logger.trace("Trace");
-    assert.isTrue(spy.notCalled);
+    assert.isTrue(spy.notCalled,"trace wont be called because the default is info");
     logger.critical("Critical error");
-    assert.isTrue(spy.calledOnce);
+    assert.isTrue(spy.calledOnce,"need be called when a critical error ocorrus ");
     spy.restore();
   });
 
@@ -29,7 +29,19 @@ describe('logger api', () => {
     assert.isTrue(spy.calledOnce);
     spy.restore();
   });
- 
+    
+});
 
- 
+
+describe('retro logger api', () => {
+
+  it('Logger default not filter corretly',async  () => {
+    const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
+    const spy = sinon.spy(logger, 'log');
+    logger.options.defaultLevel = LogLevel.DEBUG;
+    logger.trace("Trace");
+    assert.isTrue(spy.notCalled);
+    spy.restore();
+  }); 
+    
 });

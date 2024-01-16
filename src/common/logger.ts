@@ -14,32 +14,38 @@ class Logger {
   public close(){
   }
 
-  /***Compare if a is lesser or equal than be, eg:
-   * isLesserOrEqualThan(TRACE,TRACE) = true
-   * isLesserOrEqualThan(TRACE,DEBUG) = true
-   * isLesserOrEqualThan(DEBUG,TRACE) = false
+  /***Check if need be filtered, eg:
+   * needBeFiltered(TRACE,any case ) = false
+   * needBeFiltered(DEBUG,TRACE) = true
+   * needBeFiltered(DEBUG,DEBUG) = false
+   * needBeFiltered(DEBUG,ERROR) = false
+   * needBeFiltered(INFO,CRITICAL) = false
+   * needBeFiltered(INFO,DEBUG) = true
    * 
   */
-  private isLesserOrEqualThan(a:LogLevel,b:LogLevel):boolean
+  private needBeFiltered(defaultLevel:LogLevel,level:LogLevel):boolean
   {
+    if(defaultLevel==LogLevel.DEBUG && ![LogLevel.CRITICAL,LogLevel.ERROR,LogLevel.INFO,LogLevel.DEBUG].find((i)=>i==level,false) )
+    {
+      return true;
+    }
 
-    if(a==LogLevel.DEBUG && b!= LogLevel.TRACE )
+    if(defaultLevel==LogLevel.INFO && ![LogLevel.CRITICAL,LogLevel.ERROR,LogLevel.INFO].find((i)=>i==level,false))
     {
-      return false;
+      return true;
     }
-    if(a==LogLevel.INFO &&  [LogLevel.TRACE,LogLevel.DEBUG,LogLevel.TRACE].find((i)=>i==b,false))
+
+    if(defaultLevel==LogLevel.ERROR && ![LogLevel.CRITICAL,LogLevel.ERROR].find((i)=>i==level,false))
     {
-      return false;
+      return true;
     }
-    if(a==LogLevel.ERROR && [LogLevel.TRACE,LogLevel.DEBUG,LogLevel.INFO,LogLevel.ERROR].find((i)=>i==b,false))
+
+    if(defaultLevel==LogLevel.CRITICAL && defaultLevel!=level)
     {
-      return false;
+      return true;
     }
-    if(a==LogLevel.CRITICAL && a!=b)
-    {
-      return false;
-    }
-    return true;
+
+    return false;
   }
   public log(level:LogLevel,message?: any, ...optionalParams: any){
   
@@ -53,10 +59,11 @@ class Logger {
   }
   private common(level:LogLevel, message?: any, ...optionalParams: any)
   {
-    if(!this.isLesserOrEqualThan(this.options.defaultLevel,level))
+    if(this.needBeFiltered(this.options.defaultLevel,level))
     {
       return;
     }
+    
     if(message)
     {
       this.log(level,message,...optionalParams);
