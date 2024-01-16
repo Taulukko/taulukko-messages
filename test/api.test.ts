@@ -49,13 +49,13 @@ describe("api.basics",  function test(options={}){
 
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
-    assert.equal(server.subscribers.length,0,"Publishers need be equal 0");  
+    assert.equal(server.subscribers.length,0,"Subscribers need be equal 0");  
 
     await publisher.send("topic.helloWorld","Hello World");
 
     await publisher.close();
 
-    assert.equal(server.publishers.length,1,"Publishers need be equal 0");
+    assert.equal(server.publishers.length,0,"Publishers need be equal 0");
    
    
     await server.close(); 
@@ -63,7 +63,7 @@ describe("api.basics",  function test(options={}){
 
   
 
-  it.only('Open subscriber and receiving a string message',async  () => {
+  it('Open subscriber and receiving a string message',async  () => {
     
     
     const server = await initServer();
@@ -140,10 +140,39 @@ describe("api.basics",  function test(options={}){
     assert.ifError( await receiveTheMessage()); 
         
   });
+ 
+  it.skip('publish a string message for all',async  () => {
+    const server = await initServer(); 
+  
+    let countMessages=0;
+
+    const subscriber = await Subscriber.create({
+      server:"taulukko://localhost:7777",
+      topics:["topic.helloWorld","unexistentTopic"],
+      handler:(message:Message)=>{
+        countMessages++;
+        expect(["topic.helloWorld","unexistentTopic"] ).toContain(message.topic);
+        expect(message.data).toBe("Hello World");
+        expect(countMessages).toBe(1);
+      }
+    }); 
+
+    await subscriber.open();
+
+    await server.sendAll("topic.helloWorld","test");
+    await server.sendAll(null,"test2");
+
+    await subscriber.close();
+    
+    await server.close();
+  });
+  
   
 });
  
 
+
+//auxiliar functions
 
 function receiveTheMessage():Promise<Error|null> {
   return new Promise((resolve,reject)=>{

@@ -1,35 +1,33 @@
-
-import { loggers } from "winston";
+ 
 import { loggerFactory } from "../src/common/logger"; 
 import { LogLevel,logerNames } from '../src/common/names';
- 
+import { assert } from "chai"; 
+import * as sinon from "sinon";
 
 describe('logger api', () => {
 
-  test('Default Logger isnt null',async  () => {
+  it('Default Logger isnt null',async  () => {
     const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
-    expect(logger).not.toBeNull(); 
+    assert.isNotNull(logger); 
   });
 
-  test('Check if log function obey default level ',async  () => {
+  it('Check if log function obey default level ',async  () => {
     const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
-    const spy = jest.spyOn(logger, 'log');
+    const spy = sinon.spy(logger, 'log');
     logger.trace("Trace");
-    expect(spy).not.toHaveBeenCalled();
+    assert.isTrue(spy.notCalled);
     logger.critical("Critical error");
-    expect(spy).toHaveBeenCalled();
-    spy.mockReset();
+    assert.isTrue(spy.calledOnce);
+    spy.restore();
   });
- 
-  
 
-  test('Check if log function obey when change the log level ',async  () => {
+  it('Check if log function obey when change the log level ',async  () => {
     const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
-    const spy = jest.spyOn(logger, 'log');
+    const spy = sinon.spy(logger, 'log');
     logger.options.defaultLevel = LogLevel.TRACE;
     logger.trace("Trace");
-    expect(spy).toHaveBeenCalled();
-    spy.mockReset();
+    assert.isTrue(spy.calledOnce);
+    spy.restore();
   });
  
 

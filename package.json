@@ -9,7 +9,7 @@
     "installGlobals": "npm install i -g esrun",
     "REM-posttest": "npm run tslint",
     "tsfm": "tsfmt -r --no-tslint",
-    "test": "tsc --sourceMap | mocha .\\test\\api.test.js",
+    "test": "tsc --sourceMap |  mocha \"test/**/*.test.js\"",
     "publish": "npm publish",
     "start": "node -r source-map-support/register index.js",
     "startDev": "nodemon  -r source-map-support/register index.js"
@@ -42,7 +42,6 @@
     "@google-cloud/nodejs-repo-tools": "^3.3.0",
     "@types/chai": "^4.3.11",
     "@types/express": "^4.16.0",
-    "@types/jest": "^24.0.15",
     "chai": "^4.3.6",
     "jest": "^24.9.0",
     "mocha": "^10.2.0",
@@ -52,7 +51,10 @@
     "tslint": "^5.11.0",
     "tslint-eslint-rules-recommended": "^1.2.2",
     "typescript": "4.8",
-    "typescript-formatter": "^7.2.2"
+    "typescript-formatter": "^7.2.2",
+    "@types/sinon": "^17.0.3",
+    "sinon": "^17.0.1"
+
   },
   "jest": {
     "rootDir": ".",
