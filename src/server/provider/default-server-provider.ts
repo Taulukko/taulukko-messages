@@ -8,6 +8,7 @@ import { loggerFactory } from "../../common/logger";
 import { WSServer, WSServerOptions, WebSocket  } from "../../ws/"; 
 import { ClientOffLineDTO, ClientOnLineDTO } from "../server-protocols-dtos";
 import { Message } from "src/common/message";
+import { AuthProvider } from "src/auth/auth-provider";
 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
@@ -18,6 +19,7 @@ export class DefaultServerProvider implements ServerProvider {
   wsServer:WSServer;
   private publisherList:Array<ClientData> = new Array();
   private subscriberList:Array<ClientData> = new Array();
+  private auth:AuthProvider ;
  
 
   constructor(options:any){
@@ -28,6 +30,7 @@ export class DefaultServerProvider implements ServerProvider {
     this.options.onDisconnect = this.onWSDisconect;
     this.wsServer = WSServer.create(options);
     this.status = serviceStatus.STARTING;
+    this.auth = this.options.auth;
   }
 
   private onWSSocketConnection(socket:WebSocket){
@@ -40,6 +43,14 @@ export class DefaultServerProvider implements ServerProvider {
   }
 
   private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{
+    if(this.auth)
+    {
+      if(!this.auth.validateOnClienteOnline(socket,data))
+      {
+        socket.emit(protocolNames.UNREGISTERED);   
+        return;
+      }
+    }
 
     let list:Array<ClientData> = this.publisherList;
 
@@ -70,9 +81,7 @@ export class DefaultServerProvider implements ServerProvider {
   };
  
   private onNewMessage = (socket:WebSocket, message:Message)=>{
-
-    let list:Array<ClientData> = this.publisherList;
-
+  
     const publisherId = socket.client.id;
     if(this.publisherList.map(clientData=>clientData.id).filter(id=>id==publisherId).length == 0){
       logger.error(`A non publisher send a message {publisherId,Message}` ,publisherId,message);
@@ -141,4 +150,5 @@ export class DefaultServerProvider implements ServerProvider {
 }
 
 interface TaulukkoProviderOptions extends WSServerOptions{
+  auth:AuthProvider
 }

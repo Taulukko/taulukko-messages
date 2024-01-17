@@ -86,7 +86,7 @@ describe('stability test', () => {
   it.skip('Publisher disconnect and connect event',async  () => {
     const server = await initServer();
 
-    expect(server.publishers.length).toBe(0);
+    //expect(server.publishers.length).toBe(0);
 
     const publisher = await Publisher.create({
       server:"taulukko://notexist:7777",

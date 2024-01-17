@@ -4,6 +4,7 @@ import { ServerData } from "./server-data";
 import { loggerFactory } from "../common/logger"; 
 import { logerNames ,LogLevel} from "../common/names";
 import { ClientData } from "./client-data";
+import { AuthProvider } from "src/auth/auth-provider";
 
 
 
@@ -62,7 +63,8 @@ export class Server implements ServerProvider {
   
 interface ServerOptions{
   defaultLogLevel:LogLevel,
-  provider:ServerProvider
+  provider:ServerProvider,
+  auth?:AuthProvider
 }
 
 
