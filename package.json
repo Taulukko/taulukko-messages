@@ -7,7 +7,7 @@
   "scripts": {
     "compile": "tsc --sourceMap",
     "installGlobals": "npm install i -g esrun",
-    "test": "clear | tsc --sourceMap |  mocha \"test/**/*.test.js\"",
+    "test": "tsc --sourceMap |  mocha \"test/**/*.test.js\"",
     "publish": "npm publish",
     "start": "node -r source-map-support/register index.js",
     "startDev": "nodemon -r source-map-support/register index.js"
