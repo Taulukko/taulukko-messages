@@ -7,12 +7,10 @@
   "scripts": {
     "compile": "tsc --sourceMap",
     "installGlobals": "npm install i -g esrun",
-    "REM-posttest": "npm run tslint",
-    "tsfm": "tsfmt -r --no-tslint",
-    "test": "tsc --sourceMap |  mocha \"test/**/*.test.js\"",
+    "test": "clear | tsc --sourceMap |  mocha \"test/**/*.test.js\"",
     "publish": "npm publish",
     "start": "node -r source-map-support/register index.js",
-    "startDev": "nodemon  -r source-map-support/register index.js"
+    "startDev": "nodemon -r source-map-support/register index.js"
   },
   "repository": {
     "type": "git",
