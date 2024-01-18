@@ -81,7 +81,7 @@ class Logger {
     this.common(LogLevel.DEBUG,message,...optionalParams);
   }
   public info(message?: any, ...optionalParams: any)
-  {
+  { 
     this.common(LogLevel.INFO,message,...optionalParams);
   }
   public error(message?: any, ...optionalParams: any)

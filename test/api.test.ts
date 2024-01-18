@@ -40,8 +40,7 @@ describe("api.basics",  function test(options={}){
 
     assert.equal(publisher.data.status,proccessStatus.STARTING,"Start state need be STARTING");
  
-    await publisher.open();
-     
+    await publisher.open();    
 
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
@@ -52,6 +51,7 @@ describe("api.basics",  function test(options={}){
     assert.equal(server.subscribers.length,0,"Subscribers need be equal 0");  
 
     await publisher.send("topic.helloWorld","Hello World");
+
 
     await publisher.close();
 

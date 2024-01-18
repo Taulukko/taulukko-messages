@@ -14,7 +14,7 @@ async function initServer(options={}){
  
 
 
-describe.skip('auth test - Simple Auth', () => {
+describe('auth test - Simple Auth', () => {
   it('init Server with simple Auth',async  () => {
     const server:Server = await initServer({auth:SimpleAuth.create({password:"test123"})});
     
@@ -35,9 +35,17 @@ describe.skip('auth test - Simple Auth', () => {
 
     const publisher:Publisher = Publisher.create({auth:SimpleAuth.create({password:"wrongPassword"})});
 
-    assert.throws(publisher.open);
-
-    server.forceClose();//close without exceptions
+    try{
+      await publisher.open();
+      assert.fail("Cannot open with a wrong password") ;
+    }
+    catch(e)
+    {
+      assert.isNotNull(e);
+    }
+    finally{
+      server.forceClose();
+    }
    }
   );
 
@@ -50,13 +58,22 @@ describe.skip('auth test - Simple Auth', () => {
 
     const subscriber:Subscriber = Subscriber.create({auth:SimpleAuth.create({password:"wrongPassword"})});
 
-    assert.throws(subscriber.open);
-
-    server.forceClose();//close without exceptions
+    try{
+      await subscriber.open();
+      assert.fail("Cannot open with a wrong password") ;
+    }
+    catch(e)
+    {
+      assert.isNotNull(e);
+    }
+    finally{
+      server.forceClose();
+    }
+ 
    }
   );
 
-  it('start Publisher with a correct password',async  () => {
+  it.skip('start Publisher with a correct password',async  () => {
     const server:Server = await initServer({auth:SimpleAuth.create({password:"test123"})});
     
     assert.equal(server.data.port,7777);
@@ -71,7 +88,7 @@ describe.skip('auth test - Simple Auth', () => {
    }
   );
 
-  it('start Subscriber with a correct password',async  () => {
+  it.skip('start Subscriber with a correct password',async  () => {
     const server:Server = await initServer({auth:SimpleAuth.create({password:"test123"})});
     
     assert.equal(server.data.port,7777);

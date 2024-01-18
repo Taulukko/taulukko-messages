@@ -18,7 +18,7 @@ export class SimpleAuth implements AuthProvider {
     }
 
     validateOnClienteOnline(socket: WebSocket, data: ClientOnLineDTO): boolean {
-      throw new Error("Method not implemented.");
+      return false;
     }
   
     static create(options: any = {} ) : AuthProvider{

@@ -32,7 +32,7 @@ export class Publisher implements PublisherProvider{
     }
     
     async open(){
-      logger.trace("Publisher open ");
+      logger.info("Publisher open ");
       const ret = await this.provider.open();
       return ret; 
     }

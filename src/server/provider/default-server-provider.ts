@@ -35,6 +35,7 @@ export class DefaultServerProvider implements ServerProvider {
 
   private onWSSocketConnection(socket:WebSocket){
     logger.trace("Taulukko Server Provider new Connection : " , socket);
+    logger.debug("Taulukko Server Provider new Connection : " );
     socket.emit(protocolNames.CONNECTION_OK,{client:socket.client, server:socket.server});
   }
 
@@ -43,14 +44,17 @@ export class DefaultServerProvider implements ServerProvider {
   }
 
   private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{
+    logger.debug("onClientOnline ",1 );
     if(this.auth)
     {
       if(!this.auth.validateOnClienteOnline(socket,data))
       {
-        socket.emit(protocolNames.UNREGISTERED);   
+        logger.debug("onClientOnline " ,2);
+        socket.emit(protocolNames.UNREGISTERED);
         return;
       }
     }
+    logger.debug("onClientOnline " ,3);
 
     let list:Array<ClientData> = this.publisherList;
 
@@ -103,7 +107,7 @@ export class DefaultServerProvider implements ServerProvider {
   };
 
   async open() {
-    logger.info("Taulukko Server Provider starting with port : " , this.options.port);
+    logger.debug("Taulukko Server Provider starting with port : " , this.options.port);
     logger.trace("Taulukko Server Provider starting with options : " , this.options);
     await  this.wsServer.open();
 
@@ -119,7 +123,7 @@ export class DefaultServerProvider implements ServerProvider {
   async close() {
     await this.wsServer.close();
     this.status = serviceStatus.STOPED;
-    logger.info("Taulukko Server Provider is closed ");
+    logger.debug("Taulukko Server Provider is closed ");
   }
   async forceClose() {
     try{

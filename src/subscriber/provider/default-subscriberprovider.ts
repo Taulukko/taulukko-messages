@@ -56,7 +56,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
         this.client.on(protocolNames.REGISTERED,onTaulukkoServerRegisteredClient );
       });
 
-      await this.onTaulukkoServerUnregisteredClient(resolve).then((onTaulukkoServerUnregisteredClient)=>{
+      await this.onTaulukkoServerUnregisteredClient(resolve,this).then((onTaulukkoServerUnregisteredClient)=>{
         this.client.on(protocolNames.UNREGISTERED,onTaulukkoServerUnregisteredClient );
       });
   
@@ -91,11 +91,17 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   };
 
   
-  onTaulukkoServerUnregisteredClient = async (resolve: (ret:any)=>void )=>{
+  onTaulukkoServerUnregisteredClient = async (resolve: (ret:any)=>void,me:DefaultSubscriberProvider )=>{
     const ret =  (async (websocket:WebSocket)=>{
         logger.trace("Taulukko Publisher Provider onTaulukkoServerRegisteredClient ",websocket); 
         this.status = serviceStatus.STOPED;
      
+        try{
+          me.client.close();
+        }
+        catch(e)
+        {}
+         
         resolve({}); 
 
       });
@@ -113,7 +119,11 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
         if(this.status == serviceStatus.STOPED)
         {
           clearInterval(handle);
-          await this.client.close();
+          try{
+            this.client.close();
+          }
+          catch(e)
+          {}
           resolve();
         }
       },100); 
