@@ -16,13 +16,11 @@ export class Subscriber implements SubscriberProvider {
       this.provider = options.provider? options.provider: new DefaultSubscriberProvider(options) ;
 
       const defaults = { 
-        provider:  new DefaultSubscriberProvider(options) , 
-        defaultLogLevel: LogLevel.INFO,
+        provider:  new DefaultSubscriberProvider(options) ,  
         server:"taulukko:\\localhost:7777",
         topics: new Array()};
       options = Object.assign({}, defaults, options);
       this.options = options as SubscriberOptions;
-      logger.options.defaultLevel = this.options.defaultLogLevel;
     }
 
 
@@ -53,8 +51,7 @@ export class Subscriber implements SubscriberProvider {
     }
   }
   
-interface SubscriberOptions{
-  defaultLogLevel:LogLevel,
+interface SubscriberOptions{ 
   provider:SubscriberProvider,
   topics:Array<string>
 }

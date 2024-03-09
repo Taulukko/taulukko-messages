@@ -20,9 +20,7 @@ export class Server implements ServerProvider {
     const defaults = { provider:  defaultProvider , defaultLogLevel: LogLevel.INFO };
     options = Object.assign({}, defaults, options);
     this.options = options as ServerOptions;
-    logger.options.defaultLevel = this.options.defaultLogLevel; 
-    logger.trace(logger.options.defaultLevel,this.options.defaultLogLevel);
-  }
+   }
 
   static create(options: any = {} ) : Server{
     const server=  new Server(options);
@@ -61,8 +59,7 @@ export class Server implements ServerProvider {
     
 };
   
-interface ServerOptions{
-  defaultLogLevel:LogLevel,
+interface ServerOptions{ 
   provider:ServerProvider,
   auth?:AuthProvider
 }

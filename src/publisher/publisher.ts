@@ -18,8 +18,7 @@ export class Publisher implements PublisherProvider{
         server:"taulukko:\\localhost:7777",
         topics: new Array()};
       options = Object.assign({}, defaults, options);
-      this.options = options as PublisherOptions;
-      logger.options.defaultLevel = this.options.defaultLogLevel;
+      this.options = options as PublisherOptions; 
     }
 
 

@@ -10,7 +10,6 @@ class Logger {
     const defaults = {  };
     options = Object.assign({}, defaults, options);
     this.options = options as LoggerOptions;
-    console.log("log globalConfiguration",globalConfiguration);
   }
 
   public open(){
@@ -51,16 +50,24 @@ class Logger {
 
     return false;
   }
+
   public log(level:LogLevel,message?: any, ...optionalParams: any){
   
     if(message)
     {
-      console.log(message,...optionalParams);
+      if(globalConfiguration.log.showInConsole)
+      {
+        globalConfiguration.log.consoleLog(message,...optionalParams);
+      }
+      return;
     }
-    else{
-      console.log(...optionalParams);
+    
+    if(globalConfiguration.log.showInConsole)
+    {
+      globalConfiguration.log.consoleLog(...optionalParams);
     }
   }
+
   private common(level:LogLevel, message?: any, ...optionalParams: any)
   {
     if(this.needBeFiltered(globalConfiguration.log.level,level))
