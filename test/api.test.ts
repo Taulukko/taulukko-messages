@@ -1,5 +1,5 @@
-import  {Server,Publisher,Subscriber,Message,proccessStatus} from '../index';
-import { LogLevel, serviceStatus } from '../src/common/names';
+import  {Server,Publisher,Subscriber,Message,serviceStatus} from '../index';
+import { LogLevel } from '../src/common/names';
 import { assert } from "chai"; 
 
 
@@ -38,13 +38,13 @@ describe("api.basics",  function test(options={}){
 
     assert.equal(server.publishers.length, 0,"server.publishers need be incremented after open");
 
-    assert.equal(publisher.data.status,proccessStatus.STARTING,"Start state need be STARTING");
+    assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
  
     await publisher.open();    
 
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
-    assert.equal(publisher.data.status,proccessStatus.ONLINE,"Publishers need be equal ONLINE");
+    assert.equal(publisher.data.status,serviceStatus.ONLINE,"Publishers need be equal ONLINE");
 
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
