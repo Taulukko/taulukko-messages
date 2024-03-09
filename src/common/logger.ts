@@ -1,12 +1,16 @@
 import { LogLevel } from "./names";
 
+import { globalConfiguration } from "../global-configuration";
+
 class Logger {
   options:LoggerOptions;
 
   constructor(options:any){
-    const defaults = { defaultLevel: LogLevel.INFO };
+    
+    const defaults = {  };
     options = Object.assign({}, defaults, options);
     this.options = options as LoggerOptions;
+    console.log("log globalConfiguration",globalConfiguration);
   }
 
   public open(){
@@ -59,7 +63,7 @@ class Logger {
   }
   private common(level:LogLevel, message?: any, ...optionalParams: any)
   {
-    if(this.needBeFiltered(this.options.defaultLevel,level))
+    if(this.needBeFiltered(globalConfiguration.log.level,level))
     {
       return;
     }
@@ -114,8 +118,7 @@ class Logger {
   }
 }
 
-interface LoggerOptions{
-  defaultLevel:LogLevel
+interface LoggerOptions{ 
 }
 
 const factory = new Map<String,Logger>();
