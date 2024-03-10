@@ -31,7 +31,6 @@ class LogConfiguration{
     public static create(options:LogConfigurationOptions):LogConfiguration{
         return new LogConfiguration(options);
     }
- 
     
 }
 

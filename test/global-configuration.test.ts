@@ -47,5 +47,32 @@ describe('global configuration api - log configuration', () => {
     assert.isTrue(counter==1,"need be called when showInConsole is True ");
 
   });
+
+  
+
+  it('Changing pattern property',async  () => {
+    // sinon.spy(console, 'log') not work, so I need inject the console.log function
+    let lastMessage:string = null;
+    let consoleLog=(message,...data:any[])=>lastMessage=message;
+    globalConfiguration.log.consoleLog = consoleLog;
+    globalConfiguration.log.pattern = "DD#MM#YYYY#HH#mm#ss#SSSS";
+    globalConfiguration.log.showInConsole = true;
+     
+    const now:Date = new Date();
+
+    const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
+  
+    logger.info("test");
+    assert.isNotNull(lastMessage ," pattern cannot be null ");
+    const partMessage:Array<string> = lastMessage.split('#');
+    assert.equal(partMessage.length,7);
+    console.log("lastMessage",lastMessage);
+    let monthFormated:string = (now.getMonth()+1).toString();
+    monthFormated = ("0"+monthFormated).substring(monthFormated.length-2);
+    assert.equal(partMessage[1],monthFormated);
+    assert.equal(partMessage[2],now.getFullYear().toString());
+    
+
+  });
  
 });
