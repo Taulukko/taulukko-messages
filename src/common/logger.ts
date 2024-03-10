@@ -2,6 +2,8 @@ import { LogLevel } from "./names";
 
 import { globalConfiguration } from "../global-configuration";
 
+import * as moment from "moment"; 
+
 class Logger {
   options:LoggerOptions;
 
@@ -50,21 +52,24 @@ class Logger {
 
     return false;
   }
+ 
 
   public log(level:LogLevel,message?: any, ...optionalParams: any){
+
+    const head:string = moment().format(globalConfiguration.log.pattern).replaceAll("LOGLEVEL",LogLevel[level]);
   
     if(message)
     {
       if(globalConfiguration.log.showInConsole)
       {
-        globalConfiguration.log.consoleLog(message,...optionalParams);
+        globalConfiguration.log.consoleLog(head,message,...optionalParams);
       }
       return;
     }
     
     if(globalConfiguration.log.showInConsole)
     {
-      globalConfiguration.log.consoleLog(...optionalParams);
+      globalConfiguration.log.consoleLog(head,...optionalParams);
     }
   }
 
