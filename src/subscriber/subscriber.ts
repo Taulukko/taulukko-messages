@@ -1,6 +1,6 @@
 import { LogLevel , logerNames} from "../common/names";
 import {Data} from "../common/data";
-import { loggerFactory } from "../common/logger";
+import { loggerFactory } from "../common/log/logger";
 import { DefaultSubscriberProvider } from "./provider/default-subscriberprovider";
 import { SubscriberProvider } from "./provider/subscriber-provider";
 import { Message } from "src/common/message";
@@ -27,13 +27,13 @@ export class Subscriber implements SubscriberProvider {
     static create(options: any):Subscriber {
       const publisher =  new Subscriber(options);
       
-      logger.trace("New subscriber created ", publisher);
+      logger.log7("New subscriber created ", publisher);
        
       return publisher;
     }
     
     async open(){
-      logger.trace("Subscriber open ");
+      logger.log7("Subscriber open ");
       return await this.provider.open();
     }
     async close(){

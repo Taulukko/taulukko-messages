@@ -4,7 +4,7 @@ import { ClientData } from "../client-data";
 import { ServerData } from '../server-data';
 import {serviceStatus} from "../../common/names"; 
 import { logerNames,protocolNames,clientTypes} from "../../common/names"; 
-import { loggerFactory } from "../../common/logger";
+import { loggerFactory } from "../../common/log/logger";
 import { WSServer, WSServerOptions, WebSocket  } from "../../ws/"; 
 import { ClientOffLineDTO, ClientOnLineDTO } from "../server-protocols-dtos";
 import { Message } from "src/common/message";
@@ -34,27 +34,27 @@ export class DefaultServerProvider implements ServerProvider {
   }
 
   private onWSSocketConnection(socket:WebSocket){
-    logger.trace("Taulukko Server Provider new Connection : " , socket);
-    logger.debug("Taulukko Server Provider new Connection : " );
+    logger.log7("Taulukko Server Provider new Connection : " , socket);
+    logger.log5("Taulukko Server Provider new Connection : " );
     socket.emit(protocolNames.CONNECTION_OK,{client:socket.client, server:socket.server});
   }
 
   private onWSDisconect(socket:WebSocket){
-    logger.trace("Taulukko Server Provider ends Connection : " , socket);
+    logger.log7("Taulukko Server Provider ends Connection : " , socket);
   }
 
   private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{
-    logger.debug("onClientOnline ",1 );
+    logger.log5("onClientOnline ",1 );
     if(this.auth)
     {
       if(!this.auth.validateOnClienteOnline(socket,data))
       {
-        logger.debug("onClientOnline " ,2);
+        logger.log5("onClientOnline " ,2);
         socket.emit(protocolNames.UNREGISTERED);
         return;
       }
     }
-    logger.debug("onClientOnline " ,3);
+    logger.log5("onClientOnline " ,3);
 
     let list:Array<ClientData> = this.publisherList;
 
@@ -62,7 +62,7 @@ export class DefaultServerProvider implements ServerProvider {
       list=this.subscriberList;
     }
  
-    logger.trace(`Taulukko Server Provider receive a ${data.type} connection : ` ,socket,data);
+    logger.log7(`Taulukko Server Provider receive a ${data.type} connection : ` ,socket,data);
     const clientData:ClientData  = {id:data.id,topics:data.topics,socket} ;
     list.push(clientData);
 
@@ -72,7 +72,7 @@ export class DefaultServerProvider implements ServerProvider {
 
   private onClientOffline = (socket:WebSocket, data:ClientOffLineDTO)=>{
  
-    logger.trace(`Taulukko Server Provider receive a close ${data.type} connection : ` ,socket,data); 
+    logger.log7(`Taulukko Server Provider receive a close ${data.type} connection : ` ,socket,data); 
     
     if(data.type==clientTypes.PUBLISHER){
       this.publisherList = this.publisherList.filter((item)=>item.id!=data.id);
@@ -107,8 +107,8 @@ export class DefaultServerProvider implements ServerProvider {
   };
 
   async open() {
-    logger.debug("Taulukko Server Provider starting with port : " , this.options.port);
-    logger.trace("Taulukko Server Provider starting with options : " , this.options);
+    logger.log5("Taulukko Server Provider starting with port : " , this.options.port);
+    logger.log7("Taulukko Server Provider starting with options : " , this.options);
     await  this.wsServer.open();
 
     await this.wsServer.on(protocolNames.CLIENT_ONLINE,this.onClientOnline); 
@@ -123,7 +123,7 @@ export class DefaultServerProvider implements ServerProvider {
   async close() {
     await this.wsServer.close();
     this.status = serviceStatus.STOPED;
-    logger.debug("Taulukko Server Provider is closed ");
+    logger.log5("Taulukko Server Provider is closed ");
   }
   async forceClose() {
     try{
@@ -133,13 +133,13 @@ export class DefaultServerProvider implements ServerProvider {
       //TODO:LOG
       this.status = serviceStatus.STOPED;
     }
-    logger.trace("Taulukko Server Provider ends (forced) ");
+    logger.log7("Taulukko Server Provider ends (forced) ");
   }
   get data(): ServerData {
     const ret = {port:this.options.port, status: this.status ,
       online:this.status==serviceStatus.ONLINE,
       offline:this.status!=serviceStatus.ONLINE};
-      logger.trace("get data ", ret);
+      logger.log7("get data ", ret);
       return ret;
   }
   get publishers():Array<ClientData>{

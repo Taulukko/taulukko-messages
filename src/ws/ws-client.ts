@@ -3,7 +3,7 @@ import { logerNames, serviceStatus } from "../common/names";
 import { WSClientOptions, WSServerOptions } from "./";
 import * as socketIo from "socket.io";
 import { KeyTool, StringsUtil } from "taulukko-commons";
-import { loggerFactory } from "../common/logger";
+import { loggerFactory } from "../common/log/logger";
 import * as io from "socket.io-client";
 const LOGGER = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 const KEY_TOOL = new KeyTool();
@@ -48,13 +48,13 @@ export class WSClient {
         throw Error("State need be STARTING");
       }
 
-      LOGGER.debug("WSClient starting with options : ", this.options);
+      LOGGER.log5("WSClient starting with options : ", this.options);
  
       this.client = io.connect("http://localhost:7777");
 
       return new Promise((resolve,reject)=>{
         this.client.on('connect', () => {
-          LOGGER.debug("WSClient connection with server sucefull ");
+          LOGGER.log5("WSClient connection with server sucefull ");
           this.state = serviceStatus.ONLINE;
           resolve({});
         });
@@ -62,7 +62,7 @@ export class WSClient {
       });
   };
   close = async () => {
-    LOGGER.debug("WSClient close ", this.state);
+    LOGGER.log5("WSClient close ", this.state);
     if (this.state != serviceStatus.ONLINE) {
       throw Error("State need be ONLINE");
     }
@@ -75,7 +75,7 @@ export class WSClient {
      }
      catch(e)
      {
-      LOGGER.trace("forceClose error ", e);
+      LOGGER.log7("forceClose error ", e);
       return;
      }
   };

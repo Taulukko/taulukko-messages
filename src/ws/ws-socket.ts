@@ -1,4 +1,4 @@
-import { loggerFactory } from "../common/logger";
+import { loggerFactory } from "../common/log/logger";
 import { WebSocketClient, WebSocketServer  } from ".";
 import { logerNames } from "../common/names";
 import { KeyTool } from "taulukko-commons";
@@ -24,7 +24,7 @@ export class WSSocket {
     emit = async (event:string, ...args:any)=>
     {
 
-      logger.trace("WSSocket emit : " , event, args); 
+      logger.log7("WSSocket emit : " , event, args); 
       const socket:socketIo.Socket = this.socket;
       socket.emit(event,...args);
 
@@ -32,7 +32,7 @@ export class WSSocket {
   
     send = (...args:any)=>
     {
-      logger.trace("WSSocket send : " , args); 
+      logger.log7("WSSocket send : " , args); 
       const socket:socketIo.Socket = this.socket;
       socket.send(...args);
     };

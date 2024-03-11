@@ -1,7 +1,7 @@
 import { DefaultServerProvider } from "./provider/default-server-provider";
 import { ServerProvider } from "./provider/server-provider";
 import { ServerData } from "./server-data";
-import { loggerFactory } from "../common/logger"; 
+import { loggerFactory } from "../common/log/logger"; 
 import { logerNames ,LogLevel} from "../common/names";
 import { ClientData } from "./client-data";
 import { AuthProvider } from "src/auth/auth-provider";
@@ -24,23 +24,23 @@ export class Server implements ServerProvider {
 
   static create(options: any = {} ) : Server{
     const server=  new Server(options);
-    logger.trace("New server created ", server);
+    logger.log7("New server created ", server);
     return server;
   }
   
   public async open() {
     const ret =  this.options.provider.open();
-    logger.trace("Server started on port: ", this.options.provider.data.port);
+    logger.log7("Server started on port: ", this.options.provider.data.port);
     return ret;
   }
   public async close(){
     const ret =  this.options.provider.close();
-    logger.trace("Server stoped ");
+    logger.log7("Server stoped ");
     return ret
   }
   public async forceClose(){
     const ret = this.options.provider.forceClose();
-    logger.trace("Server stoped (forced)");
+    logger.log7("Server stoped (forced)");
     return ret;
   }
   public get data():ServerData  {

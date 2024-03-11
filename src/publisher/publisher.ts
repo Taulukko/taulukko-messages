@@ -1,5 +1,5 @@
 import { LogLevel , logerNames} from "../common/names"; 
-import { loggerFactory } from "../common/logger";  
+import { loggerFactory } from "../common/log/logger";  
 import { PublisherProvider } from "./provider/publisher-provider";
 import { DefaultPublisherProvider } from "./provider/default-publisher-provider";
 import { PearData } from "src/common/pear-data";
@@ -25,7 +25,7 @@ export class Publisher implements PublisherProvider{
     static create(options: any):Publisher {
       const publisher =  new Publisher(options);
       
-      logger.trace("New publisher created ", publisher);
+      logger.log7("New publisher created ", publisher);
        
       return publisher;
     }

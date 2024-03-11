@@ -21,7 +21,7 @@ class LogConfiguration{
     public pattern:string;
 
     private constructor(options:LogConfigurationOptions){
-        const defaults = {level:LogLevel.INFO,showInConsole:false,consoleLog:console.log,pattern:"YYYY-MM-DD HH:mm:ss.SSS [LOGLEVEL] - "};
+        const defaults = {level:LogLevel.WARNING,showInConsole:true,consoleLog:console.log,pattern:"YYYY-MM-DD HH:mm:ss.SSS [LOGLEVEL] - "};
         options = Object.assign({}, defaults, options);
         this.level =options.level;
         this.showInConsole = options.showInConsole; 

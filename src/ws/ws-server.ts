@@ -1,5 +1,5 @@
 import { logerNames, serviceStatus} from "../common/names"; 
-import { loggerFactory } from "../common/logger"; 
+import { loggerFactory } from "../common/log/logger"; 
 
 import * as http from "http";
 import * as socketIo from "socket.io"; 
@@ -62,7 +62,7 @@ export class WSServer   {
       {
         throw Error("State need be STARTING");
       }
-      LOGGER.trace("WSServer starting with options : " , this.options);
+      LOGGER.log7("WSServer starting with options : " , this.options);
       const ret = new Promise<any>((resolve,reject)=>{ 
         this.server = http.createServer((req, res) => {     
             if(me.options.showDefaultMessage)
@@ -72,7 +72,7 @@ export class WSServer   {
           
         }); 
         me.server.listen( me.options.port, () => {
-          LOGGER.trace("WSServer listen port : " , me.options.port);
+          LOGGER.log7("WSServer listen port : " , me.options.port);
           me.state = serviceStatus.ONLINE; 
           resolve({});
         }); 
@@ -111,22 +111,22 @@ export class WSServer   {
     const websocket = new  WebSocket({socket,id:this.id});
 
     this.globalEvents.forEach((listener,event)=>{
-      LOGGER.trace("WSServer _bindEvents: " ,event, websocket.client.id);
+      LOGGER.log7("WSServer _bindEvents: " ,event, websocket.client.id);
  
       socket.on(event,(...data:any)=>{
-        LOGGER.trace("Evento recebido " ,data);
+        LOGGER.log7("Evento recebido " ,data);
         listener(websocket,...data);
       }); 
     });
   };
 
   on = async  (event:string,listener:(...data:any)=>void) => {
-    LOGGER.trace("WSServer on : " ,event);
+    LOGGER.log7("WSServer on : " ,event);
     this.globalEvents.set(event,listener);
 
     this.internalSocketsByClientId.forEach((socket,key)=>{
       const websocket = new  WebSocket({socket,id:this.id});
-      LOGGER.trace("WSServer on wsclient: " ,event, websocket.client.id);
+      LOGGER.log7("WSServer on wsclient: " ,event, websocket.client.id);
  
       socket.on(event,(...data:any)=>{
         listener(websocket,...data);
@@ -135,7 +135,7 @@ export class WSServer   {
    };
 
    close = async() => { 
-    LOGGER.trace("WSServer close ");
+    LOGGER.log7("WSServer close ");
     if(this.state!=serviceStatus.ONLINE)
     {
       throw Error("State need be ONLINE");
