@@ -53,8 +53,8 @@ export class Server implements ServerProvider {
     return this.options.provider.subscribers;
   }
 
-  public async sendAll(topic:string,data:any){
-    return this.options.provider.sendAll(topic,data);
+  public async sendAll(data:any){
+    return this.options.provider.sendAll(data);
   }
     
 };

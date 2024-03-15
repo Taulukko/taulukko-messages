@@ -9,7 +9,7 @@ export interface ServerProvider {
   open():any;
   get publishers():Array<ClientData>;
   get subscribers():Array<ClientData>;
-  sendAll(topic:string,data:any):any;
+  sendAll(data:any):any;
 }
 
   

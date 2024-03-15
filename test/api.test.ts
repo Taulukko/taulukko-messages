@@ -1,5 +1,6 @@
+import { error } from 'winston';
 import  {Server,Publisher,Subscriber,Message,serviceStatus} from '../index';
-import { LogLevel } from '../src/common/names';
+import { LogLevel, systemTopics } from '../src/common/names';
 import { assert } from "chai"; 
 
 
@@ -16,7 +17,7 @@ async function initServer(options={}){
 
  
 describe("api.basics",  function test(options={}){
-
+ 
   it("Open server ",async function(){
     const server = await initServer();
 
@@ -140,32 +141,63 @@ describe("api.basics",  function test(options={}){
     assert.ifError( await receiveTheMessage()); 
         
   });
- 
-  it.skip('publish a string message for all',async  () => {
-    const server = await initServer(); 
+  
+  it('publish a string message for all',async  () => {
+     const server = await initServer(); 
   
     let countMessages=0;
-
-    const subscriber = await Subscriber.create({
+    const subscriber1 = await Subscriber.create({
       server:"taulukko://localhost:7777",
-      topics:["topic.helloWorld","unexistentTopic"],
-      handler:(message:Message)=>{
-        countMessages++;
-      //  expect(["topic.helloWorld","unexistentTopic"] ).toContain(message.topic);
-       // expect(message.data).toBe("Hello World");
-      //  expect(countMessages).toBe(1);
-      }
+      topics:["topic.helloWorld1"] 
     }); 
 
-    await subscriber.open();
+    const subscriber2 = await Subscriber.create({
+      server:"taulukko://localhost:7777", 
+      topics:[ ] 
+    }); 
 
-    await server.sendAll("topic.helloWorld","test");
-    await server.sendAll(null,"test2");
+    await subscriber1.open();
+    await subscriber2.open();
+    
 
-    await subscriber.close();
+    const onReceiveBradcast = async (message:Message)=>{
+      
+      try{
+        countMessages++;
+        assert.equal(message.topic,systemTopics.BROADCAST);
+        assert.equal(message.data,"test");      
+      }
+      catch(e)
+      {
+        console.log(e);
+        semaphore = true;
+      }
+      finally{
+        if(countMessages>1)
+        {
+          semaphore = true;
+        }
+      }
+    };
+
+    await subscriber1.on(onReceiveBradcast);
+    await subscriber2.on(onReceiveBradcast);
+
+    cleanupGlobals();
+    await server.sendAll("test"); 
+
+ 
+    assert.ifError( await receiveTheMessage()); 
+
+    await subscriber1.close();
+    await subscriber2.close();
     
     await server.close();
+
+    assert.equal(countMessages,2); 
+
   });
+  
   
   
 });

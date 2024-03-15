@@ -2,13 +2,13 @@
 import {  ServerProvider } from "./server-provider";
 import { ClientData } from "../client-data"; 
 import { ServerData } from '../server-data';
-import {serviceStatus} from "../../common/names"; 
+import {serviceStatus, systemTopics} from "../../common/names"; 
 import { logerNames,protocolNames,clientTypes} from "../../common/names"; 
 import { loggerFactory } from "../../common/log/logger";
 import { WSServer, WSServerOptions, WebSocket  } from "../../ws/"; 
 import { ClientOffLineDTO, ClientOnLineDTO } from "../server-protocols-dtos";
-import { Message } from "src/common/message";
-import { AuthProvider } from "src/auth/auth-provider";
+import { Message } from "../../common/message";
+import { AuthProvider } from "../../auth/auth-provider";
 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
@@ -85,24 +85,23 @@ export class DefaultServerProvider implements ServerProvider {
   };
  
   private onNewMessage = (socket:WebSocket, message:Message)=>{
-  
-    const publisherId = socket.client.id;
-    if(this.publisherList.map(clientData=>clientData.id).filter(id=>id==publisherId).length == 0){
+    const isSystemTopic:boolean = socket==null;
+    const publisherId:string = (socket==null)?null:socket.client.id;
+    
+    if(!isSystemTopic && this.publisherList.map(clientData=>clientData.id).filter(id=>id==publisherId).length == 0){
       logger.error(`A non publisher send a message {publisherId,Message}` ,publisherId,message);
     }
-    if(this.publisherList.filter(clientData=>clientData.id==publisherId
+    
+    if(!isSystemTopic &&  this.publisherList.filter(clientData=>clientData.id==publisherId
        && clientData.topics.filter(topic=>topic==message.topic)).length == 0){
       logger.error(`Topic not found for this publisher {publisherId,Message}` ,publisherId, message);
     }
 
     const subscriberForthisTopic = this.subscriberList.filter(
-      subscriber=>subscriber.topics.filter(
-        (topic)=>{
-          return topic==message.topic;
-        }
-        ).length==1);
+      subscriber=>isSystemTopic || subscriber.topics.filter(
+          topic=>topic==message.topic).length==1);
 
-    subscriberForthisTopic.forEach(item=>item.socket.emit(protocolNames.NEW_MESSAGE,message));
+    subscriberForthisTopic.forEach(item=> item.socket.emit(protocolNames.NEW_MESSAGE,message));
 
   };
 
@@ -147,10 +146,11 @@ export class DefaultServerProvider implements ServerProvider {
   }
   get subscribers(): Array<ClientData>{
     return this.subscriberList;
+  }d
+  async sendAll( data: any) {
+    const message:Message = Message.create({topic:systemTopics.BROADCAST,data});
+    this.onNewMessage(null,message);
   }
-  async sendAll(topic: string, data: any) {
-    throw new Error('Method not implemented.');
-  } 
 }
 
 interface TaulukkoProviderOptions extends WSServerOptions{

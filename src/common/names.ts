@@ -1,5 +1,7 @@
 export var logerNames={LOGGER_DEFAULT:"default"};
 
+export var systemTopics={BROADCAST:"broadcast"};
+
 export var serviceStatus = {STARTING : "STARTING",ONLINE:"ONLINE",FAIL:"FAIL",RESTARTING:"RESTARTING",
 STOPED:"STOPED"} ;
 

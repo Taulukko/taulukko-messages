@@ -26,7 +26,6 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   }
   on = async (listener:    (message: Message) => Promise<any>)=> {
     logger.log7("Taulukko Subscriber Provider on: inserting a new listener " );
-     
     await this.client.on( protocolNames.NEW_MESSAGE,(message:Message)=>{
       listener(message)
     });  

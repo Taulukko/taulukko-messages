@@ -3,3 +3,4 @@ node_modules
 **/*.map
 *-audit.json
 *.log
+log/
