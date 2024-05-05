@@ -36,11 +36,15 @@ export class Publisher implements PublisherProvider{
       return ret; 
     }
     async close(){
-      await this.provider.close();
+      const rand = Math.floor( Math.random()*100);
+      console.log("base.close:0-,",rand);
+      const ret  =  await this.provider.close();
+      console.log("base.close:1-",rand);
+      return ret;
     }
     
     async forceClose() {
-      await this.provider.forceClose();
+        await this.provider.forceClose();
     }
 
     get data():PearData  {

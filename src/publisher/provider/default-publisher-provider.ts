@@ -107,38 +107,46 @@ export class DefaultPublisherProvider implements PublisherProvider {
   };
  
 
-  close = () : Promise<void> =>  {
-    const ret : Promise<void> = new Promise(async (resolve,reject)=>{
+  close = async () : Promise<void> =>  {
+    console.log("publisher.close:0");
+    const ret : Promise<void> = new Promise(async (resolve,)=>{
+      console.log("publisher.close:2");
       if(this.status!=serviceStatus.ONLINE){
+        console.log("publisher.close:3");
         logger.error("Publisher isnt open");
         throw Error("Publisher isnt open");
       }
+      console.log("publisher.close:4");
       await this.client.emit(protocolNames.CLIENT_OFFLINE,{type:clientTypes.PUBLISHER, id:this.id});
-      
+      console.log("publisher.close:5");
       const handle = setInterval(async ()=>{
+        console.log("publisher.close:6");
         if(this.status == serviceStatus.STOPED)
         {
+          console.log("publisher.close:7");
           clearInterval(handle);
+          console.log("publisher.close:8");
           this.client.forceClose();
+          console.log("publisher.close:9");
           resolve();
+          console.log("publisher.close:10");
         }
       },100); 
       logger.log7("Taulukko Publisher Provider ends");
     });
+    console.log("publisher.close:1");
    return ret;
   };
 
   forceClose = async () => {
     logger.log7("Taulukko Publisher Provider forceClose ");
     try{
-      await this.close();
+      this.close();
     }
     catch{
       logger.log7("Taulukko Publisher Provider error ");
-    
     }
     this.status = serviceStatus.STOPED;
-     
     
   };
 

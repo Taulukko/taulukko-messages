@@ -126,7 +126,7 @@ export class DefaultServerProvider implements ServerProvider {
   }
   async forceClose() {
     try{
-      await this.close();
+      this.close();
     }
     catch{
       //TODO:LOG

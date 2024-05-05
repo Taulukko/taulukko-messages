@@ -134,7 +134,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   forceClose = async () => {
     logger.log7("Taulukko Subscriber Provider forceClose ");
     try{
-      await this.close();
+       this.close();
     }
     catch{
       logger.log7("Taulukko Subscriber Provider error ");
