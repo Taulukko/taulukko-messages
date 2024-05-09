@@ -35,11 +35,8 @@ export class Publisher implements PublisherProvider{
       const ret = await this.provider.open();
       return ret; 
     }
-    async close(){
-      const rand = Math.floor( Math.random()*100);
-      console.log("base.close:0-,",rand);
-      const ret  =  await this.provider.close();
-      console.log("base.close:1-",rand);
+    async close(){ 
+      const ret  =  await this.provider.close(); 
       return ret;
     }
     

@@ -85,6 +85,7 @@ export class DefaultServerProvider implements ServerProvider {
   };
  
   private onNewMessage = (socket:WebSocket, message:Message)=>{
+
     const isSystemTopic:boolean = socket==null;
     const publisherId:string = (socket==null)?null:socket.client.id;
     
