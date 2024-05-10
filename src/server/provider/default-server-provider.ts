@@ -20,9 +20,7 @@ export class DefaultServerProvider implements ServerProvider {
   private publisherList:Array<ClientData> = new Array();
   private subscriberList:Array<ClientData> = new Array();
   private auth:AuthProvider ;
- 
-
-  constructor(options:any){
+ constructor(options:any){
     const defaults = { port: 7777, defaultMessage:"Taulukko Message Server is Running" ,showDefaultMessage:true};
     options = Object.assign({}, defaults, options);
     this.options = options as TaulukkoProviderOptions;
@@ -33,14 +31,29 @@ export class DefaultServerProvider implements ServerProvider {
     this.auth = this.options.auth;
   }
 
-  private onWSSocketConnection(socket:WebSocket){
+  private onWSSocketConnection(socket:WebSocket){  
     logger.log7("Taulukko Server Provider new Connection : " , socket);
     logger.log5("Taulukko Server Provider new Connection : " );
     socket.emit(protocolNames.CONNECTION_OK,{client:socket.client, server:socket.server});
   }
 
   private onWSDisconect(socket:WebSocket){
+
+    const brokePublisherConnectionWithoutClose:boolean =this.publisherList!=null &&  this.publisherList.map((value)=>value.id).filter((value)=>value==socket.client.id).length==1; 
+    if(brokePublisherConnectionWithoutClose)
+    {
+      logger.log3("Taulukko Publisher broke Connection : " , socket);
+      this.publisherList = this.publisherList.filter((item)=>item.id!=socket.client.id);
+    }
+    const brokeSubscriberConnectionWithoutClose:boolean =this.subscriberList!=null &&  this.subscriberList.map((value)=>value.id).filter((value)=>value==socket.client.id).length==1; 
+    if(brokeSubscriberConnectionWithoutClose)
+    {
+      logger.log3("Taulukko Subscriber broke Connection : " , socket);
+      this.subscriberList = this.subscriberList.filter((item)=>item.id!=socket.client.id);
+    }
+   
     logger.log7("Taulukko Server Provider ends Connection : " , socket);
+    
   }
 
   private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{
@@ -66,9 +79,20 @@ export class DefaultServerProvider implements ServerProvider {
     const clientData:ClientData  = {id:data.id,topics:data.topics,socket} ;
     list.push(clientData);
 
+    if(data.type==clientTypes.PUBLISHER){
+      this.reconnectOldSubscribers(clientData );
+    }
+
     socket.emit(protocolNames.REGISTERED,{client:socket.client, server:socket.server});    
   };
 
+  private reconnectOldSubscribers = (clientData:ClientData)=>{
+    /*
+    clientData.topics.forEach((value)=>{
+      this.subscriberList.forEach((subscriber)=>{subscriber.})
+    });
+    */
+  }; 
 
   private onClientOffline = (socket:WebSocket, data:ClientOffLineDTO)=>{
  
@@ -85,8 +109,7 @@ export class DefaultServerProvider implements ServerProvider {
   };
  
   private onNewMessage = (socket:WebSocket, message:Message)=>{
-
-    const isSystemTopic:boolean = socket==null;
+   const isSystemTopic:boolean = socket==null;
     const publisherId:string = (socket==null)?null:socket.client.id;
     
     if(!isSystemTopic && this.publisherList.map(clientData=>clientData.id).filter(id=>id==publisherId).length == 0){
@@ -101,8 +124,11 @@ export class DefaultServerProvider implements ServerProvider {
     const subscriberForthisTopic = this.subscriberList.filter(
       subscriber=>isSystemTopic || subscriber.topics.filter(
           topic=>topic==message.topic).length==1);
+   subscriberForthisTopic.forEach(item=> {
 
-    subscriberForthisTopic.forEach(item=> item.socket.emit(protocolNames.NEW_MESSAGE,message));
+  
+      item.socket.emit(protocolNames.NEW_MESSAGE,message);
+    });
 
   };
 

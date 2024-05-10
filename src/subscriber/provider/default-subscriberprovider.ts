@@ -17,16 +17,16 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   status:string; 
   client:io.Socket;
   id:string;
- 
-
-  constructor(options:any){
+ constructor(options:any){
     const defaults = { port: 7777, topics:new Array()};
     this.options = Object.assign({}, defaults, options); 
     this.status = serviceStatus.STARTING;
   }
   on = async (listener:    (message: Message) => Promise<any>)=> {
+
     logger.log7("Taulukko Subscriber Provider on: inserting a new listener " );
     await this.client.on( protocolNames.NEW_MESSAGE,(message:Message)=>{
+
       listener(message)
     });  
     };
@@ -38,9 +38,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     logger.log7("Taulukko Subscriber Provider starting with options : " , this.options);
 
     const ret = new Promise(async (resolve,reject)=>{
-    
-
-      logger.log7("Taulukko Subscriber Provider preparing the connection with websocket " );
+     logger.log7("Taulukko Subscriber Provider preparing the connection with websocket " );
 
       this.client = io.connect("http://localhost:7777");
 
