@@ -51,8 +51,8 @@ export class Publisher implements PublisherProvider{
       return this.provider.send(...data);
     }
 
-    async waitReconect():Promise<boolean>{
-      return this.provider.waitReconect();
+    async waitReconnect():Promise<boolean>{
+      return this.provider.waitReconnect();
     }
   }
   

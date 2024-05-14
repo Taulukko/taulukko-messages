@@ -6,7 +6,7 @@ export interface PublisherProvider {
   get data():PearData;
   forceClose():Promise<void>;
   open():Promise<void>;
-  waitReconect(): Promise<boolean>;
+  waitReconnect(): Promise<boolean>;
 }
 
  

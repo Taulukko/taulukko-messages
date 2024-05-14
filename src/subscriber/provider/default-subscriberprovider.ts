@@ -143,7 +143,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     
   };
 
-  waitReconect = async () : Promise<boolean> => {
+  waitReconnect = async () : Promise<boolean> => {
     return false;
   };
 

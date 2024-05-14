@@ -51,8 +51,8 @@ export class Subscriber implements SubscriberProvider {
     }
 
     
-    async waitReconect():Promise<boolean>{
-      return this.provider.waitReconect();
+    async waitReconnect():Promise<boolean>{
+      return this.provider.waitReconnect();
     }
   }
   

@@ -376,8 +376,8 @@ describe('stability test', () => {
 
     logger.debug("Debug 7 : After check online server");
 
-    assert.isTrue(await publisher.waitReconect()); 
-    assert.isTrue(await subscriber.waitReconect()); 
+    assert.isTrue(await publisher.waitReconnect()); 
+    assert.isTrue(await subscriber.waitReconnect()); 
 
     logger.debug("Debug 8 : After after reconnect");
  

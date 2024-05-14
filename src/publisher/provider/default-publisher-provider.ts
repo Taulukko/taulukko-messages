@@ -150,7 +150,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
     
   };
 
-  waitReconect = async () : Promise<boolean> => {
+  waitReconnect = async () : Promise<boolean> => {
     return false;
   };
 

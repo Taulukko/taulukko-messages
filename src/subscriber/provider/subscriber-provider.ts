@@ -7,7 +7,7 @@ export interface SubscriberProvider {
   forceClose():Promise<void>;
   open():Promise<void>;
   close():Promise<void>;
-  waitReconect(): Promise<boolean>;
+  waitReconnect(): Promise<boolean>;
 
   
 }
