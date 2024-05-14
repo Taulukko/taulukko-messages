@@ -149,6 +149,8 @@ export class DefaultServerProvider implements ServerProvider {
   async close() {
     await this.wsServer.close();
     this.status = serviceStatus.STOPED;
+    this.subscriberList =  new Array();
+    this.publisherList = new Array();
     logger.log5("Taulukko Server Provider is closed ");
   }
   async forceClose() {

@@ -31,13 +31,13 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     });  
     };
  
-  open = async () :Promise<any>  => {
+  open = async () :Promise<void>  => {
     if(this.status!=serviceStatus.STARTING){
       throw Error("Subscriber already started");
     }
     logger.log7("Taulukko Subscriber Provider starting with options : " , this.options);
 
-    const ret = new Promise(async (resolve,reject)=>{
+    const ret : Promise<void> = new Promise(async (resolve,reject)=>{
      logger.log7("Taulukko Subscriber Provider preparing the connection with websocket " );
 
       this.client = io.connect("http://localhost:7777");
@@ -129,7 +129,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
    return ret;
   };
 
-  forceClose = async () => {
+  forceClose = async () : Promise<void> => {
     logger.log7("Taulukko Subscriber Provider forceClose ");
     try{
        this.close();
@@ -141,6 +141,10 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     this.status = serviceStatus.STOPED;
     
     
+  };
+
+  waitReconect = async () : Promise<boolean> => {
+    return false;
   };
 
   get data (): PearData {

@@ -32,11 +32,11 @@ export class Subscriber implements SubscriberProvider {
       return publisher;
     }
     
-    async open(){
+    async open():Promise<void>{
       logger.log7("Subscriber open ");
       return await this.provider.open();
     }
-    async close(){
+    async close():Promise<void>{
       await this.provider.close();
     }
     get data():PearData  {
@@ -46,8 +46,13 @@ export class Subscriber implements SubscriberProvider {
       return await this.provider.on(listener);
     }
 
-    async forceClose(): Promise<any> {
+    async forceClose(): Promise<void> {
       return await this.provider.forceClose();
+    }
+
+    
+    async waitReconect():Promise<boolean>{
+      return this.provider.waitReconect();
     }
   }
   

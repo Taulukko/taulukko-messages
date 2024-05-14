@@ -32,7 +32,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
     }); 
   }
 
-  open = async  ()   => {
+  open = async  () :Promise<void>  => {
       
     if(this.status!=serviceStatus.STARTING){
       throw Error("Publisher already started");
@@ -40,7 +40,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
    
     logger.log5("Taulukko Publisher Provider starting with options : " );
     
-    const ret = new Promise(async (resolve,reject)=>{
+    const ret:Promise<void> = new Promise(async (resolve,reject)=>{
 
       logger.log4("Taulukko Publisher Provider preparing the connection with websocket " );
 
@@ -138,7 +138,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
    return ret;
   };
 
-  forceClose = async () => {
+  forceClose = async () :Promise<void> => {
     logger.log7("Taulukko Publisher Provider forceClose ");
     try{
       this.close();
@@ -148,6 +148,10 @@ export class DefaultPublisherProvider implements PublisherProvider {
     }
     this.status = serviceStatus.STOPED;
     
+  };
+
+  waitReconect = async () : Promise<boolean> => {
+    return false;
   };
 
   get data() :PearData {

@@ -2,11 +2,11 @@ import { PearData } from "src/common/pear-data";
 
 export interface PublisherProvider {
   send( ...data: any): any;
-  close():any; 
+  close():Promise<void>; 
   get data():PearData;
-  forceClose():any;
-  open():any;
-  
+  forceClose():Promise<void>;
+  open():Promise<void>;
+  waitReconect(): Promise<boolean>;
 }
 
  
