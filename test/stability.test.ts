@@ -353,8 +353,7 @@ describe('stability test', () => {
     logger.debug("Debug 2 : Before server close");
 
     await server.close(); 
-  
-
+    
     logger.debug("Debug 3 : After server close");
 
     assert.equal(server.publishers.length,0,"Publishers must be zero after the server.close");

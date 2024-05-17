@@ -40,9 +40,8 @@ export class WSClient {
 
     this._state = value;
   }
+
   open = async () => {
-
-
       const me = this;
       if (me.state != serviceStatus.STARTING) {
         throw Error("State need be STARTING");
@@ -52,12 +51,16 @@ export class WSClient {
  
       this.client = io.connect("http://localhost:7777");
 
-      return new Promise((resolve,reject)=>{
+      const ret:Promise<{}> = new Promise((resolve,reject)=>{
         this.client.on('connect', () => {
           LOGGER.log5("WSClient connection with server sucefull ");
           this.state = serviceStatus.ONLINE;
           resolve({});
         });
+
+     
+
+        return ret;
     
       });
   };

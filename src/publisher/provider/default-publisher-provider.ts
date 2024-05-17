@@ -66,10 +66,25 @@ export class DefaultPublisherProvider implements PublisherProvider {
       });
       logger.log5("Taulukko Publisher Provider finish open, waiting for the connection ");
 
+      logger.log5("Taulukko Publisher Provider finish open, start detect disconnect ");
+
+    
+      this.client.on('disconnect',  this.onDisconnect);
       
     });
     
     return ret;
+  };
+
+  private  onDisconnect = () =>{
+    //console.log("onDisconnect",this.status, serviceStatus.STOPED);
+    if(this.status ===  serviceStatus.STOPED )
+      {
+        return;
+      }
+      //console.log("Server disconnected, restarting the connection");
+      logger.log0("Server disconnected, restarting the connection");
+      this.status = serviceStatus.RESTARTING;
   };
 
   onTaulukkoServerConnectionOK = async (_: any)=>{

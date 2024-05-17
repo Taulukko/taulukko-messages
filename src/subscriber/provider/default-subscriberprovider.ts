@@ -22,6 +22,18 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     this.options = Object.assign({}, defaults, options); 
     this.status = serviceStatus.STARTING;
   }
+
+  private  onDisconnect = () =>{
+    //console.log("onDisconnect",this.status, serviceStatus.STOPED);
+    if(this.status ===  serviceStatus.STOPED )
+      {
+        return;
+      }
+      //console.log("Server disconnected, restarting the connection");
+      logger.log0("Server disconnected, restarting the connection");
+      this.status = serviceStatus.RESTARTING;
+  };
+
   on = async (listener:    (message: Message) => Promise<any>)=> {
 
     logger.log7("Taulukko Subscriber Provider on: inserting a new listener " );
@@ -64,6 +76,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
       });
       logger.log7("Taulukko Subscriber Provider finish open, waiting for the connection ");
     
+      this.client.on('disconnect',  this.onDisconnect);
     });
     return ret;
   };

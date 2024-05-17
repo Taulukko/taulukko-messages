@@ -98,7 +98,7 @@ export class WSServer   {
               me.options.onDisconnect(new  WebSocket({socket,id:me.id}));
               me.internalSocketsByClientId.delete(websocket.client.id);
             });
-      
+ 
          
          });
    
