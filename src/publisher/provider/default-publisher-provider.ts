@@ -34,7 +34,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
 
   open = async  () :Promise<void>  => {
       
-    if(this.status!=serviceStatus.STARTING){
+    if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Publisher already started");
     }
    
@@ -77,14 +77,24 @@ export class DefaultPublisherProvider implements PublisherProvider {
   };
 
   private  onDisconnect = () =>{
-    //console.log("onDisconnect",this.status, serviceStatus.STOPED);
+    
     if(this.status ===  serviceStatus.STOPED )
       {
         return;
       }
-      //console.log("Server disconnected, restarting the connection");
       logger.log0("Server disconnected, restarting the connection");
+      this.client.forceClose();
       this.status = serviceStatus.RESTARTING;
+      const handle = setInterval(async ()=>{
+        try{
+          await this.open();
+          clearInterval(handle);
+        }
+        catch(e)
+        {
+          logger.error(e);
+        }
+      },1000);
   };
 
   onTaulukkoServerConnectionOK = async (_: any)=>{
@@ -166,7 +176,17 @@ export class DefaultPublisherProvider implements PublisherProvider {
   };
 
   waitReconnect = async () : Promise<boolean> => {
-    return false;
+    return new Promise<boolean>((resolve)=>{
+      const handle = setInterval(async ()=>{
+        
+        if(this.status != serviceStatus.ONLINE)
+        {
+          return;
+        }
+        resolve(true);
+        clearInterval(handle);
+      },100);
+    });
   };
 
   get data() :PearData {

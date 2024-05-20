@@ -23,16 +23,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     this.status = serviceStatus.STARTING;
   }
 
-  private  onDisconnect = () =>{
-    //console.log("onDisconnect",this.status, serviceStatus.STOPED);
-    if(this.status ===  serviceStatus.STOPED )
-      {
-        return;
-      }
-      //console.log("Server disconnected, restarting the connection");
-      logger.log0("Server disconnected, restarting the connection");
-      this.status = serviceStatus.RESTARTING;
-  };
+ 
 
   on = async (listener:    (message: Message) => Promise<any>)=> {
 
@@ -44,7 +35,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     };
  
   open = async () :Promise<void>  => {
-    if(this.status!=serviceStatus.STARTING){
+    if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Subscriber already started");
     }
     logger.log7("Taulukko Subscriber Provider starting with options : " , this.options);
@@ -79,6 +70,26 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
       this.client.on('disconnect',  this.onDisconnect);
     });
     return ret;
+  };
+
+  private  onDisconnect = () =>{
+    
+    if(this.status ===  serviceStatus.STOPED )
+      {
+        return;
+      }
+      logger.log0("Server disconnected, restarting the connection");
+      this.status = serviceStatus.RESTARTING;
+      const handle = setInterval(async ()=>{
+        try{
+          await this.open();
+          clearInterval(handle);
+        }
+        catch(e)
+        {
+          logger.error(e);
+        }
+      },1000);
   };
 
   onTaulukkoServerConnectionOK = async (resolve)=>{
@@ -157,8 +168,19 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   };
 
   waitReconnect = async () : Promise<boolean> => {
-    return false;
+    return new Promise<boolean>((resolve)=>{
+      const handle = setInterval(async ()=>{
+        
+        if(this.status != serviceStatus.ONLINE)
+        {
+          return;
+        }
+        resolve(true);
+        clearInterval(handle);
+      },100);
+    });
   };
+
 
   get data (): PearData {
     const ret = {port:this.options.port, status: this.status ,
