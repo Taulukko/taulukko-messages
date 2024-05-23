@@ -31,29 +31,35 @@ export class DefaultPublisherProvider implements PublisherProvider {
       this.client.emit(protocolNames.NEW_MESSAGE,message.struct);
     }); 
   }
-
+ 
+  
   open = async  () :Promise<void>  => {
-      
+
+       
     if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Publisher already started");
     }
-   
-    logger.log5("Taulukko Publisher Provider starting with options : " );
     
+    logger.log5("Taulukko Publisher Provider starting with options : " );
+     
     const ret:Promise<void> = new Promise(async (resolve,reject)=>{
-
+    
       logger.log4("Taulukko Publisher Provider preparing the connection with websocket " );
-
+     
       this.client = WSClient.create(this.options);
-
+       
+       
       this.client.open();
 
+       
       logger.log5("Taulukko Publisher Provider get connection with server ");
 
       await this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
         this.client.on(protocolNames.CONNECTION_OK,onTaulukkoServerConnectionOK );
       });
       await  this.onTaulukkoServerRegisteredClient(resolve).then((onTaulukkoServerRegisteredClient)=>{
+       
+
         this.client.on(protocolNames.REGISTERED,onTaulukkoServerRegisteredClient );
       });
       await  this.onTaulukkoServerUnregisteredClient(reject,this).then((onTaulukkoServerUnregisteredClient)=>{
@@ -75,29 +81,57 @@ export class DefaultPublisherProvider implements PublisherProvider {
     
     return ret;
   };
-
   private  onDisconnect = () =>{
+
+    var cont:number = 0 ; 
     
     if(this.status ===  serviceStatus.STOPED )
-      {
-        return;
-      }
+    { 
+      return;
+    }
       logger.log0("Server disconnected, restarting the connection");
       this.client.forceClose();
       this.status = serviceStatus.RESTARTING;
+      let isOpenning:boolean = false;
       const handle = setInterval(async ()=>{
-        try{
-          await this.open();
+        if(isOpenning &&  this.status === serviceStatus.RESTARTING)
+          { 
+            return;
+          }
+        try{ 
+ 
+          isOpenning=true;
+          await this.open( );
           clearInterval(handle);
+          isOpenning=false; 
         }
         catch(e)
         {
+          isOpenning=false;
           logger.error(e);
         }
       },1000);
   };
 
+  waitReconnect = async () : Promise<boolean> => {
+    return new Promise<boolean>((resolve)=>{
+      const handle = setInterval( ()=>{
+      
+    
+        if(this.status != serviceStatus.ONLINE)
+        { 
+          return;
+        } 
+        clearInterval(handle); 
+        resolve(true); 
+       
+      },1000);
+    });
+  };
+
+
   onTaulukkoServerConnectionOK = async (_: any)=>{
+    
     return  (async (websocket:WebSocket)=>{
         logger.log5("Taulukko Publisher Provider onTaulukkoServerConnectionOK ");
         this.id = websocket.client.id;
@@ -108,7 +142,6 @@ export class DefaultPublisherProvider implements PublisherProvider {
 
   onTaulukkoServerRegisteredClient = async (resolve: (ret:any)=>void )=>{
     const ret =  (async (websocket:WebSocket)=>{
-    
         logger.log4("Taulukko Publisher Provider onTaulukkoServerRegisteredClient "); 
         this.status = serviceStatus.ONLINE;
         resolve({}); 
@@ -175,20 +208,8 @@ export class DefaultPublisherProvider implements PublisherProvider {
     
   };
 
-  waitReconnect = async () : Promise<boolean> => {
-    return new Promise<boolean>((resolve)=>{
-      const handle = setInterval(async ()=>{
-        
-        if(this.status != serviceStatus.ONLINE)
-        {
-          return;
-        }
-        resolve(true);
-        clearInterval(handle);
-      },100);
-    });
-  };
-
+  
+  
   get data() :PearData {
     const ret = {port:this.options.port, status: this.status ,
       online:this.status==serviceStatus.ONLINE,

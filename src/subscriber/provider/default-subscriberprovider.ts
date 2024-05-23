@@ -75,21 +75,31 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   private  onDisconnect = () =>{
     
     if(this.status ===  serviceStatus.STOPED )
-      {
-        return;
+    {
+      return;
+    }
+   
+    logger.log0("Server disconnected, restarting the connection");
+    this.client.close();
+    this.status = serviceStatus.RESTARTING;
+    let isOpenning = false;
+    const handle = setInterval(async ()=>{
+      try{
+        if(isOpenning &&  this.status === serviceStatus.RESTARTING)
+          { 
+            return;
+          }
+        isOpenning = true;
+        await this.open();
+        clearInterval(handle);
+        isOpenning=false; 
       }
-      logger.log0("Server disconnected, restarting the connection");
-      this.status = serviceStatus.RESTARTING;
-      const handle = setInterval(async ()=>{
-        try{
-          await this.open();
-          clearInterval(handle);
-        }
-        catch(e)
-        {
-          logger.error(e);
-        }
-      },1000);
+      catch(e)
+      {
+        isOpenning=false;
+        logger.error(e);
+      }
+    },1000);
   };
 
   onTaulukkoServerConnectionOK = async (resolve)=>{
@@ -175,8 +185,8 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
         {
           return;
         }
-        resolve(true);
         clearInterval(handle);
+        resolve(true);
       },100);
     });
   };

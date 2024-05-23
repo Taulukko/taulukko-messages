@@ -31,10 +31,10 @@ export class DefaultServerProvider implements ServerProvider {
     this.auth = this.options.auth;
   }
 
-  private onWSSocketConnection(socket:WebSocket){  
+  private onWSSocketConnection(socket:WebSocket){   
     logger.log7("Taulukko Server Provider new Connection : " , socket);
     logger.log5("Taulukko Server Provider new Connection : " );
-    socket.emit(protocolNames.CONNECTION_OK,{client:socket.client, server:socket.server});
+    socket.emit(protocolNames.CONNECTION_OK,{client:socket.client, server:socket.server}); 
   }
 
   private onWSDisconect(socket:WebSocket){
@@ -56,7 +56,7 @@ export class DefaultServerProvider implements ServerProvider {
     
   }
 
-  private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{
+  private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{ 
     logger.log5("onClientOnline ",1 );
     if(this.auth)
     {
@@ -79,20 +79,10 @@ export class DefaultServerProvider implements ServerProvider {
     const clientData:ClientData  = {id:data.id,topics:data.topics,socket} ;
     list.push(clientData);
 
-    if(data.type==clientTypes.PUBLISHER){
-      this.reconnectOldSubscribers(clientData );
-    }
-
     socket.emit(protocolNames.REGISTERED,{client:socket.client, server:socket.server});    
   };
 
-  private reconnectOldSubscribers = (clientData:ClientData)=>{
-    /*
-    clientData.topics.forEach((value)=>{
-      this.subscriberList.forEach((subscriber)=>{subscriber.})
-    });
-    */
-  }; 
+  
 
   private onClientOffline = (socket:WebSocket, data:ClientOffLineDTO)=>{
  
