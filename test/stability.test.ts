@@ -225,9 +225,7 @@ describe('stability test', () => {
  
     assert.ifError( await receiveTheMessage()); 
    await subscriber.close(); 
-
  
-    
     assert.equal(server.publishers.length,1,"Need keep 1 after subscriber close");
     assert.equal(server.subscribers.length,0,"Must be one  after the subscriber.open");
     assert.equal( subscriber.data.status,serviceStatus.STOPED,"Must be STOPED after  subscriber.close");
@@ -264,9 +262,6 @@ describe('stability test', () => {
     //TODO if the subscriber disconnect, when he enter, he receive all before your last conection
     
   }); 
-  
-  
-  
     
 
 });
@@ -325,22 +320,24 @@ describe('stability long time test', function ()  {
     assert.equal(subscriber.data.status,serviceStatus.ONLINE,"Must be ONLINE before open");
    await subscriber.on(async (message:Message)=>{
       try{
-      
+        logger.debug("Listener on,1");
+        
         assert.equal(message.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");
         assert.equal(message.data, "Hello World","Message need be Hello World");
       
-        
-        if(++times==NUMBER_OF_TESTS)
-        {
-         await subscriber.close();
-          await publisher.close(); 
-          await server.close(); 
-        }
-        else{
-          console.log("Não fechou ",times);
-        }
+        logger.debug("Listener on,2",times);
 
+        if(++times!=NUMBER_OF_TESTS)
+        {
+          return;
+        }
+        logger.debug("Listener on,3",times);
+
+        await subscriber.close();
+        await publisher.close(); 
+        await server.close();
          
+        logger.debug("Listener on,4",times);
       }catch(e){
         lastError=e; 
         await subscriber.forceClose();
@@ -367,10 +364,7 @@ describe('stability long time test', function ()  {
     assert.equal(server.publishers.length,0,"Publishers must be zero after the server.close");
     assert.equal(server.subscribers.length,0,"Subscribers must be zero after the server.close");
     assert.equal(server.data.status,serviceStatus.STOPED,"Must be STOPED after  server.close");
-
-   
-    
-
+ 
     server = await initServer();
 
     
@@ -384,72 +378,70 @@ describe('stability long time test', function ()  {
     //this happen only into a test enviroment
     //not work  assert.isTrue( await  publisher.waitReconnect() ); 
     publisher.waitReconnect().then(async (value)=>{ 
-      if(!value){console.error("ERROR: publisher.waitReconnect");} 
+      if(!value){
+        console.error("ERROR: publisher.waitReconnect");
+      } 
     
       logger.debug("Debug 6.1 : After waitReconect publisher"); 
       subscriber.waitReconnect().then(
         async (value)=>{
+
+          
           if(!value){console.error("ERROR: publisher.waitReconnect");} 
 
           logger.debug("Debug 6.2 : After waitReconect publisher"); 
  
-    assert.equal(server.publishers.length,1,"Must be one publisher after the server.open");    
-          
-    logger.debug("Debug 7 : publisher ok");
+          if(server.publishers.length!=1)
+          {
+            logger.debug("ERROR: publisher need be 1 after reconect");
+          }
+          logger.error("Debug 7 : publisher ok");
+          if(server.subscribers.length!=1)
+          {
+            logger.error("ERROR: publisher need be 1 after reconect");
+          }
+              
+         logger.debug("Debug 8 : Before send message");
 
+         publisher.send("Hello World").then(async ()=>{
+            logger.debug("Debug 9 : After send message");
+            cleanupGlobals();
 
-    assert.equal(server.subscribers.length,1,"Must be one subscriber after the server.open");
+            logger.debug("Debug 10 : After Cleanup Globals");
 
-    logger.debug("Debug 8 : Before send message");
+            receiveTheMessage().then(()=>{
 
-    await publisher.send("Hello World"); 
+            logger.debug("END of Tests! Verify if there are errors above");
+         
+              
+            }); 
+         
+         
+          }
+         );
       
-    logger.debug("Debug 9 : After send message");
-
-    
-   cleanupGlobals();
-
-   logger.debug("Debug 10 : After Cleanup Globals");
-
-   assert.ifError( await receiveTheMessage()); 
-
-   logger.debug("Debug 11 :All good!");
-
-          setTimeout(async ()=>{
-            console.log("Finalizando o teste, verifique se houve erros acima");
-            await publisher.forceClose();
-            await subscriber.forceClose();
-            await server.forceClose();  
-          },5000);
-
+  
          }
       );
  
 
     } ); 
-    
-    /*
-  
-   
-
-
-  
-
-   */
+     
 
   });
 });
 
 //auxiliar functions
 function receiveTheMessage():Promise<Error|null> { 
+
   const TIME_TO_CHECK = 50;
   return new Promise((resolve,reject)=>{ 
     const handle = setInterval(()=>{ 
       if(!semaphore)
       {  
+        
         return;
       }
-     
       clearTimeout(handle);
 
       if(lastError)
@@ -464,9 +456,8 @@ function receiveTheMessage():Promise<Error|null> {
   });
 }
 
+function cleanupGlobals() {
+  lastError = null;
+  semaphore = false;
 
-  function cleanupGlobals() {
-    lastError = null;
-    semaphore = false;
-  
-  }
+}

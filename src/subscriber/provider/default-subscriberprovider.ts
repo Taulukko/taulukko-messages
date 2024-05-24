@@ -1,5 +1,5 @@
  
-import {SubscriberProvider} from "./subscriber-provider";  
+import {SubscriberProvider,Listener} from "./subscriber-provider";  
 import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../common/names";  
 import { loggerFactory } from "../../common/log/logger";
 import {  WSServerOptions, WebSocket } from "../../ws";
@@ -7,6 +7,7 @@ import {  WSServerOptions, WebSocket } from "../../ws";
 import * as io from "socket.io-client";
 import { Message } from "src/common/message";  
 import { PearData } from "src/common/pear-data";
+import { Server } from "socket.io";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -17,6 +18,9 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   status:string; 
   client:io.Socket;
   id:string;
+  listeners : Array<Listener> = new Array(); 
+
+  
  constructor(options:any){
     const defaults = { port: 7777, topics:new Array()};
     this.options = Object.assign({}, defaults, options); 
@@ -25,9 +29,9 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
 
  
 
-  on = async (listener:    (message: Message) => Promise<any>)=> {
-
+  on = async (listener:  Listener)=> {
     logger.log7("Taulukko Subscriber Provider on: inserting a new listener " );
+    this.listeners.push(listener);
     await this.client.on( protocolNames.NEW_MESSAGE,(message:Message)=>{
 
       listener(message)
@@ -116,6 +120,13 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   onTaulukkoServerRegisteredClient = async (resolve)=>{
     return  (async (websocket:WebSocket)=>{
         logger.log7("Taulukko Subscriber Provider onTaulukkoServerRegisteredClient ",websocket); 
+        if(this.status==serviceStatus.RESTARTING)
+        {
+
+          this.listeners.forEach((listener)=>{
+            this.on(listener);
+          });
+        }
         this.status = serviceStatus.ONLINE; 
         resolve(); 
       });

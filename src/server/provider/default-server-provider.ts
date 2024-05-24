@@ -99,25 +99,30 @@ export class DefaultServerProvider implements ServerProvider {
   };
  
   private onNewMessage = (socket:WebSocket, message:Message)=>{
+
    const isSystemTopic:boolean = socket==null;
     const publisherId:string = (socket==null)?null:socket.client.id;
     
+
     if(!isSystemTopic && this.publisherList.map(clientData=>clientData.id).filter(id=>id==publisherId).length == 0){
       logger.error(`A non publisher send a message {publisherId,Message}` ,publisherId,message);
     }
     
+
     if(!isSystemTopic &&  this.publisherList.filter(clientData=>clientData.id==publisherId
        && clientData.topics.filter(topic=>topic==message.topic)).length == 0){
       logger.error(`Topic not found for this publisher {publisherId,Message}` ,publisherId, message);
     }
+
 
     const subscriberForthisTopic = this.subscriberList.filter(
       subscriber=>isSystemTopic || subscriber.topics.filter(
           topic=>topic==message.topic).length==1);
    subscriberForthisTopic.forEach(item=> {
 
-  
+
       item.socket.emit(protocolNames.NEW_MESSAGE,message);
+
     });
 
   };

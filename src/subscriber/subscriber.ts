@@ -1,10 +1,7 @@
-import { LogLevel , logerNames} from "../common/names";
-import {Data} from "../common/data";
+import { LogLevel , logerNames} from "../common/names"; 
 import { loggerFactory } from "../common/log/logger";
 import { DefaultSubscriberProvider } from "./provider/default-subscriberprovider";
-import { SubscriberProvider } from "./provider/subscriber-provider";
-import { Message } from "src/common/message";
-import { ClientData } from "src/server/client-data";
+import { Listener, SubscriberProvider } from "./provider/subscriber-provider";  
 import { PearData } from "src/common/pear-data";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
@@ -42,7 +39,7 @@ export class Subscriber implements SubscriberProvider {
     get data():PearData  {
       return this.provider.data;
     }
-    async on( listener:(message:Message)=>void){
+    async on( listener:Listener){
       return await this.provider.on(listener);
     }
 
