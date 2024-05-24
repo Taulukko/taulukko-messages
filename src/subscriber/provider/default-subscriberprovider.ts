@@ -1,5 +1,5 @@
  
-import {SubscriberProvider} from "./subscriber-provider";  
+import {SubscriberProvider,Listener} from "./subscriber-provider";  
 import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../common/names";  
 import { loggerFactory } from "../../common/log/logger";
 import {  WSServerOptions, WebSocket } from "../../ws";
@@ -7,6 +7,7 @@ import {  WSServerOptions, WebSocket } from "../../ws";
 import * as io from "socket.io-client";
 import { Message } from "src/common/message";  
 import { PearData } from "src/common/pear-data";
+import { Server } from "socket.io";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -17,27 +18,33 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   status:string; 
   client:io.Socket;
   id:string;
+  listeners : Array<Listener> = new Array(); 
+
+  
  constructor(options:any){
     const defaults = { port: 7777, topics:new Array()};
     this.options = Object.assign({}, defaults, options); 
     this.status = serviceStatus.STARTING;
   }
-  on = async (listener:    (message: Message) => Promise<any>)=> {
 
+ 
+
+  on = async (listener:  Listener)=> {
     logger.log7("Taulukko Subscriber Provider on: inserting a new listener " );
+    this.listeners.push(listener);
     await this.client.on( protocolNames.NEW_MESSAGE,(message:Message)=>{
 
       listener(message)
     });  
     };
  
-  open = async () :Promise<any>  => {
-    if(this.status!=serviceStatus.STARTING){
+  open = async () :Promise<void>  => {
+    if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Subscriber already started");
     }
     logger.log7("Taulukko Subscriber Provider starting with options : " , this.options);
 
-    const ret = new Promise(async (resolve,reject)=>{
+    const ret : Promise<void> = new Promise(async (resolve,reject)=>{
      logger.log7("Taulukko Subscriber Provider preparing the connection with websocket " );
 
       this.client = io.connect("http://localhost:7777");
@@ -64,8 +71,39 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
       });
       logger.log7("Taulukko Subscriber Provider finish open, waiting for the connection ");
     
+      this.client.on('disconnect',  this.onDisconnect);
     });
     return ret;
+  };
+
+  private  onDisconnect = () =>{
+    
+    if(this.status ===  serviceStatus.STOPED )
+    {
+      return;
+    }
+   
+    logger.log0("Server disconnected, restarting the connection");
+    this.client.close();
+    this.status = serviceStatus.RESTARTING;
+    let isOpenning = false;
+    const handle = setInterval(async ()=>{
+      try{
+        if(isOpenning &&  this.status === serviceStatus.RESTARTING)
+          { 
+            return;
+          }
+        isOpenning = true;
+        await this.open();
+        clearInterval(handle);
+        isOpenning=false; 
+      }
+      catch(e)
+      {
+        isOpenning=false;
+        logger.error(e);
+      }
+    },1000);
   };
 
   onTaulukkoServerConnectionOK = async (resolve)=>{
@@ -82,6 +120,13 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   onTaulukkoServerRegisteredClient = async (resolve)=>{
     return  (async (websocket:WebSocket)=>{
         logger.log7("Taulukko Subscriber Provider onTaulukkoServerRegisteredClient ",websocket); 
+        if(this.status==serviceStatus.RESTARTING)
+        {
+
+          this.listeners.forEach((listener)=>{
+            this.on(listener);
+          });
+        }
         this.status = serviceStatus.ONLINE; 
         resolve(); 
       });
@@ -129,7 +174,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
    return ret;
   };
 
-  forceClose = async () => {
+  forceClose = async () : Promise<void> => {
     logger.log7("Taulukko Subscriber Provider forceClose ");
     try{
        this.close();
@@ -142,6 +187,21 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     
     
   };
+
+  waitReconnect = async () : Promise<boolean> => {
+    return new Promise<boolean>((resolve)=>{
+      const handle = setInterval(async ()=>{
+        
+        if(this.status != serviceStatus.ONLINE)
+        {
+          return;
+        }
+        clearInterval(handle);
+        resolve(true);
+      },100);
+    });
+  };
+
 
   get data (): PearData {
     const ret = {port:this.options.port, status: this.status ,

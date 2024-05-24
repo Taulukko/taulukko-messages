@@ -73,7 +73,7 @@ describe('auth test - Simple Auth', () => {
    }
   );
 
-  it.skip('start Publisher with a correct password',async  () => {
+  it('start Publisher with a correct password',async  () => {
     const server:Server = await initServer({auth:SimpleAuth.create({password:"test123"})});
     
     assert.equal(server.data.port,7777);
@@ -88,7 +88,7 @@ describe('auth test - Simple Auth', () => {
    }
   );
 
-  it.skip('start Subscriber with a correct password',async  () => {
+  it('start Subscriber with a correct password',async  () => {
     const server:Server = await initServer({auth:SimpleAuth.create({password:"test123"})});
     
     assert.equal(server.data.port,7777);

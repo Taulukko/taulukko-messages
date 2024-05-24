@@ -1,7 +1,10 @@
  import { assert } from "chai"; 
-import { error } from 'winston';
+import { loggers } from 'winston';
 import  {Server,Publisher,Subscriber,Message,serviceStatus} from '../index';
-import { LogLevel, systemTopics } from '../src/common/names';
+import { LogLevel, logerNames } from '../src/common/names';
+import { Logger, loggerFactory } from "../src/common/log/logger";  
+import { globalConfiguration } from "../src/global-configuration"; 
+ 
 
 const DEFAULT_PORT:number = 7778;
 var semaphore:boolean; 
@@ -222,9 +225,7 @@ describe('stability test', () => {
  
     assert.ifError( await receiveTheMessage()); 
    await subscriber.close(); 
-
  
-    
     assert.equal(server.publishers.length,1,"Need keep 1 after subscriber close");
     assert.equal(server.subscribers.length,0,"Must be one  after the subscriber.open");
     assert.equal( subscriber.data.status,serviceStatus.STOPED,"Must be STOPED after  subscriber.close");
@@ -261,35 +262,186 @@ describe('stability test', () => {
     //TODO if the subscriber disconnect, when he enter, he receive all before your last conection
     
   }); 
-  
-  
-  
-  it.skip('Publisher disconnect and connect event',async  () => {
-    const server = await initServer();
-
-    //expect(server.publishers.length).toBe(0);
-
-    const publisher = await Publisher.create({
-      server:"taulukko://notexist:" + DEFAULT_PORT, 
-      retro:true
-    }); 
-    //TODO  
     
-  });  
 
 });
  
-//auxiliar functions
-function receiveTheMessage():Promise<Error|null> {
-  const TIME_TO_CHECK = 50;
-  return new Promise((resolve,reject)=>{
-    const handle = setInterval(()=>{
+const MINUTE = 60*1000;
+const TIMEOUT = 10 * MINUTE;
 
+describe('stability long time test', function ()  {
+  this.timeout(TIMEOUT);
+  it('Publisher and subscriber reconect after server restart',async  () => {
+    
+    globalConfiguration.log.level = LogLevel.DEBUG;
+    globalConfiguration.log.showInConsole = true;
+    const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT); 
+
+    
+    //INICIO : Temporariamente enquanto o log estiver com bug
+    logger.debug = console.log;
+    //FIM 
+
+    const NUMBER_OF_TESTS = 2;
+    let times = 0;
+   
+    let server = await initServer();
+
+    assert.equal(server.publishers.length,0);
+
+    let publisher = await Publisher.create({ 
+      server:"taulukko://localhost:" + DEFAULT_PORT,
+      topics:["topic.helloWorld"],
+      defaultLogLevel:LogLevel.ERROR
+    });
+
+    assert.equal(server.publishers.length,0,"Must be zero before the publisher.open");
+    assert.equal(publisher.data.status,serviceStatus.STARTING,"Must be STARTING before publisher.open");
+
+    await publisher.open();
+
+    assert.equal(publisher.data.status,serviceStatus.ONLINE,"Must be ONLINE after publisher.open");
+
+    assert.equal(server.publishers.length,1,"Must be 1 after publisher.open");
+
+    assert.equal(server.subscribers.length,0,"Must be 0 before subscriber.open");
+   const subscriber = await Subscriber.create({ 
+      topics:["topic.helloWorld","unexistentTopic" ], defaultLogLevel:LogLevel.ERROR
+    });
+   assert.equal(server.subscribers.length,0,"Must be 0 before subscriber.open");
+    assert.equal(server.publishers.length,1,"Must be 1 yet");
+
+    assert.equal(subscriber.data.status,serviceStatus.STARTING,"Must be STARTING before open");
+
+    await subscriber.open();
+
+    assert.equal(server.subscribers.length,1,"Must be 1 after open");
+
+    assert.equal(subscriber.data.status,serviceStatus.ONLINE,"Must be ONLINE before open");
+   await subscriber.on(async (message:Message)=>{
+      try{
+        logger.debug("Listener on,1");
+        
+        assert.equal(message.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");
+        assert.equal(message.data, "Hello World","Message need be Hello World");
+      
+        logger.debug("Listener on,2",times);
+
+        if(++times!=NUMBER_OF_TESTS)
+        {
+          return;
+        }
+        logger.debug("Listener on,3",times);
+
+        await subscriber.close();
+        await publisher.close(); 
+        await server.close();
+         
+        logger.debug("Listener on,4",times);
+      }catch(e){
+        lastError=e; 
+        await subscriber.forceClose();
+        await publisher.forceClose();
+        await server.forceClose();  
+      }
+      finally{ 
+
+        semaphore = true;
+      }
+     
+    }); 
+
+    cleanupGlobals();
+ 
+    await publisher.send("Hello World"); 
+    
+    assert.ifError( await receiveTheMessage()); 
+ 
+
+    await server.close(); 
+     
+    
+    assert.equal(server.publishers.length,0,"Publishers must be zero after the server.close");
+    assert.equal(server.subscribers.length,0,"Subscribers must be zero after the server.close");
+    assert.equal(server.data.status,serviceStatus.STOPED,"Must be STOPED after  server.close");
+ 
+    server = await initServer();
+
+    
+      
+
+    assert.equal(publisher.data.status,serviceStatus.ONLINE,"Must be ONLINE  after  server.open");
+
+    logger.debug("Debug 6 : After check online server");
+    
+    //observation: not use await because if the function (like waitReconnect) uses setInterval or setTimeout causes error
+    //this happen only into a test enviroment
+    //not work  assert.isTrue( await  publisher.waitReconnect() ); 
+    publisher.waitReconnect().then(async (value)=>{ 
+      if(!value){
+        console.error("ERROR: publisher.waitReconnect");
+      } 
+    
+      logger.debug("Debug 6.1 : After waitReconect publisher"); 
+      subscriber.waitReconnect().then(
+        async (value)=>{
+
+          
+          if(!value){console.error("ERROR: publisher.waitReconnect");} 
+
+          logger.debug("Debug 6.2 : After waitReconect publisher"); 
+ 
+          if(server.publishers.length!=1)
+          {
+            logger.debug("ERROR: publisher need be 1 after reconect");
+          }
+          logger.error("Debug 7 : publisher ok");
+          if(server.subscribers.length!=1)
+          {
+            logger.error("ERROR: publisher need be 1 after reconect");
+          }
+              
+         logger.debug("Debug 8 : Before send message");
+
+         publisher.send("Hello World").then(async ()=>{
+            logger.debug("Debug 9 : After send message");
+            cleanupGlobals();
+
+            logger.debug("Debug 10 : After Cleanup Globals");
+
+            receiveTheMessage().then(()=>{
+
+            logger.debug("END of Tests! Verify if there are errors above");
+         
+              
+            }); 
+         
+         
+          }
+         );
+      
+  
+         }
+      );
+ 
+
+    } ); 
+     
+
+  });
+});
+
+//auxiliar functions
+function receiveTheMessage():Promise<Error|null> { 
+
+  const TIME_TO_CHECK = 50;
+  return new Promise((resolve,reject)=>{ 
+    const handle = setInterval(()=>{ 
       if(!semaphore)
-      { 
+      {  
+        
         return;
       }
-
       clearTimeout(handle);
 
       if(lastError)
@@ -304,8 +456,8 @@ function receiveTheMessage():Promise<Error|null> {
   });
 }
 
-  function cleanupGlobals() {
-    lastError = null;
-    semaphore = false;
-  
-  }
+function cleanupGlobals() {
+  lastError = null;
+  semaphore = false;
+
+}
