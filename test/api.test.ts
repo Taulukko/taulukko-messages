@@ -141,6 +141,85 @@ describe("api.basics",  function test(options={}){
     assert.ifError( await receiveTheMessage()); 
         
   });
+
+  
+
+  it('Open subscriber and receiving a string message, opening subscriber before publisher',async  () => {
+    
+    
+    const server = await initServer();
+
+    assert.equal(server.publishers.length,0);
+
+    const publisher = await Publisher.create({ 
+      topics:["topic.helloWorld"],
+      defaultLogLevel:LogLevel.ERROR
+    });
+
+    assert.equal(server.publishers.length,0,"Must be zero before the publisher.open");
+    assert.equal(publisher.data.status,serviceStatus.STARTING,"Must be STARTING before publisher.open");
+
+    const subscriber = await Subscriber.create({ 
+      topics:["topic.helloWorld","unexistentTopic" ], defaultLogLevel:LogLevel.ERROR
+    });
+    
+
+    assert.equal(server.subscribers.length,0,"Must be 0 before subscriber.open");
+    assert.equal(server.publishers.length,0,"Must be 1 yet");
+
+    assert.equal(subscriber.data.status,serviceStatus.STARTING,"Must be STARTING before open");
+
+    await subscriber.open();
+    
+    assert.equal(server.subscribers.length,1,"Must be 1 after open");
+
+    await publisher.open();
+
+    assert.equal(publisher.data.status,serviceStatus.ONLINE,"Must be ONLINE after publisher.open");
+
+    assert.equal(server.publishers.length,1,"Must be 1 after publisher.open");
+
+    assert.equal(server.subscribers.length,1,"Keep 1 after publisher.open");
+  
+    assert.equal(subscriber.data.status,serviceStatus.ONLINE,"Must be ONLINE before open");
+ 
+
+    await subscriber.on(async (message:Message)=>{
+      try{
+       
+        assert.equal(message.topic,"topic.helloWorld","Topic need be the same topic in the publisher.send");
+        assert.equal(message.data, "Hello World","Message need be Hello World");
+        assert.equal(server.subscribers.length,1,"subscribers need be 1 into the server");
+        assert.equal(server.publishers.length,1,"publisher need be 1 into the server"); 
+        await subscriber.close();
+        assert.equal(server.subscribers.length,0,"subscribers need be 0 into the server after subscriber close");
+        assert.equal(server.publishers.length,1,"publisher need be 1 into the server after subscriber close"); 
+        await publisher.close(); 
+        assert.equal(server.subscribers.length,0,"subscribers need be 0 into the server after publisher close");
+        assert.equal(server.publishers.length,0,"publisher need be 0 into the server  after subscriber close"); 
+        await server.close(); 
+      }catch(e){
+        lastError=e; 
+        await subscriber.forceClose();
+        await publisher.forceClose();
+        await server.forceClose();  
+      }
+      finally{ 
+        semaphore = true;
+      }
+     
+    }); 
+
+    cleanupGlobals();
+ 
+     
+
+    await publisher.send("Hello World"); 
+ 
+
+    assert.ifError( await receiveTheMessage()); 
+        
+  });
   
   it('publish a string message for all',async  () => {
      const server = await initServer(); 
