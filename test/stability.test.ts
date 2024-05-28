@@ -272,15 +272,11 @@ const TIMEOUT = 10 * MINUTE;
 describe('stability long time test', function ()  {
   this.timeout(TIMEOUT);
   it('Publisher and subscriber reconect after server restart',async  () => {
+    const logger = Logger.create({});
     
-    globalConfiguration.log.level = LogLevel.DEBUG;
-    globalConfiguration.log.showInConsole = true;
-    const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT); 
-
     
-    //INICIO : Temporariamente enquanto o log estiver com bug
-    logger.debug = console.log;
-    //FIM 
+    globalConfiguration.log.level = LogLevel.WARNING;
+    globalConfiguration.log.showInConsole = true; 
 
     const NUMBER_OF_TESTS = 2;
     let times = 0;
