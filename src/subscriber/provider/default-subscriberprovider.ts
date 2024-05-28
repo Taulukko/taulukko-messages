@@ -2,12 +2,10 @@
 import {SubscriberProvider,Listener} from "./subscriber-provider";  
 import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../common/names";  
 import { loggerFactory } from "../../common/log/logger";
-import {  WSServerOptions, WebSocket } from "../../ws";
-
-import * as io from "socket.io-client";
+import {  WSClient, WSServerOptions, WebSocket } from "../../ws";
+ 
 import { Message } from "src/common/message";  
-import { PearData } from "src/common/pear-data";
-import { Server } from "socket.io";
+import { PearData } from "src/common/pear-data"; 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
@@ -16,7 +14,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
 
   options:TaulukkoProviderOptions;
   status:string; 
-  client:io.Socket;
+  client:WSClient;
   id:string;
   listeners : Array<Listener> = new Array(); 
 
@@ -39,18 +37,22 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     };
  
   open = async () :Promise<void>  => {
+
     if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Subscriber already started");
     }
     logger.log7("Taulukko Subscriber Provider starting with options : " , this.options);
 
     const ret : Promise<void> = new Promise(async (resolve,reject)=>{
-     logger.log7("Taulukko Subscriber Provider preparing the connection with websocket " );
+     logger.log7("Taulukko Subscriber Provider preparing the connection with wsclient " );
 
-      this.client = io.connect("http://localhost:7777");
+      this.client = WSClient.create(this.options);
 
-      logger.log7("Taulukko Subscriber Provider get connection with server ");
+      logger.log7("Taulukko Subscriber Provider before open connection with server ");
+
+      this.client.open();
        
+      logger.log7("Taulukko Subscriber Provider after open connection with server ");
       
       await this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
         this.client.on(protocolNames.CONNECTION_OK,onTaulukkoServerConnectionOK );

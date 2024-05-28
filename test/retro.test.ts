@@ -1,24 +1,20 @@
 import { LogLevel, Logger, logerNames } from '../src/common';
-import  {Server,Publisher,Subscriber,Message, globalConfiguration} from '../index';
+import  {globalConfiguration} from '../index';
 import { loggerFactory } from '../src/common/log/logger';
 import { assert } from 'chai';
-
-async function initServer(options={}){
-
-  const server  = await Server.create(options);
-  await server.open();
-  return server;
-}
-
+ 
  
 
 
-describe.only('retro test', () => {
+describe('retro test', () => {
   it('#20240510-Corrigir o log ver #20240510',async  () => {
 
   let count:number =1;
   
   let logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
+  const oldConsoleLog = globalConfiguration.log.consoleLog;
+  const oldLevel = globalConfiguration.log.level;
+
   globalConfiguration.log.level = LogLevel.DEBUG;
   globalConfiguration.log.showInConsole = true;
  
@@ -28,6 +24,8 @@ describe.only('retro test', () => {
   logger.debug("teste1");
   logger = Logger.create({});
   logger.debug("teste2");
+  globalConfiguration.log.consoleLog = oldConsoleLog;
+  globalConfiguration.log.level = oldLevel;
 
   });
 });

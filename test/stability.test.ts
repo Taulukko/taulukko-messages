@@ -275,7 +275,7 @@ describe('stability long time test', function ()  {
     const logger = Logger.create({});
     
     
-    globalConfiguration.log.level = LogLevel.WARNING;
+    globalConfiguration.log.level = LogLevel.ALERT;
     globalConfiguration.log.showInConsole = true; 
 
     const NUMBER_OF_TESTS = 2;
@@ -407,7 +407,7 @@ describe('stability long time test', function ()  {
 
             receiveTheMessage().then(()=>{
 
-            logger.debug("END of Tests! Verify if there are errors above");
+            logger.alert("END of Tests! Verify if there are errors above");
          
               
             }); 
