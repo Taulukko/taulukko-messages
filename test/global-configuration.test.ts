@@ -70,7 +70,7 @@ describe('global configuration api - log configuration', () => {
     assert.equal(partMessage.length,7);
     console.log("lastMessage",lastMessage);
     let monthFormated:string = (now.getMonth()+1).toString();
-    monthFormated = ("0"+monthFormated).substring(monthFormated.length-2);
+    monthFormated = ("0"+monthFormated).substring(monthFormated.length-1);
     assert.equal(partMessage[1],monthFormated);
     assert.equal(partMessage[2],now.getFullYear().toString());
     
