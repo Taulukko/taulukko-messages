@@ -38,15 +38,25 @@ describe('stability test', () => {
   
   });
  
- it.skip('publish into a inexistent server',async  () => {
-    const server = await initServer();
+ it.skip('publish into a inexistent server with timeout',async  () => {
+    const before:number = new Date().getTime();
+    try{
+     
+      const publisher = await Publisher.create({
+        server:"taulukko://notexist:" + DEFAULT_PORT, timeout:5000
+      });
+      await publisher.open();
+    }
+    catch(e)
+    {
+      assert.equal(e,"Erro");
+      const after:number = new Date().getTime();
+      const delta:number = after-before;
+      assert.isTrue(delta > 5000);
+      assert.isTrue(delta < 10000);
 
-    assert.equal(server.publishers.length,0); 
-
-    const publisher = await Publisher.create({
-      server:"taulukko://notexist:" + DEFAULT_PORT
-    });
-  //TODO
+    }
+    
   });
  it('reconecting into a publisher need be restarted',async  () => {
     const NUMBER_OF_TESTS = 2;
@@ -251,6 +261,9 @@ describe('stability test', () => {
  }); 
   
   it.skip('Publisher with a retro configuration',async  () => {
+
+    //if there is "retro" in the configuration, he needs to receive everything he lost since the last downtime
+
     const server = await initServer();
 
     assert.equal(server.publishers.length,0); 
