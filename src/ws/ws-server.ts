@@ -28,8 +28,10 @@ export class WSServer   {
 
 
   private constructor(options:any){
+    console.log("WSServer",1,options);
     const defaults = { port: 7777, showDefaultMessage:true, defaultMessage:"WSServer Server is Running"};
     options = Object.assign({}, defaults, options);
+    console.log("WSServer",2,options);
     this.options = options as WSServerOptions;
     const key:string = KEY_TOOL.build(1, 1);
     this.id = new StringsUtil().right(key, key.length - KEY_TOOL_HEAD_SIZE);
