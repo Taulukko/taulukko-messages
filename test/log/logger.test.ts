@@ -18,7 +18,9 @@ describe('logger api', () => {
     assert.isNotNull(logger); 
   });
  
-  it('Check if log function obey default level info ',async  () => {
+  it('Check if log function obey default level info',async  () => {
+
+    //DEFAULT = WARNING (4)
     const logger = Logger.create({}); 
     let spy = sinon.spy(logger, 'log');
     logger.log6("Example"); 

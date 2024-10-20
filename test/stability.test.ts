@@ -38,7 +38,7 @@ describe('stability test', () => {
   
   });
  
-  it.skip('publish into a inexistent server with timeout but the server up before timeout',async  () => {
+  it.skip('publish into a inexistent server with timeout',async  () => {
     const before:number = new Date().getTime();
     try{
      
@@ -68,7 +68,7 @@ describe('stability test', () => {
     setTimeout(async ()=>{
       serverOn = true;
       server = await initServer()
-    },1000);
+    },100);
 
     const publisher = Publisher.create({ 
       topics:["topic.helloWorld","unexistentTopic"],

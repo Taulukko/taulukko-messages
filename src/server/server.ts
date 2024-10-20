@@ -13,8 +13,8 @@ const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 export class Server implements ServerProvider { 
   options: ServerOptions;
 
-  private constructor(options: any) {
-    console.log("Server",options);
+  private constructor(options: any) { 
+    
     const defaultProvider:ServerProvider =   new DefaultServerProvider(options) ; 
 
     const defaults = { provider:  defaultProvider , defaultLogLevel: LogLevel.INFO };
@@ -22,8 +22,7 @@ export class Server implements ServerProvider {
     this.options = options as ServerOptions;
    }
 
-  static create(options: any = {} ) : Server{
-    console.log("create",options);
+  static create(options: any = {} ) : Server{ 
     const server=  new Server(options);
     logger.log7("New server created ", server);
     return server;

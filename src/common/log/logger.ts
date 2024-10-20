@@ -76,7 +76,7 @@ export class Logger {
 
   private common(level:LogLevel, message?: any, ...optionalParams: any)
   {
-    const needBeFiltered:boolean =  globalConfiguration.log.level<=level; 
+    const needBeFiltered:boolean =  globalConfiguration.log.level<level; 
     if(needBeFiltered)
     {
       return;

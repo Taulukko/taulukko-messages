@@ -55,7 +55,10 @@ describe('global configuration api - log configuration', () => {
   it('Changing pattern property',async  () => {
     // sinon.spy(console, 'log') not work, so I need inject the console.log function
     let lastMessage:string = null;
-    let consoleLog=(message,...data:any[])=>lastMessage=message;
+    let consoleLog=(message,...data:any[])=>{
+      lastMessage=message};
+    const level:LogLevel = globalConfiguration.log.level;
+    globalConfiguration.log.level = 7;  
     globalConfiguration.log.consoleLog = consoleLog;
     globalConfiguration.log.pattern = "DD#MM#YYYY#HH#mm#ss#SSSS";
     globalConfiguration.log.showInConsole = true;

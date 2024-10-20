@@ -10,11 +10,9 @@ var semaphore:boolean;
 var lastError:Error; 
 
 async function initServer(options={}){
-  try {
-    console.log("initServer",1,options);
+  try { 
     const defaults = {defaultLogLevel:LogLevel.ERROR};
-    options = Object.assign({}, defaults, options);
-    console.log("initServer",2,options);
+    options = Object.assign({}, defaults, options); 
     const server  =  Server.create(options);
     await server.open();
     return server;
@@ -142,16 +140,16 @@ describe("api.basics",  function test(options={}){
     
     setTimeout(async()=>{
       server1 = await initServer({
-        server:"taulukko://localhost:7777",
+        port:"7777",
         topics:["topic.helloWorld"] 
       });
   
-    },10000);
+    },100);
    
     assert.isNull(server1);
 
     const server2 = await initServer({
-      server:"taulukko://localhost:8888",
+      port:"8888",
       topics:["topic.helloWorld"] 
     });
 
@@ -173,10 +171,7 @@ describe("api.basics",  function test(options={}){
 
    
     assert.equal(server2.publishers.length,0,"Publishers need be equal 0 in Server 2 because the port is not equal");
-    
-    console.log( "Debug 1");
-    
-
+      
     await server2.close();
 
     assert.isTrue(deltaTime < 9000,"Ignored port");
@@ -416,8 +411,7 @@ describe("api.basics",  function test(options={}){
         assert.equal(message.data,"test");      
       }
       catch(e)
-      {
-        console.log(e);
+      { 
         semaphore = true;
       }
       finally{
