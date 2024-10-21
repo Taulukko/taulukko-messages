@@ -71,8 +71,24 @@ export class DefaultPublisherProvider implements PublisherProvider {
       
       this.client = WSClient.create(this.options);
        
-       
-      this.client.open();
+      let success:boolean = false ;
+
+
+      if(this.options.timeout && !isNaN(this.options.timeout))
+      {
+        setTimeout(()=>{
+          if(success)
+          {
+            return;
+          }
+          reject("Time out in open publisher " + this.options.timeout)
+        },this.options.timeout); 
+      }
+      
+
+      await this.client.open();
+
+      success=true;
 
        
       logger.log5("Taulukko Publisher Provider get connection with server ");
