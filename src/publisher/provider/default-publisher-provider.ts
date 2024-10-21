@@ -16,17 +16,40 @@ export class DefaultPublisherProvider implements PublisherProvider {
  
 
   private constructor(options:any){
-    const defaults = { port: 7777 ,topics:new Array()};
-    this.options = Object.assign({}, defaults, options); 
+    let host:string = "localhost";
+    let port :number = 80;
+
+    if(options.server!=null)
+    {
+      const domainSlices = options.server.split("//");  
+      
+      const portSlices = domainSlices[domainSlices.length-1].split(":");
+      host = portSlices[0];
+      
+      if(portSlices.length=2)
+      {
+        port = portSlices[1];
+      } 
+ 
+      options.server=null;
+    }
+
+    const defaults = { port,host ,topics:new Array()};
+    this.options = Object.assign({}, defaults, options);
+
+     
+    const wsoptions =  this.options = Object.assign({}, this.options, {port,host});
+ 
+
     this.status = serviceStatus.STARTING;
   }
 
-  static create = (options:any):DefaultPublisherProvider=>{
+  static create = (options:any):DefaultPublisherProvider=>{ 
     return new DefaultPublisherProvider(options);
   };
 
   send(...data: any) {
-    this.options.topics.forEach((item,index)=>{
+      this.options.topics.forEach((item,index)=>{
       const message:Message = Message.create({topic:item,data});
       this.client.emit(protocolNames.NEW_MESSAGE,message.struct);
     }); 
@@ -45,7 +68,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
     const ret:Promise<void> = new Promise(async (resolve,reject)=>{
     
       logger.log4("Taulukko Publisher Provider preparing the connection with websocket " );
-     
+      
       this.client = WSClient.create(this.options);
        
        
@@ -220,6 +243,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
 }
 
 interface TaulukkoProviderOptions extends WSServerOptions{
-  topics:Array<string>
+  topics:Array<string>;
+  timeout?:number;
 }
  

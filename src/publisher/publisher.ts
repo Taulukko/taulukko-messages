@@ -10,18 +10,37 @@ export class Publisher implements PublisherProvider{
   options: PublisherOptions;
 
     private constructor(options: any) {
-      this.provider = options.provider? options.provider:   DefaultPublisherProvider.create(options) ;
-
+  
       const defaults = { 
-        provider:    DefaultPublisherProvider.create(options) , 
         defaultLogLevel: LogLevel.INFO,
-        server:"taulukko:\\localhost:7777",
+        server:"taulukko://localhost:7777",
         topics: new Array()};
       options = Object.assign({}, defaults, options);
+      if(!this.validarUrl(options.server))
+      {
+        throw new Error(options.server + " isnt a correct url, eg: taulukko://localhost:7777 ");
+      } 
+      options.port = this.extractPort(options.server);
+      options.host = this.extractHost(options.server);
+ 
+
+      this.provider = options.provider? options.provider:   DefaultPublisherProvider.create(options) ;
       this.options = options as PublisherOptions; 
     }
 
+    private validarUrl(url: string): boolean {
+      const padrao = /^taulukko:\/\/([a-zA-Z0-9.-]+|\d{1,3}(\.\d{1,3}){3}):\d+$/;
+      return padrao.test(url);
+  }
 
+    private extractPort(server:string): number {
+      return parseInt(server.split(":")[2]);
+    }
+
+    private extractHost(server:string): string {
+      return server.split("//")[1].split(":")[0];
+    }
+    
     static create(options: any):Publisher {
       const publisher =  new Publisher(options);
       
@@ -61,4 +80,5 @@ interface PublisherOptions{
   provider:PublisherProvider,
   topics:Array<string>
 }
+
 

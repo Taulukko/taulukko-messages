@@ -6,7 +6,7 @@ import { Logger, loggerFactory } from "../src/common/log/logger";
 import { globalConfiguration } from "../src/global-configuration"; 
  
 
-const DEFAULT_PORT:number = 7778;
+const DEFAULT_PORT:number = 7777;
 var semaphore:boolean; 
 var lastError:Error; 
 
