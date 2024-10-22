@@ -14,15 +14,22 @@ import { AuthProvider } from "../../auth/auth-provider";
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 export class DefaultServerProvider implements ServerProvider {
+
+  
   options:TaulukkoProviderOptions;
   status:string;
   wsServer:WSServer;
   private publisherList:Array<ClientData> = new Array();
   private subscriberList:Array<ClientData> = new Array();
   private auth:AuthProvider ;
- constructor(options:any){
+ constructor(options:any){ 
+    if(options.server!=null)
+    { 
+      logger.log0("server is a uncorrect parameter, try use port");
+      return;
+    }
     const defaults = { port: 7777, defaultMessage:"Taulukko Message Server is Running" ,showDefaultMessage:true};
-    options = Object.assign({}, defaults, options);
+    options = Object.assign({}, defaults, options); 
     this.options = options as TaulukkoProviderOptions;
     this.options.onConnection = this.onWSSocketConnection;
     this.options.onDisconnect = this.onWSDisconect;

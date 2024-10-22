@@ -6,7 +6,7 @@ import { Logger, loggerFactory } from "../src/common/log/logger";
 import { globalConfiguration } from "../src/global-configuration"; 
  
 
-const DEFAULT_PORT:number = 7778;
+const DEFAULT_PORT:number = 7777;
 var semaphore:boolean; 
 var lastError:Error; 
 
@@ -38,16 +38,82 @@ describe('stability test', () => {
   
   });
  
- it.skip('publish into a inexistent server',async  () => {
-    const server = await initServer();
+  it.skip('publish into a inexistent server with timeout',async  () => {
+    const before:number = new Date().getTime();
+    try{
+     
+      const publisher = await Publisher.create({
+        server:"taulukko://notexist:" + DEFAULT_PORT, timeout:5000
+      });
+      await publisher.open();
+    }
+    catch(e)
+    {
+      assert.equal(e,"Erro");
+      const after:number = new Date().getTime();
+      const delta:number = after-before;
+      assert.isTrue(delta > 5000);
+      assert.isTrue(delta < 10000);
 
-    assert.equal(server.publishers.length,0); 
-
-    const publisher = await Publisher.create({
-      server:"taulukko://notexist:" + DEFAULT_PORT
-    });
-  //TODO
+    }
+    
   });
+
+  it.skip('publish into a inexistent server with timeout but the server up before timeout',async  () => {
+  
+
+    let server =null;
+    let serverOn = false;
+
+    setTimeout(async ()=>{
+      serverOn = true;
+      server = await initServer()
+    },100);
+
+    const publisher = Publisher.create({ 
+      topics:["topic.helloWorld","unexistentTopic"],
+      defaultLogLevel:LogLevel.ERROR, timeout:5000
+    });
+
+    assert.isTrue(serverOn,"Server must be off"); 
+ 
+    await publisher.open(); 
+
+    assert.equal(server.publishers.length,1,"Publishers need be equal 1"); 
+
+    assert.isTrue(serverOn,"Server must be on"); 
+
+    await publisher.close(); 
+    await server.close(); 
+  }); 
+  
+ it.skip('publish into a inexistent server without timeout but the server up before timeout',async  () => {
+  
+    let server =null;
+    let serverOn = false;
+
+    setTimeout(async ()=>{
+      serverOn = true;
+      server = await initServer()
+    },1000);
+
+    const publisher = Publisher.create({ 
+      topics:["topic.helloWorld","unexistentTopic"],
+      defaultLogLevel:LogLevel.ERROR 
+    });
+
+    assert.isTrue(serverOn,"Server must be off"); 
+
+    await publisher.open(); 
+
+    assert.equal(server.publishers.length,1,"Publishers need be equal 1"); 
+
+    assert.isTrue(serverOn,"Server must be on"); 
+
+    await publisher.close(); 
+    await server.close(); 
+  });
+
  it('reconecting into a publisher need be restarted',async  () => {
     const NUMBER_OF_TESTS = 2;
     let times = 0;
@@ -251,6 +317,9 @@ describe('stability test', () => {
  }); 
   
   it.skip('Publisher with a retro configuration',async  () => {
+
+    //if there is "retro" in the configuration, he needs to receive everything he lost since the last downtime
+
     const server = await initServer();
 
     assert.equal(server.publishers.length,0); 

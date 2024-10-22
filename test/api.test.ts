@@ -10,11 +10,16 @@ var semaphore:boolean;
 var lastError:Error; 
 
 async function initServer(options={}){
-  const defaults = {defaultLogLevel:LogLevel.ERROR};
-  options = Object.assign({}, defaults, options);
-  const server  =  Server.create(options);
-  await server.open();
-  return server;
+  try { 
+    const defaults = {defaultLogLevel:LogLevel.ERROR};
+    options = Object.assign({}, defaults, options); 
+    const server  =  Server.create(options);
+    await server.open();
+    return server;
+  } catch (error) {
+    return null;
+  }
+
 }
 
  
@@ -62,6 +67,107 @@ describe("api.basics",  function test(options={}){
    
    
     await server.close(); 
+  }); 
+
+  
+  
+  it.skip("Check if host config work ",async function(){
+
+    const startTime:number  = new Date().getTime();
+
+    let server1 =  await initServer({
+        port:"7777",
+        topics:["topic.helloWorld"] 
+      });
+   
+   
+    assert.isNotNull(server1);
+
+    const publisher = Publisher.create({ 
+      server:"taulukko://notexist:7778",
+      topics:["topic.helloWorld","unexistentTopic"],
+      defaultLogLevel:LogLevel.ERROR,
+      timeout:1000
+    });
+
+    assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
+ 
+    await publisher.open();    
+
+    const endTime:number  = new Date().getTime();
+    const deltaTime:number = endTime - startTime;
+ 
+    assert.isTrue(deltaTime > 1000,"Timeout, the server should not exist" + deltaTime);
+
+    assert.equal(publisher.data.status,serviceStatus.FAIL,"Start state need be FAIL");
+ 
+    assert.equal(server1.publishers.length,0,"Publishers need be equal 0");   
+   
+    await server1.close(); 
+  }); 
+
+  
+  it("Check if port config work ",async function(){
+
+    const startTime:number  = new Date().getTime();
+
+    let server1 = null;
+    
+    setTimeout(async()=>{
+      server1 = await initServer({
+        port:"7777",
+        topics:["topic.helloWorld"] 
+      });
+  
+    },100);
+   
+    assert.isNull(server1);
+
+    const server2 = await initServer({
+      port:"8888",
+      topics:["topic.helloWorld"] 
+    });
+
+    assert.isNotNull(server2);
+
+
+    const publisher = Publisher.create({ 
+      server:"taulukko://localhost:7777",
+      topics:["topic.helloWorld","unexistentTopic"],
+      defaultLogLevel:LogLevel.ERROR
+    });
+
+    assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
+ 
+    await publisher.open();    
+
+    const endTime:number  = new Date().getTime();
+    const deltaTime:number = endTime - startTime;
+
+   
+    assert.equal(server2.publishers.length,0,"Publishers need be equal 0 in Server 2 because the port is not equal");
+      
+    await server2.close();
+
+    assert.isTrue(deltaTime < 9000,"Ignored port");
+ 
+    assert.equal(server1.publishers.length,1,"Publishers need be equal 1 in Server 1");
+
+    assert.equal(publisher.data.status,serviceStatus.ONLINE,"Publishers need be equal ONLINE");
+
+    assert.equal(server1.publishers.length,1,"Publishers need be equal 1");
+
+    assert.equal(server1.subscribers.length,0,"Subscribers need be equal 0");  
+
+    await publisher.send("topic.helloWorld","Hello World");
+
+
+    await publisher.close();
+
+    assert.equal(server1.publishers.length,0,"Publishers need be equal 0");
+   
+   
+    await server1.close(); 
   }); 
 
   
@@ -280,8 +386,7 @@ describe("api.basics",  function test(options={}){
         assert.equal(message.data,"test");      
       }
       catch(e)
-      {
-        console.log(e);
+      { 
         semaphore = true;
       }
       finally{

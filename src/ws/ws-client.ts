@@ -9,6 +9,7 @@ const LOGGER = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 const KEY_TOOL = new KeyTool();
 //see keytool documentation (head = clusterid+ processid + random)
 const KEY_TOOL_HEAD_SIZE = 13;
+
 export class WSClient {
   id: string;
   options: WSClientOptions;
@@ -18,9 +19,9 @@ export class WSClient {
   _state: string = serviceStatus.STARTING;
 
   private constructor(options: any) {
-    const defaults = { port: 7777, showDefaultMessage: true, defaultMessage: "WS Server is Running" };
+    const defaults = { port: 80, host:"localhost",showDefaultMessage: true, defaultMessage: "WS Server is Running" };
     options = Object.assign({}, defaults, options);
-    this.options = options as WSServerOptions;
+    this.options = options as WSClientOptions;
     const key:string = KEY_TOOL.build(1, 1);
     this.id = new StringsUtil().right(key, key.length - KEY_TOOL_HEAD_SIZE);
   }
@@ -28,6 +29,7 @@ export class WSClient {
   static create = (options: any): WSClient => {
     return new WSClient(options);
   };
+
   get state(): string {
     return this._state;
   }
@@ -46,14 +48,11 @@ export class WSClient {
       if (me.state != serviceStatus.STARTING) { 
         throw Error("State need be STARTING");
       }
- 
         
       LOGGER.log5("WSClient starting with options : ", this.options);
  
-      this.client = io.connect("http://localhost:7777");
+      this.client = io.connect("http://"+ this.options.host + ":"  + this.options.port);
  
-
-
       const ret:Promise<{}> = new Promise((resolve,reject)=>{
         this.client.on('connect', () => { 
           LOGGER.log5("WSClient connection with server sucefull ");
@@ -61,12 +60,10 @@ export class WSClient {
           resolve({});
         });
 
-     
-
         return ret;
-    
       });
   };
+
   close = async () => {
     LOGGER.log5("WSClient close ", this.state);
     if (this.state != serviceStatus.ONLINE) {
@@ -75,6 +72,7 @@ export class WSClient {
     this.client.close();
     this.state = serviceStatus.STOPED;
   };
+
   forceClose = async () => {
      try{
       await this.close();
@@ -85,9 +83,11 @@ export class WSClient {
       return;
      }
   };
+
   emit = async (event: string, ...data) => {
     this.client.emit(event, ...data);
   };
+
   on = async (event: string, listener: (...data: any) => void) => {
     await this.client.on(event, listener);
   };
