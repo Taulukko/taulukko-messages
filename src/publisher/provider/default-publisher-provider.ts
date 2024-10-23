@@ -4,15 +4,16 @@ import { loggerFactory } from "../../common/log/logger";
 import {WSClient ,WebSocket, WSServerOptions } from "../../ws/"; 
 import { PearData } from "../../common/pear-data"; 
 import { Message } from "../../common/message";  
+import { Publisher } from "../publisher";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 export class DefaultPublisherProvider implements PublisherProvider {
   
-  options:TaulukkoProviderOptions;
-  status:string; 
-  client:WSClient;
-  id:string;
+  private options:TaulukkoProviderOptions;
+  private status:string; 
+  private client:WSClient;
+  private id:string;
  
 
   private constructor(options:any){
@@ -45,6 +46,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
   }
 
   static create = (options:any):DefaultPublisherProvider=>{ 
+    console.log("DefaultPublisherProvider",options);
     return new DefaultPublisherProvider(options);
   };
 
@@ -58,7 +60,8 @@ export class DefaultPublisherProvider implements PublisherProvider {
   
   open = async  () :Promise<void>  => {
 
-       
+    let success:boolean = false ;
+
     if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Publisher already started");
     }
@@ -70,25 +73,18 @@ export class DefaultPublisherProvider implements PublisherProvider {
       logger.log4("Taulukko Publisher Provider preparing the connection with websocket " );
       
       this.client = WSClient.create(this.options);
-       
-      let success:boolean = false ;
-
-
-      if(this.options.timeout && !isNaN(this.options.timeout))
-      {
-        setTimeout(()=>{
-          if(success)
-          {
-            return;
-          }
-          reject("Time out in open publisher " + this.options.timeout)
-        },this.options.timeout); 
+        
+      try{
+        await this.client.open();
+      }catch(e){
+        this.forceClose();
+        this.status = serviceStatus.FAIL;
+        reject(e);
       }
       
-
-      await this.client.open();
-
       success=true;
+      console.log("open",2,this.client.state,ret);
+     
 
        
       logger.log5("Taulukko Publisher Provider get connection with server ");
@@ -117,7 +113,6 @@ export class DefaultPublisherProvider implements PublisherProvider {
       this.client.on('disconnect',  this.onDisconnect);
       
     });
-    
     return ret;
   };
   private  onDisconnect = () =>{

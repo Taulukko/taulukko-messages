@@ -27,6 +27,7 @@ export class WSClient {
   }
 
   static create = (options: any): WSClient => {
+    console.log("WSClient.options",options);
     return new WSClient(options);
   };
 
@@ -50,18 +51,62 @@ export class WSClient {
       }
         
       LOGGER.log5("WSClient starting with options : ", this.options);
+
+      console.log("WSClient.open",this.options);
  
-      this.client = io.connect("http://"+ this.options.host + ":"  + this.options.port);
- 
+     
+      
+      
       const ret:Promise<{}> = new Promise((resolve,reject)=>{
-        this.client.on('connect', () => { 
+        let success:boolean = false;
+
+        console.log("wsc.open"+me.options.timeout,1);
+        if(me.options.timeout && !isNaN(this.options.timeout))
+          {
+            console.log("open",this.options.timeout);
+            
+            setTimeout((args)=>{
+              const wsclient:WSClient = args[0]; 
+              if(success)
+              {
+                console.log("setTimeout"+wsclient.options.timeout,2);
+                return;
+              }
+              console.log("setTimeout wsclient",3); 
+              this.forceClose();
+              me.client.close();
+             reject(new Error("Time out in open wsclient , take more then " + wsclient.options.timeout));
+              console.log("setTimeout",4);
+            },me.options.timeout+500,[me]); 
+
+       
+            me.client = io.connect("http://"+ this.options.host + ":"  + this.options.port, { 
+              // enable retries
+              ackTimeout: 100,
+              retries: 1,
+            });
+           
+          }
+          else{
+            console.log("no timeout wsclient",1); 
+            me.client = io.connect("http://"+ this.options.host + ":"  + this.options.port);
+          }
+        me.client.on("connect_error", (err) => { 
+          me.client.close();
+          reject(new Error("Time2 out in open wsclient , take more then "  ));
+        });
+        
+        me.client.on('connect', () => { 
+          success=true;
+          console.log("WSClient connection with server sucefull",this.options);
           LOGGER.log5("WSClient connection with server sucefull ");
           this.state = serviceStatus.ONLINE;
-          resolve({});
+          resolve(true);
         });
-
-        return ret;
+ 
       });
+
+      return  ret;
   };
 
   close = async () => {

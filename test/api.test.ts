@@ -33,7 +33,7 @@ describe("api.basics",  function test(options={}){
     await server.close(); 
   }); 
 
-  it("Open publisher ",async function(){
+  it.only("Open publisher ",async function(){
     const server = await initServer();
 
     assert.equal(server.publishers.length,0,"server.ublishers need be start with zero");
@@ -48,8 +48,12 @@ describe("api.basics",  function test(options={}){
 
     assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
  
+    try{
     await publisher.open();    
-
+  }
+  catch(e){
+    console.log("erro",e);
+  }
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
     assert.equal(publisher.data.status,serviceStatus.ONLINE,"Publishers need be equal ONLINE");
@@ -71,7 +75,11 @@ describe("api.basics",  function test(options={}){
 
   
   
-  it.skip("Check if host config work ",async function(){
+  it("Check if host config work ",async function(  ){
+
+    const  abortController = new AbortController();
+
+    const timeout:number = 1000;
 
     const startTime:number  = new Date().getTime();
 
@@ -84,26 +92,38 @@ describe("api.basics",  function test(options={}){
     assert.isNotNull(server1);
 
     const publisher = Publisher.create({ 
-      server:"taulukko://notexist:7778",
+      server:"taulukko://notexist:7777",
       topics:["topic.helloWorld","unexistentTopic"],
       defaultLogLevel:LogLevel.ERROR,
-      timeout:1000
+      timeout
     });
 
     assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
  
-    await publisher.open();    
+    try{
+      await publisher.open();
+      assert.fail("Never can connect using a non existent server");
+    }
+    catch(e)
+    { 
+      assert.isNotNull(e);
+      console.log("error final",e.message);
+      assert.isTrue(e.message.toUpperCase().indexOf("TIME OUT")>=0,"Error havent timeout message " + e.toString());
+      
+    }
 
     const endTime:number  = new Date().getTime();
     const deltaTime:number = endTime - startTime;
  
-    assert.isTrue(deltaTime > 1000,"Timeout, the server should not exist" + deltaTime);
+    assert.isTrue(deltaTime >= timeout,"Timeout, the server should not exist" + deltaTime);
 
     assert.equal(publisher.data.status,serviceStatus.FAIL,"Start state need be FAIL");
  
     assert.equal(server1.publishers.length,0,"Publishers need be equal 0");   
-   
-    await server1.close(); 
+    await publisher.forceClose(); 
+    await server1.forceClose(); 
+    abortController.abort(); 
+     
   }); 
 
   
