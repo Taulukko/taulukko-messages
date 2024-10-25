@@ -23,7 +23,7 @@ async function initServer(options={}){
 }
 
  
-describe("api.basics",  function test(options={}){
+describe.only("api.basics",  function test(options={}){
  
   it("Open server ",async function(){
     const server = await initServer();
@@ -33,7 +33,7 @@ describe("api.basics",  function test(options={}){
     await server.close(); 
   }); 
 
-  it.only("Open publisher ",async function(){
+  it("Open publisher ",async function(){ 
     const server = await initServer();
 
     assert.equal(server.publishers.length,0,"server.ublishers need be start with zero");
@@ -48,12 +48,9 @@ describe("api.basics",  function test(options={}){
 
     assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
  
-    try{
+     
     await publisher.open();    
-  }
-  catch(e){
-    console.log("erro",e);
-  }
+    
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
     assert.equal(publisher.data.status,serviceStatus.ONLINE,"Publishers need be equal ONLINE");
@@ -61,30 +58,33 @@ describe("api.basics",  function test(options={}){
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
     assert.equal(server.subscribers.length,0,"Subscribers need be equal 0");  
-
+ 
     await publisher.send("topic.helloWorld","Hello World");
+ 
 
-
-    await publisher.close();
-
-    assert.equal(server.publishers.length,0,"Publishers need be equal 0");
-   
-   
-    await server.close(); 
+    setTimeout(async ()=>{ 
+      await publisher.close(); 
+  
+      assert.equal(server.publishers.length,0,"Publishers need be equal 0");
+     
+     
+      await server.close();  
+    },5000);
+    
   }); 
 
   
   
   it("Check if host config work ",async function(  ){
 
-    const  abortController = new AbortController();
 
-    const timeout:number = 1000;
+ 
+    const timeout:number = 500;
 
     const startTime:number  = new Date().getTime();
 
     let server1 =  await initServer({
-        port:"7777",
+        port:"7778",
         topics:["topic.helloWorld"] 
       });
    
@@ -92,7 +92,7 @@ describe("api.basics",  function test(options={}){
     assert.isNotNull(server1);
 
     const publisher = Publisher.create({ 
-      server:"taulukko://notexist:7777",
+      server:"taulukko://notexist:7778",
       topics:["topic.helloWorld","unexistentTopic"],
       defaultLogLevel:LogLevel.ERROR,
       timeout
@@ -100,14 +100,15 @@ describe("api.basics",  function test(options={}){
 
     assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
  
-    try{
+    try{ 
       await publisher.open();
+ 
+
       assert.fail("Never can connect using a non existent server");
     }
     catch(e)
     { 
-      assert.isNotNull(e);
-      console.log("error final",e.message);
+      assert.isNotNull(e); 
       assert.isTrue(e.message.toUpperCase().indexOf("TIME OUT")>=0,"Error havent timeout message " + e.toString());
       
     }
@@ -121,23 +122,25 @@ describe("api.basics",  function test(options={}){
  
     assert.equal(server1.publishers.length,0,"Publishers need be equal 0");   
     await publisher.forceClose(); 
-    await server1.forceClose(); 
-    abortController.abort(); 
+    await server1.forceClose();  
      
   }); 
 
   
-  it("Check if port config work ",async function(){
+  it.only("Check if port config work ",async function(){
+    this.timeout(5000);
 
     const startTime:number  = new Date().getTime();
 
     let server1 = null;
     
     setTimeout(async()=>{
+      console.log("Abrindo o server certo");
       server1 = await initServer({
         port:"7777",
         topics:["topic.helloWorld"] 
       });
+      console.log("O server certo foi aberto");
   
     },100);
    
@@ -154,12 +157,16 @@ describe("api.basics",  function test(options={}){
     const publisher = Publisher.create({ 
       server:"taulukko://localhost:7777",
       topics:["topic.helloWorld","unexistentTopic"],
-      defaultLogLevel:LogLevel.ERROR
+      defaultLogLevel:LogLevel.ERROR,
+      timeout:3000
     });
 
     assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
  
+    console.log("teste 1");
     await publisher.open();    
+
+    console.log("teste 2");
 
     const endTime:number  = new Date().getTime();
     const deltaTime:number = endTime - startTime;

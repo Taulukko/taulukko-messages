@@ -71,70 +71,80 @@ export class WSServer   {
             }  
           
         }); 
-        me.server.listen( me.options.port, () => {
+        me.server.listen( me.options.port, () => { 
           LOGGER.log7("WSServer listen port : " , me.options.port);
-          me.state = serviceStatus.ONLINE; 
-          resolve({});
-        }); 
-        me.io = new socketIo.Server(me.server); 
         
-        me.io.on('connection', async  (socket) => {
-            if(!me.options.onConnection)
-            {
-              return;
-            } 
 
-            const websocket = new  WebSocket({socket,id:me.id});
-            me.internalSocketsByClientId.set(websocket.client.id,socket); 
-            me.options.onConnection(websocket);
-
-            await me._bindEvents(socket);
-      
-            socket.on('disconnect', () => {
-              if(!me.options.onDisconnect)
-              {
-                return;
-              }
-              me.options.onDisconnect(new  WebSocket({socket,id:me.id}));
-              me.internalSocketsByClientId.delete(websocket.client.id);
-            });
- 
+          me.io = new socketIo.Server(me.server); 
          
-         });
+          me.state = serviceStatus.ONLINE; 
+          
+          
+          me.io.on('connection', async  (socket) => { 
+             
+              const websocket = new  WebSocket({socket,id:me.id});
+              me.internalSocketsByClientId.set(websocket.client.id,socket); 
+              
+              await me._bindEvents(socket);  
+             
+              if(me.options.onConnection)
+              { 
+                me.options.onConnection(websocket);
+              }  
+           });
+
+           
+          resolve({});
+
+        
+        }); 
+      
    
       });
       
       return ret;
     };
 
-  _bindEvents = async  (socket:socketIo.Socket)=>{
+  _bindEvents = async  (socket:socketIo.Socket)=>{ 
     const websocket = new  WebSocket({socket,id:this.id});
 
-    this.globalEvents.forEach((listener,event)=>{
+    const me:WSServer = this;
+
+    socket.on('disconnect', () => {
+      if(!me.options.onDisconnect)
+      {
+        return;
+      }
+      me.options.onDisconnect(new  WebSocket({socket,id:me.id}));
+      me.internalSocketsByClientId.delete(websocket.client.id);
+    }); 
+
+    this.globalEvents.forEach((listener,event)=>{ 
+    
       LOGGER.log7("WSServer _bindEvents: " ,event, websocket.client.id);
  
-      socket.on(event,(...data:any)=>{
+      socket.on(event,(...data:any)=>{ 
         LOGGER.log7("Evento recebido " ,data);
-        listener(websocket,...data);
+        listener(websocket,...data); 
+
       }); 
     });
   };
 
-  on = async  (event:string,listener:(...data:any)=>void) => {
-    LOGGER.log7("WSServer on : " ,event);
+  on = async  (event:string,listener:(...data:any)=>void) => { 
     this.globalEvents.set(event,listener);
-
-    this.internalSocketsByClientId.forEach((socket,key)=>{
+ 
+    this.internalSocketsByClientId.forEach((socket,key)=>{ 
       const websocket = new  WebSocket({socket,id:this.id});
       LOGGER.log7("WSServer on wsclient: " ,event, websocket.client.id);
- 
-      socket.on(event,(...data:any)=>{
+      LOGGER.log7("WSServer on : " ,socket.id);
+      socket.on(event,(...data:any)=>{ 
         listener(websocket,...data);
       }); 
     });
    };
 
-   close = async() => { 
+   close = async() => {  
     LOGGER.log7("WSServer close ");
     if(this.state!=serviceStatus.ONLINE)
     {

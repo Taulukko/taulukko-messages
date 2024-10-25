@@ -22,18 +22,19 @@ export class WSSocket {
     }
   
     emit = async (event:string, ...args:any)=>
-    {
-
+    { 
       logger.log7("WSSocket emit : " , event, args); 
       const socket:socketIo.Socket = this.socket;
-      socket.emit(event,...args);
+      socket.emit(event,...args); 
 
     };
   
     send = (...args:any)=>
-    {
+    { 
+ 
       logger.log7("WSSocket send : " , args); 
       const socket:socketIo.Socket = this.socket;
-      socket.send(...args);
+      socket.send(...args);  
+
     };
   }

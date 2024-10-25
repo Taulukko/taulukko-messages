@@ -23,8 +23,7 @@ export class Publisher implements PublisherProvider{
       } 
       options.port = this.extractPort(options.server);
       options.host = this.extractHost(options.server);
- 
-      console.log("Publisher",options);
+  
       this.provider = options.provider? options.provider:   DefaultPublisherProvider.create(options) ;
       this.options = options as PublisherOptions; 
     }
@@ -42,8 +41,7 @@ export class Publisher implements PublisherProvider{
       return server.split("//")[1].split(":")[0];
     }
     
-    static create(options: any):Publisher {
-      console.log("Publisher.create",options);
+    static create(options: any):Publisher { 
       const publisher =  new Publisher(options);
       
       logger.log7("New publisher created ", publisher);
