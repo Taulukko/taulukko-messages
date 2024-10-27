@@ -16,14 +16,14 @@ export class Publisher implements PublisherProvider{
         server:"taulukko://localhost:7777",
         topics: new Array()};
       options = Object.assign({}, defaults, options);
+
       if(!this.validarUrl(options.server))
       {
         throw new Error(options.server + " isnt a correct url, eg: taulukko://localhost:7777 ");
       } 
       options.port = this.extractPort(options.server);
       options.host = this.extractHost(options.server);
- 
-
+  
       this.provider = options.provider? options.provider:   DefaultPublisherProvider.create(options) ;
       this.options = options as PublisherOptions; 
     }
@@ -31,7 +31,7 @@ export class Publisher implements PublisherProvider{
     private validarUrl(url: string): boolean {
       const padrao = /^taulukko:\/\/([a-zA-Z0-9.-]+|\d{1,3}(\.\d{1,3}){3}):\d+$/;
       return padrao.test(url);
-  }
+   }
 
     private extractPort(server:string): number {
       return parseInt(server.split(":")[2]);
@@ -41,7 +41,7 @@ export class Publisher implements PublisherProvider{
       return server.split("//")[1].split(":")[0];
     }
     
-    static create(options: any):Publisher {
+    static create(options: any):Publisher { 
       const publisher =  new Publisher(options);
       
       logger.log7("New publisher created ", publisher);

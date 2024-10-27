@@ -39,13 +39,16 @@ export class DefaultServerProvider implements ServerProvider {
   }
 
   private onWSSocketConnection(socket:WebSocket){   
+   
     logger.log7("Taulukko Server Provider new Connection : " , socket);
     logger.log5("Taulukko Server Provider new Connection : " );
-    socket.emit(protocolNames.CONNECTION_OK,{client:socket.client, server:socket.server}); 
+    setTimeout(()=>{
+      socket.emit(protocolNames.CONNECTION_OK,{client:socket.client, server:socket.server});
+    },100); 
   }
 
   private onWSDisconect(socket:WebSocket){
-
+ 
     const brokePublisherConnectionWithoutClose:boolean =this.publisherList!=null &&  this.publisherList.map((value)=>value.id).filter((value)=>value==socket.client.id).length==1; 
     if(brokePublisherConnectionWithoutClose)
     {
@@ -59,12 +62,12 @@ export class DefaultServerProvider implements ServerProvider {
       this.subscriberList = this.subscriberList.filter((item)=>item.id!=socket.client.id);
     }
    
-    logger.log7("Taulukko Server Provider ends Connection : " , socket);
+    logger.log7("Taulukko Server Provider ends Connection : " , socket); 
     
   }
 
-  private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{ 
-    logger.log5("onClientOnline ",1 );
+  private onClientOnline = (socket:WebSocket, data:ClientOnLineDTO)=>{  
+    logger.log5("onClientOnline ",1,data );
     if(this.auth)
     {
       if(!this.auth.validateOnClienteOnline(socket,data))
@@ -73,7 +76,7 @@ export class DefaultServerProvider implements ServerProvider {
         socket.emit(protocolNames.UNREGISTERED);
         return;
       }
-    }
+    } 
     logger.log5("onClientOnline " ,3);
 
     let list:Array<ClientData> = this.publisherList;
@@ -86,12 +89,18 @@ export class DefaultServerProvider implements ServerProvider {
     const clientData:ClientData  = {id:data.id,topics:data.topics,socket} ;
     list.push(clientData);
 
-    socket.emit(protocolNames.REGISTERED,{client:socket.client, server:socket.server});    
+    socket.emit(protocolNames.REGISTERED,{client:socket.client, server:socket.server});   
   };
 
   
 
   private onClientOffline = (socket:WebSocket, data:ClientOffLineDTO)=>{
+
+    if(socket.client.id!=data.id)
+    { 
+
+      return;
+    } 
  
     logger.log7(`Taulukko Server Provider receive a close ${data.type} connection : ` ,socket,data); 
     
@@ -102,23 +111,26 @@ export class DefaultServerProvider implements ServerProvider {
     {
       this.subscriberList = this.subscriberList.filter((item)=>item.id!=data.id);
     }
-    socket.emit(protocolNames.UNREGISTERED);
+    socket.emit(protocolNames.UNREGISTERED); 
+
   };
  
   private onNewMessage = (socket:WebSocket, message:Message)=>{
-
+ 
    const isSystemTopic:boolean = socket==null;
     const publisherId:string = (socket==null)?null:socket.client.id;
     
 
     if(!isSystemTopic && this.publisherList.map(clientData=>clientData.id).filter(id=>id==publisherId).length == 0){
       logger.error(`A non publisher send a message {publisherId,Message}` ,publisherId,message);
+      return;
     }
     
 
     if(!isSystemTopic &&  this.publisherList.filter(clientData=>clientData.id==publisherId
        && clientData.topics.filter(topic=>topic==message.topic)).length == 0){
       logger.error(`Topic not found for this publisher {publisherId,Message}` ,publisherId, message);
+      return;
     }
 
 
@@ -144,16 +156,19 @@ export class DefaultServerProvider implements ServerProvider {
     await this.wsServer.on(protocolNames.CLIENT_OFFLINE,this.onClientOffline);
 
     await this.wsServer.on(protocolNames.NEW_MESSAGE,this.onNewMessage); 
+ 
 
     this.status = serviceStatus.ONLINE;
   }
 
   async close() {
+     
     await this.wsServer.close();
     this.status = serviceStatus.STOPED;
     this.subscriberList =  new Array();
     this.publisherList = new Array();
-    logger.log5("Taulukko Server Provider is closed ");
+    logger.log5("Taulukko Server Provider is closed "); 
+
   }
   async forceClose() {
     try{

@@ -17,6 +17,7 @@ async function initServer(options={}){
     await server.open();
     return server;
   } catch (error) {
+    console.error(error);
     return null;
   }
 
@@ -33,7 +34,7 @@ describe("api.basics",  function test(options={}){
     await server.close(); 
   }); 
 
-  it("Open publisher ",async function(){
+  it("Open publisher ",async function(){ 
     const server = await initServer();
 
     assert.equal(server.publishers.length,0,"server.ublishers need be start with zero");
@@ -48,8 +49,9 @@ describe("api.basics",  function test(options={}){
 
     assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
  
+     
     await publisher.open();    
-
+    
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
     assert.equal(publisher.data.status,serviceStatus.ONLINE,"Publishers need be equal ONLINE");
@@ -57,26 +59,32 @@ describe("api.basics",  function test(options={}){
     assert.equal(server.publishers.length,1,"Publishers need be equal 1");
 
     assert.equal(server.subscribers.length,0,"Subscribers need be equal 0");  
-
+ 
     await publisher.send("topic.helloWorld","Hello World");
+ 
 
-
-    await publisher.close();
+    await publisher.close(); 
 
     assert.equal(server.publishers.length,0,"Publishers need be equal 0");
-   
-   
-    await server.close(); 
+    
+    
+    await server.close();  
+
+  
   }); 
 
   
   
-  it.skip("Check if host config work ",async function(){
+  it("Check if host config work ",async function(  ){
+
+
+ 
+    const timeout:number = 500;
 
     const startTime:number  = new Date().getTime();
 
     let server1 =  await initServer({
-        port:"7777",
+        port:"7778",
         topics:["topic.helloWorld"] 
       });
    
@@ -87,37 +95,50 @@ describe("api.basics",  function test(options={}){
       server:"taulukko://notexist:7778",
       topics:["topic.helloWorld","unexistentTopic"],
       defaultLogLevel:LogLevel.ERROR,
-      timeout:1000
+      timeout
     });
 
     assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
  
-    await publisher.open();    
+    try{ 
+      await publisher.open();
+ 
+
+      assert.fail("Never can connect using a non existent server");
+    }
+    catch(e)
+    { 
+      assert.isNotNull(e); 
+      assert.isTrue(e.message.toUpperCase().indexOf("TIME OUT")>=0,"Error havent timeout message " + e.toString());
+      
+    }
 
     const endTime:number  = new Date().getTime();
     const deltaTime:number = endTime - startTime;
  
-    assert.isTrue(deltaTime > 1000,"Timeout, the server should not exist" + deltaTime);
+    assert.isTrue(deltaTime >= timeout,"Timeout, the server should not exist" + deltaTime);
 
     assert.equal(publisher.data.status,serviceStatus.FAIL,"Start state need be FAIL");
  
     assert.equal(server1.publishers.length,0,"Publishers need be equal 0");   
-   
-    await server1.close(); 
+    await publisher.forceClose(); 
+    await server1.forceClose();  
+     
   }); 
 
   
   it("Check if port config work ",async function(){
+    this.timeout(5000);
 
     const startTime:number  = new Date().getTime();
 
     let server1 = null;
     
-    setTimeout(async()=>{
+    setTimeout(async()=>{ 
       server1 = await initServer({
         port:"7777",
         topics:["topic.helloWorld"] 
-      });
+      });  
   
     },100);
    
@@ -134,13 +155,13 @@ describe("api.basics",  function test(options={}){
     const publisher = Publisher.create({ 
       server:"taulukko://localhost:7777",
       topics:["topic.helloWorld","unexistentTopic"],
-      defaultLogLevel:LogLevel.ERROR
+      defaultLogLevel:LogLevel.ERROR 
     });
 
     assert.equal(publisher.data.status,serviceStatus.STARTING,"Start state need be STARTING");
- 
+  
     await publisher.open();    
-
+ 
     const endTime:number  = new Date().getTime();
     const deltaTime:number = endTime - startTime;
 
@@ -171,6 +192,73 @@ describe("api.basics",  function test(options={}){
   }); 
 
   
+  it('Send message before connect',async  () => {
+
+    const logger: Logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
+    //globalConfiguration.log.level = LogLevel.DEBUG;
+    
+
+    logger.debug("Api tests 1 : Before init Server");
+
+    const server = await initServer();
+
+    logger.debug("Api tests 2 : After init Server");
+
+    assert.equal(server.publishers.length,0);
+
+    logger.debug("Api tests 3 : Before create publisher");
+
+    const publisher = await Publisher.create({ 
+      topics:["topic.helloWorld"],
+      defaultLogLevel:LogLevel.ERROR
+    });
+
+    logger.debug("Api tests 4 : After create publisher");
+
+    assert.equal(server.publishers.length,0,"Must be zero before the publisher.open");
+    assert.equal(publisher.data.status,serviceStatus.STARTING,"Must be STARTING before publisher.open");
+   
+
+    const subscriber = await Subscriber.create({ 
+      topics:["topic.helloWorld","unexistentTopic" ], defaultLogLevel:LogLevel.ERROR
+    });
+     
+
+    await subscriber.open();
+
+    logger.debug("Api tests 9 : After open subscriber");
+
+    assert.equal(server.subscribers.length,1,"Must be 1 after open");
+
+    assert.equal(subscriber.data.status,serviceStatus.ONLINE,"Must be ONLINE before open");
+ 
+
+    await subscriber.on(async function (message:Message){
+       assert.fail("Publisher is not opened");
+    }); 
+
+
+    cleanupGlobals();
+ 
+    logger.debug("Api tests 16 : Beforesend message"); 
+
+    try{
+      await publisher.send("Hello World"); 
+      assert.fail("Publisher is not opened, cannot send messages");
+    }
+    catch(e)
+    {
+      const messageError = e.toString().toUpperCase(); 
+      assert.isTrue(messageError.indexOf("PUBLISHER")>=0,"Error must be becauser publisher");
+      assert.isTrue(messageError.indexOf("ONLINE")>=0 || messageError.indexOf("OPEN")>=0,"Error must be becauser publisher isnt online or open");
+      await subscriber.close();
+      await server.close();
+      return;
+    }
+
+
+  });
+
 
   it('Open subscriber and receiving a string message',async  () => {
 

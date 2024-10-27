@@ -70,8 +70,7 @@ describe('global configuration api - log configuration', () => {
     logger.log4("test");
     assert.isNotNull(lastMessage ," pattern cannot be null ");
     const partMessage:Array<string> = lastMessage.split('#');
-    assert.equal(partMessage.length,7);
-    console.log("lastMessage",lastMessage);
+    assert.equal(partMessage.length,7); 
     let monthFormated:string = (now.getMonth()+1).toString();
     monthFormated = ("0"+monthFormated).substring(monthFormated.length-1);
     assert.equal(partMessage[1],monthFormated);

@@ -26,7 +26,7 @@ export class WSClient {
     this.id = new StringsUtil().right(key, key.length - KEY_TOOL_HEAD_SIZE);
   }
 
-  static create = (options: any): WSClient => {
+  static create = (options: any): WSClient => { 
     return new WSClient(options);
   };
 
@@ -51,17 +51,45 @@ export class WSClient {
         
       LOGGER.log5("WSClient starting with options : ", this.options);
  
-      this.client = io.connect("http://"+ this.options.host + ":"  + this.options.port);
- 
       const ret:Promise<{}> = new Promise((resolve,reject)=>{
-        this.client.on('connect', () => { 
+        let success:boolean = false;
+ 
+        if(me.options.timeout && !isNaN(this.options.timeout))
+          {  
+            setTimeout((args)=>{
+              const wsclient:WSClient = args[0]; 
+              if(success)
+              { 
+                return;
+              } 
+              this.forceClose();
+              me.client.close();
+             reject(new Error("Time out in open wsclient , take more then " + wsclient.options.timeout)); 
+            },me.options.timeout,[me]); 
+
+              
+            me.client = io.connect("http://"+ this.options.host + ":"  + this.options.port );
+           
+          }
+          else{  
+
+          
+              me.client = io.connect("http://"+ this.options.host + ":"  + this.options.port );  
+ 
+          }
+        me.client.on("connect_error", (err) => {   
+        });
+        
+        me.client.on('connect', () => {  
+          success=true; 
           LOGGER.log5("WSClient connection with server sucefull ");
           this.state = serviceStatus.ONLINE;
-          resolve({});
+          resolve(true);
         });
-
-        return ret;
+ 
       });
+
+      return  ret;
   };
 
   close = async () => {
@@ -70,10 +98,11 @@ export class WSClient {
       throw Error("State need be ONLINE");
     }
     this.client.close();
-    this.state = serviceStatus.STOPED;
+   
   };
 
   forceClose = async () => {
+    
      try{
       await this.close();
      }
@@ -82,13 +111,16 @@ export class WSClient {
       LOGGER.log7("forceClose error ", e);
       return;
      }
+     finally{
+      this.state = serviceStatus.STOPED;
+     }
   };
 
-  emit = async (event: string, ...data) => {
-    this.client.emit(event, ...data);
+  emit = async (event: string, ...data) => { 
+    this.client.emit(event, ...data); 
   };
 
-  on = async (event: string, listener: (...data: any) => void) => {
-    await this.client.on(event, listener);
+  on = async (event: string, listener: (...data: any) => void) => { 
+    await this.client.on(event, listener); 
   };
 }
