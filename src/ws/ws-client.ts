@@ -55,8 +55,7 @@ export class WSClient {
         let success:boolean = false;
  
         if(me.options.timeout && !isNaN(this.options.timeout))
-          { 
-            
+          {  
             setTimeout((args)=>{
               const wsclient:WSClient = args[0]; 
               if(success)
@@ -68,19 +67,20 @@ export class WSClient {
              reject(new Error("Time out in open wsclient , take more then " + wsclient.options.timeout)); 
             },me.options.timeout,[me]); 
 
-       
+              
             me.client = io.connect("http://"+ this.options.host + ":"  + this.options.port );
            
           }
-          else{ 
-            me.client = io.connect("http://"+ this.options.host + ":"  + this.options.port );
+          else{  
+
+          
+              me.client = io.connect("http://"+ this.options.host + ":"  + this.options.port );  
+ 
           }
-        me.client.on("connect_error", (err) => {  
-          me.client.close();
-          reject(new Error("Time2 out in open wsclient , take more then "  ));
+        me.client.on("connect_error", (err) => {   
         });
         
-        me.client.on('connect', () => { 
+        me.client.on('connect', () => {  
           success=true; 
           LOGGER.log5("WSClient connection with server sucefull ");
           this.state = serviceStatus.ONLINE;

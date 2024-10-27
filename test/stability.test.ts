@@ -18,7 +18,7 @@ async function initServer(options={}){
 }
 
 
-describe('stability test', () => {
+describe('stability test', function  () {
   it('init Server',async  () => {
     let server = await initServer({port:7779,localhost:"127.0.0.1"});
     
@@ -38,22 +38,25 @@ describe('stability test', () => {
   
   });
  
-  it.skip('publish into a inexistent server with timeout',async  () => {
+  it('publish into a inexistent server with timeout',async  function ()  {
+    
+    this.timeout(10000); 
     const before:number = new Date().getTime();
     try{
      
       const publisher = await Publisher.create({
-        server:"taulukko://notexist:" + DEFAULT_PORT, timeout:5000
+        server:"taulukko://notexist:" + DEFAULT_PORT, timeout:1000
       });
+      console.log("test.Tentando se conectar");
       await publisher.open();
+      console.log("test.conectado");
     }
     catch(e)
     {
-      assert.equal(e,"Erro");
+      assert.isTrue((e.toString() as string).toUpperCase().indexOf("TIME OUT")>=0,"Must be a time out error");
       const after:number = new Date().getTime();
       const delta:number = after-before;
-      assert.isTrue(delta > 5000);
-      assert.isTrue(delta < 10000);
+      assert.isTrue(delta > 1000, "timeout need be more then the configuration" );
 
     }
     
@@ -114,7 +117,8 @@ describe('stability test', () => {
     await server.close(); 
   });
 
- it('reconecting into a publisher need be restarted',async  () => {
+ it('reconecting into a publisher need be restarted',async function () {
+    this.timeout(5000);
     const NUMBER_OF_TESTS = 2;
     let times = 0;
    

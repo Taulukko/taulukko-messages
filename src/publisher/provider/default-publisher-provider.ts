@@ -50,9 +50,13 @@ export class DefaultPublisherProvider implements PublisherProvider {
   };
 
   send(...data: any) { 
-      this.options.topics.forEach((item,index)=>{
-        const message:Message = Message.create({topic:item,data}); 
-        this.client.emit(protocolNames.NEW_MESSAGE,message.struct); 
+    if(this.status!=serviceStatus.ONLINE)
+    {
+      throw new Error("Publisher isn't open yet");
+    }
+    this.options.topics.forEach((item,index)=>{
+      const message:Message = Message.create({topic:item,data}); 
+      this.client.emit(protocolNames.NEW_MESSAGE,message.struct); 
         
     }); 
   }
@@ -81,9 +85,11 @@ export class DefaultPublisherProvider implements PublisherProvider {
       logger.log4("Taulukko Publisher Provider preparing the connection with websocket " );
       
       this.client = WSClient.create(this.options);
+ 
          
       await this.client.open(); 
-       
+        
+
       logger.log5("Taulukko Publisher Provider get connection with server ");
 
       await this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
