@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "type": "commonjs",
   "description": "Simple messaging system in-memory based on WebSocket",
   "main": "index.js",
