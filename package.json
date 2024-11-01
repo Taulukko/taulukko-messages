@@ -1,16 +1,16 @@
 {
   "name": "taulukko-messages",
-  "version": "0.0.7",
+  "version": "0.0.13",
   "type": "commonjs",
   "description": "Simple messaging system in-memory based on WebSocket",
-  "main": "index.js",
+  "main": "index.js", 
+  "files": ["index.js","./index.d.ts","./src/**/*"],
   "scripts": {
     "compile": "tsc --sourceMap",
     "installGlobals": "npm install i -g esrun",
     "REM-posttest": "npm run tslint",
     "tsfm": "tsfmt -r --no-tslint",
-    "test": "tsc --sourceMap && mocha \"test/**/*.test.js\"",
-    "publish": "npm publish",
+    "test": "tsc --sourceMap && mocha \"test/**/*.test.js\"", 
     "start": "node -r source-map-support/register index.js",
     "startDev": "nodemon -r source-map-support/register index.js"
   },

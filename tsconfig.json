@@ -3,8 +3,7 @@
     "target": "ESNext",
     "module": "CommonJS",
     "skipLibCheck": true,
-    "declaration": true,         // Gera arquivos .d.ts para cada arquivo .ts
-    "emitDeclarationOnly": true, // Gera apenas arquivos .d.ts, sem arquivos .js
+    "declaration": true,         // Gera arquivos .d.ts para cada arquivo .ts 
     "baseUrl": "./" ,
     /*"paths": {
       "@server/*": ["src/server/*"], 
