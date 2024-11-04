@@ -1,10 +1,11 @@
 {
   "name": "taulukko-messages",
-  "version": "0.0.13",
+  "version": "0.0.19",
   "type": "commonjs",
   "description": "Simple messaging system in-memory based on WebSocket",
-  "main": "index.js", 
-  "files": ["index.js","./index.d.ts","./src/**/*"],
+  "main": "./dist/index.js", 
+  "files": ["./dist/index.js","./dist/src/**/*.js","./dist/index.d.ts","./dist/src/**/*.d.ts","./dist/index.js.map","./dist/src/**/*.js.map"], //tem que incluir os js e os d.ts (não os ts)
+ "types": "./dist/index.d.ts",
   "scripts": {
     "compile": "tsc --sourceMap",
     "installGlobals": "npm install i -g esrun",
