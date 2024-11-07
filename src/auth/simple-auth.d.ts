@@ -1,6 +1,6 @@
 import { AuthProvider } from "./auth-provider";
-import { ClientOnLineDTO } from "src/server/server-protocols-dtos";
-import { WebSocket } from "src/ws";
+import { ClientOnLineDTO } from "../server/server-protocols-dtos";
+import { WebSocket } from "../ws";
 export declare class SimpleAuth implements AuthProvider {
     options: SimpleAuthOptions;
     private constructor();

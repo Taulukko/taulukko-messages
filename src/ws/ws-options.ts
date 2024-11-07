@@ -1,4 +1,4 @@
-interface WebSocketOptions{
+export interface WebSocketOptions{
     id:string;
     socket:any;
 }

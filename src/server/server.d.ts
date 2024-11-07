@@ -1,7 +1,7 @@
 import { ServerProvider } from "./provider/server-provider";
 import { ServerData } from "./server-data";
 import { ClientData } from "./client-data";
-import { AuthProvider } from "src/auth/auth-provider";
+import { AuthProvider } from "../auth/auth-provider";
 export declare class Server implements ServerProvider {
     options: ServerOptions;
     private constructor();

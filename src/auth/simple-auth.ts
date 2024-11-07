@@ -1,8 +1,8 @@
 import { loggerFactory } from "../common/log/logger";
 import { AuthProvider } from "./auth-provider";
 import { logerNames } from "../common/names";
-import { ClientOnLineDTO } from "src/server/server-protocols-dtos";
-import { WebSocket } from "src/ws";
+import { ClientOnLineDTO } from "../server/server-protocols-dtos";
+import { WebSocket } from "../ws";
 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);

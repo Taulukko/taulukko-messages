@@ -4,7 +4,7 @@ import { ServerData } from "./server-data";
 import { loggerFactory } from "../common/log/logger"; 
 import { logerNames ,LogLevel} from "../common/names";
 import { ClientData } from "./client-data";
-import { AuthProvider } from "src/auth/auth-provider";
+import { AuthProvider } from "../auth/auth-provider";
 
 
 

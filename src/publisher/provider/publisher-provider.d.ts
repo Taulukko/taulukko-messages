@@ -1,4 +1,4 @@
-import { PearData } from "src/common/pear-data";
+import { PearData } from "../../common/pear-data";
 export interface PublisherProvider {
     send(...data: any): any;
     close(): Promise<void>;

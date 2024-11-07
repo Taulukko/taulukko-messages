@@ -1,6 +1,6 @@
  
 import { Message } from "../../common/message"; 
-import { PearData } from "src/common/pear-data";
+import { PearData } from "../../common/pear-data";
 export interface SubscriberProvider {
   on( listener:Listener):Promise<any>;
   get data():PearData;

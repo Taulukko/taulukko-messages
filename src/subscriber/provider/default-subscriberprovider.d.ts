@@ -1,6 +1,6 @@
 import { SubscriberProvider, Listener } from "./subscriber-provider";
 import { WSClient, WSServerOptions, WebSocket } from "../../ws";
-import { PearData } from "src/common/pear-data";
+import { PearData } from "../../common/pear-data";
 export declare class DefaultSubscriberProvider implements SubscriberProvider {
     options: TaulukkoProviderOptions;
     status: string;

@@ -1,4 +1,4 @@
-import {Data} from "src/common/data";
+import {Data} from "../common/data";
 
 export interface ServerData extends Data {
     port:number; 

@@ -4,7 +4,7 @@ import { loggerFactory } from "../common/log/logger";
 import * as http from "http";
 import * as socketIo from "socket.io"; 
 
-import { KeyTool,StringsUtil } from "taulukko-commons/util";
+import { KeyTool,StringsUtil } from "taulukko-commons";
 import { WSServerOptions, WebSocket } from "./";
 import { validateStateChange } from "../common/service-utils";
 

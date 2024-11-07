@@ -1,5 +1,5 @@
 import { Listener, SubscriberProvider } from "./provider/subscriber-provider";
-import { PearData } from "src/common/pear-data";
+import { PearData } from "../common/pear-data";
 export declare class Subscriber implements SubscriberProvider {
     provider: SubscriberProvider;
     options: SubscriberOptions;

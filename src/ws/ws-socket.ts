@@ -1,8 +1,7 @@
 import { loggerFactory } from "../common/log/logger";
-import { WebSocketClient, WebSocketServer  } from ".";
+import { WebSocketClient, WebSocketOptions, WebSocketServer  } from ".";
 import { logerNames } from "../common/names";
 import { KeyTool } from "taulukko-commons";
-
 import * as socketIo from "socket.io"; 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 

@@ -1,3 +1,5 @@
+import {WebSocketOptions} from "./";
+
 export class WSClientData { 
     id: string;
     constructor(options:WebSocketOptions){

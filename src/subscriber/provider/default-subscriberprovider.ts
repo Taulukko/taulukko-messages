@@ -4,8 +4,8 @@ import {serviceStatus,logerNames,protocolNames,clientTypes} from "../../common/n
 import { loggerFactory } from "../../common/log/logger";
 import {  WSClient, WSServerOptions, WebSocket } from "../../ws";
  
-import { Message } from "src/common/message";  
-import { PearData } from "src/common/pear-data"; 
+import { Message } from "../../common/message";  
+import { PearData } from "../../common/pear-data"; 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 

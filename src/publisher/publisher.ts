@@ -2,7 +2,7 @@ import { LogLevel , logerNames} from "../common/names";
 import { loggerFactory } from "../common/log/logger";  
 import { PublisherProvider } from "./provider/publisher-provider";
 import { DefaultPublisherProvider } from "./provider/default-publisher-provider";
-import { PearData } from "src/common/pear-data";
+import { PearData } from "../common/pear-data";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 export class Publisher implements PublisherProvider{

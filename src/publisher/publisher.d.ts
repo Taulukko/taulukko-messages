@@ -1,6 +1,6 @@
 import { LogLevel } from "../common/names";
 import { PublisherProvider } from "./provider/publisher-provider";
-import { PearData } from "src/common/pear-data";
+import { PearData } from "../common/pear-data";
 export declare class Publisher implements PublisherProvider {
     provider: PublisherProvider;
     options: PublisherOptions;

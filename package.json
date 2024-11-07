@@ -1,17 +1,24 @@
 {
   "name": "taulukko-messages",
-  "version": "0.0.19",
+  "version": "0.0.25",
   "type": "commonjs",
   "description": "Simple messaging system in-memory based on WebSocket",
-  "main": "./dist/index.js", 
-  "files": ["./dist/index.js","./dist/src/**/*.js","./dist/index.d.ts","./dist/src/**/*.d.ts","./dist/index.js.map","./dist/src/**/*.js.map"], //tem que incluir os js e os d.ts (não os ts)
- "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "files": [
+    "./dist/index.js",
+    "./dist/src/**/*.js",
+    "./dist/index.d.ts",
+    "./dist/src/**/*.d.ts",
+    "./dist/index.js.map",
+    "./dist/src/**/*.js.map"
+  ],
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "compile": "tsc --sourceMap",
+    "compile": "rimraf ./dist && tsc --sourceMap",
     "installGlobals": "npm install i -g esrun",
     "REM-posttest": "npm run tslint",
     "tsfm": "tsfmt -r --no-tslint",
-    "test": "tsc --sourceMap && mocha \"test/**/*.test.js\"", 
+    "test": "tsc --sourceMap && mocha \"test/**/*.test.js\"",
     "start": "node -r source-map-support/register index.js",
     "startDev": "nodemon -r source-map-support/register index.js"
   },
@@ -36,7 +43,7 @@
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "source-map-support": "^0.5.16",
-    "taulukko-commons": "^1.0.6",
+    "taulukko-commons": "^1.1.2",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1"
   },
@@ -49,6 +56,7 @@
     "chai": "^4.3.6",
     "mocha": "^10.2.0",
     "nodemon": "^2.0.7",
+    "rimraf": "^6.0.1",
     "sinon": "^17.0.1",
     "ts-jest": "^24.0.2",
     "ts-node": "^10.9.2",

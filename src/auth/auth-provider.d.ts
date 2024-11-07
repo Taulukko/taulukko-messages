@@ -1,5 +1,5 @@
-import { ClientOnLineDTO } from "src/server/server-protocols-dtos";
-import { WebSocket } from "src/ws";
+import { ClientOnLineDTO } from "../server/server-protocols-dtos";
+import { WebSocket } from "../ws";
 export interface AuthProvider {
     validateOnClienteOnline(socket: WebSocket, data: ClientOnLineDTO): boolean;
 }

@@ -2,7 +2,7 @@ import { LogLevel , logerNames} from "../common/names";
 import { loggerFactory } from "../common/log/logger";
 import { DefaultSubscriberProvider } from "./provider/default-subscriberprovider";
 import { Listener, SubscriberProvider } from "./provider/subscriber-provider";  
-import { PearData } from "src/common/pear-data";
+import { PearData } from "../common/pear-data";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 export class Subscriber implements SubscriberProvider {
