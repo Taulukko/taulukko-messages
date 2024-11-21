@@ -1,9 +1,9 @@
 
 import  {Server,Publisher,Subscriber,Message,serviceStatus, globalConfiguration} from '../index';
-import { LogLevel, logerNames, systemTopics } from '../src/common/names';
+import { LogLevel, logerNames, systemTopics } from '../src/common/names.js';
 import { assert } from "chai"; 
-import { Logger } from '../src/common';
-import { loggerFactory } from '../src/common/log/logger';
+import { Logger } from '../src/common/index.js';
+import { loggerFactory } from '../src/common/log/logger.js';
 
 
 var semaphore:boolean; 

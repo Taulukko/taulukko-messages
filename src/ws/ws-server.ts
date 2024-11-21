@@ -1,13 +1,16 @@
 import { logerNames, serviceStatus} from "../common/names"; 
 import { loggerFactory } from "../common/log/logger"; 
+ 
+import * as jsEnv from "browser-or-node";
 
-import * as http from "http";
 import * as socketIo from "socket.io"; 
 
-import { KeyTool,StringsUtil } from "taulukko-commons";
+import { KeyTool, StringsUtil } from "taulukko-commons";
 import { WSServerOptions, WebSocket } from "./";
 import { validateStateChange } from "../common/service-utils";
-
+import * as http from "../mock/http.mock"
+ 
+ 
 const LOGGER = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
 const KEY_TOOL: KeyTool = new KeyTool();
@@ -15,7 +18,39 @@ const KEY_TOOL: KeyTool = new KeyTool();
 //see keytool documentation (head = clusterid+ processid + random)
 const KEY_TOOL_HEAD_SIZE = 13;
 
+var commonHttpType:http.Server|any=null;
+  
+if(jsEnv.isBrowser)
+{ 
+  console.log("Creating http browser");
+   import("http").then(
+    (httpBrowser)=>{
+      commonHttpType = httpBrowser;
+      console.log("Created http browser",commonHttpType);
+    }
+   ).catch((e)=>{
+    console.error(e);
+   }); 
+ 
+}
+else if (jsEnv.isNode)
+{
+  console.log("Creating http node");
+  import("http").then(
+   (httpNode)=>{
+    
+     commonHttpType = httpNode;
+     console.log("Created http node",commonHttpType);
+     console.log("Created htt0.createServer node",commonHttpType.createServer);
+   }
+  ).catch((e)=>{
+   console.error(e);
+  }); 
 
+}
+else{
+  console.error("taulukko-message is supported only nto browser(not working) and node");
+}
 
 export class WSServer   {
   id:string;
@@ -27,16 +62,22 @@ export class WSServer   {
   _state:string = serviceStatus.STARTING;
 
 
-  private constructor(options:any){ 
+  private   constructor  (options:any){ 
+  
     const defaults = { port: 7777, showDefaultMessage:true, defaultMessage:"WSServer Server is Running"};
     options = Object.assign({}, defaults, options); 
     this.options = options as WSServerOptions;
     const key:string = KEY_TOOL.build(1, 1);
     this.id = new StringsUtil().right(key, key.length - KEY_TOOL_HEAD_SIZE);
+   this.server = commonHttpType.Server;
   }
 
-  static create = (options:any):WSServer=>{
-    return new WSServer(options);
+  static  create =   (options:any):  WSServer=>{
+    console.log("Create ws-server");
+    const wsServer:WSServer = new WSServer(options);
+    
+  
+    return wsServer;
   };
 
   get state():string{
@@ -64,7 +105,8 @@ export class WSServer   {
       }
       LOGGER.log7("WSServer starting with options : " , this.options);
       const ret = new Promise<any>((resolve,reject)=>{ 
-        this.server = http.createServer((req, res) => {     
+        console.log("commonHttpType.createServer",commonHttpType.createServer);
+        this.server = commonHttpType.createServer((req, res) => {     
             if(me.options.showDefaultMessage)
             {
                 res.end(me.options.defaultMessage);
@@ -75,7 +117,7 @@ export class WSServer   {
           LOGGER.log7("WSServer listen port : " , me.options.port);
         
 
-          me.io = new socketIo.Server(me.server); 
+          me.io = new socketIo.Server(me.server as any); 
          
           me.state = serviceStatus.ONLINE; 
           

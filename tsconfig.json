@@ -6,23 +6,23 @@
     "declaration": true,         // Gera arquivos .d.ts para cada arquivo .ts ,
     "baseUrl": "./" ,
     "outDir": "./dist",
-    "sourceMap": true
-    /*"paths": {
-      "@server/*": ["src/server/*"], 
-      "@client/*": ["src/client/*"], 
-      "@common/*": ["src/common/*"] 
-    }*/
+    "sourceMap": true,
+    "paths": {
+      "@bin/*": ["dist/*"] 
+    },
+    
   },
   "include": [
     "src/**/*.ts","test/**/*.ts","./index.ts" ,"**/*.spec.ts"  ],
   "exclude":[
     "node_modules",
      "./index.d.ts",
-     "./dist",
+     "dist",
      "types"
   ]
   ,
     "typeRoots": [
         "node_modules/@types"
-    ]
+    ],
+    
 }
