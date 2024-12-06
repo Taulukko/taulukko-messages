@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "skipLibCheck": true,
+    "declaration": true,         // Gera arquivos .d.ts para cada arquivo .ts ,
+    "baseUrl": "./" ,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "paths": {
+      "@bin/*": ["dist/*"] 
+    },
+    
+  },
+  "include": [
+    "./src/**/*.ts","./test/**/*.ts","./index.ts"  ],
+  "exclude":[
+    "./node_modules",
+     "./index.d.ts",
+     "./dist",
+     "./types"
+  ]
+  ,
+    "typeRoots": [
+        "node_modules/@types"
+    ],
+    
+}
