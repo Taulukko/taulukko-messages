@@ -1,4 +1,4 @@
-import { PearData } from "../../common/pear-data"; 
+import { PearData } from "taulukko-messages-core"; 
 
 export interface PublisherProvider {
   send( ...data: any): any;

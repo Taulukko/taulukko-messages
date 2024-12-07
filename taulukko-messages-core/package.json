@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages-core",
-  "version": "0.0.37",
+  "version": "0.0.39",
   "type": "commonjs",
   "description": "Core for a Simple messaging system in-memory based on WebSocket",
   "author": "Edson Vicente Carli Junior",

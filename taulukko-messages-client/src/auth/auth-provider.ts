@@ -1,7 +1,5 @@
-import { Message } from "..//common/message";
-import { ClientOnLineDTO } from "../server/server-protocols-dtos";
-import { WebSocket } from "../ws";
-
+import { WebSocket,ClientOnLineDTO  } from "taulukko-messages-core";
+ 
 export interface AuthProvider  { 
   validateOnClienteOnline(socket: WebSocket, data: ClientOnLineDTO): boolean;    
 }

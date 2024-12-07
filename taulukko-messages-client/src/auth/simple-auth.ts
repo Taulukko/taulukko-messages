@@ -1,11 +1,8 @@
-import { loggerFactory } from "../common/log/logger";
+ 
 import { AuthProvider } from "./auth-provider";
-import { logerNames } from "../common/names";
-import { ClientOnLineDTO } from "../server/server-protocols-dtos";
-import { WebSocket } from "../ws";
+import {ClientOnLineDTO , WebSocket } from "taulukko-messages-core";
 
-
-const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
+ 
 
 export class SimpleAuth implements AuthProvider { 
     options: SimpleAuthOptions;
@@ -23,7 +20,7 @@ export class SimpleAuth implements AuthProvider {
   
     static create(options: any = {} ) : AuthProvider{
       const server=  new SimpleAuth(options);
-      logger.log7("New SimpleAuth created ", server);
+      console.log("New SimpleAuth created ", server);
       return server;
     }
 }
