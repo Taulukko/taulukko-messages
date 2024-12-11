@@ -1,10 +1,7 @@
 import { DefaultServerProvider } from "./provider/default-server-provider";
-import { ServerProvider } from "./provider/server-provider";
-import { ServerData } from "./server-data";
+import { ClientData,logerNames,ServerData,ServerProvider,LogLevel } from "taulukko-messages-core";
 import { loggerFactory } from "../common/log/logger"; 
-import { logerNames ,LogLevel} from "../common/names";
-import { ClientData } from "./client-data";
-import { AuthProvider } from "../auth/auth-provider";
+import { AuthProvider } from "taulukko-messages-client";
 
 
 

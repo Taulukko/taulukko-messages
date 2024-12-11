@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "taulukko-messages-core": "^0.0.40"
+    "taulukko-messages-client": "^0.1.10",
+    "taulukko-messages-core": "^0.1.10"
   }
 }
