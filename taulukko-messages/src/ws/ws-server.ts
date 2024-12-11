@@ -1,14 +1,9 @@
-import { logerNames, serviceStatus} from "../common/names"; 
-import { loggerFactory } from "../common/log/logger"; 
- 
-import * as jsEnv from "browser-or-node";
-
-import * as socketIo from "socket.io"; 
-
-import { KeyTool, StringsUtil } from "taulukko-commons";
-import { WSServerOptions, WebSocket } from "./";
-import { validateStateChange } from "../common/service-utils";
-import * as http from "../mock/http.mock"
+import { logerNames, serviceStatus,validateStateChange,WSServerOptions, WebSocket } from "taulukko-messages-core"; 
+import { loggerFactory } from "../common/log/logger";  
+import * as jsEnv from "browser-or-node"; 
+import * as socketIo from "socket.io";  
+import { KeyTool, StringsUtil } from "taulukko-commons"; 
+import * as http from "http";
  
  
 const LOGGER = loggerFactory.get(logerNames.LOGGER_DEFAULT);

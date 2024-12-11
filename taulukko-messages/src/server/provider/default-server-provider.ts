@@ -1,14 +1,8 @@
  
-import {  ServerProvider } from "./server-provider";
-import { ClientData } from "../client-data"; 
-import { ServerData } from '../server-data';
-import {serviceStatus, systemTopics} from "../../common/names"; 
-import { logerNames,protocolNames,clientTypes} from "../../common/names"; 
+import { WebSocket,ClientOffLineDTO, ClientOnLineDTO, WSServerOptions,ServerProvider,ServerData ,serviceStatus,Message,ClientData,systemTopics,logerNames,protocolNames,clientTypes} from "taulukko-messages-core";
 import { loggerFactory } from "../../common/log/logger";
-import { WSServer, WSServerOptions, WebSocket  } from "../../ws/"; 
-import { ClientOffLineDTO, ClientOnLineDTO } from "../server-protocols-dtos";
-import { Message } from "../../common/message";
-import { AuthProvider } from "../../auth/auth-provider";
+import { WSServer} from "../../ws/"; 
+import { AuthProvider } from "taulukko-messages-client";
 
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
@@ -200,5 +194,8 @@ export class DefaultServerProvider implements ServerProvider {
 }
 
 interface TaulukkoProviderOptions extends WSServerOptions{
+  onConnection: (socket: WebSocket) => void;
+  onDisconnect: (socket: WebSocket) => void;
+  port :number;
   auth:AuthProvider
 }

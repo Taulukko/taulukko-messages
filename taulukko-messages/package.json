@@ -38,8 +38,7 @@
     "url": "https://github.com/Taulukko/taulukko-messages/issues"
   },
   "dependencies": {
-    "@types/browser-or-node": "^1.3.2",
-    "browser-or-node": "^3.0.0",
+    "@types/browser-or-node": "^1.3.2", 
     "express": "^4.18.2",
     "http-browserify": "^1.7.0",
     "moment": "^2.30.1",
@@ -47,7 +46,7 @@
     "socket.io-client": "^4.7.2",
     "source-map-support": "^0.5.16",
     "taulukko-commons": "^1.1.41",
-    "taulukko-messages-core": "^0.0.30",
+    "taulukko-messages-client": "^0.1.6",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1"
   },
