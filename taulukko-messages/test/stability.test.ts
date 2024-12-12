@@ -1,9 +1,8 @@
- import { assert } from "chai"; 
-import { loggers } from 'winston';
+ import { assert } from "chai";  
 import  {Server,Publisher,Subscriber,Message,serviceStatus} from '../index';
-import { LogLevel, logerNames } from '../src/common/names';
-import { Logger, loggerFactory } from "../src/common/log/logger";  
-import { globalConfiguration } from "../src/global-configuration"; 
+import { LogLevel } from 'taulukko-messages-core';
+import { Logger } from "../src/common/log/logger";  
+import { globalConfiguration } from "../src/common/global-configuration"; 
  
 
 const DEFAULT_PORT:number = 7777;

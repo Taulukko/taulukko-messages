@@ -1,6 +1,6 @@
  
 import { Logger } from "../src/common/log/logger"; 
-import { LogLevel,logerNames } from '../src/common/names';
+import { LogLevel} from 'taulukko-messages-core';
 import { assert } from "chai"; 
 import * as sinon from "sinon";
 import { globalConfiguration } from "../";

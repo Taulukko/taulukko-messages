@@ -1,4 +1,4 @@
-import { LogLevel, logerNames } from "../common/names";
+import { LogLevel} from "taulukko-messages-core";
 
 class GlobalConfiguration{
     private logConfiguration:LogConfiguration ;

@@ -1,8 +1,8 @@
-import { LogLevel, Logger, logerNames } from '../src/common';
+import { LogLevel, logerNames } from 'taulukko-messages-core';
 import  {globalConfiguration} from '../index';
 import { loggerFactory } from '../src/common/log/logger';
 import { assert } from 'chai';
- 
+import {Logger} from "../src/common/log"
  
 
 

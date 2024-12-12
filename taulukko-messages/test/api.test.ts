@@ -1,6 +1,6 @@
 
 import  {Server,Publisher,Subscriber,Message,serviceStatus, globalConfiguration} from '../index';
-import { LogLevel, logerNames, systemTopics } from '../src/common/names.js';
+import { LogLevel, logerNames, systemTopics } from 'taulukko-messages-core';
 import { assert } from "chai"; 
 import { Logger } from '../src/common/index.js';
 import { loggerFactory } from '../src/common/log/logger.js';

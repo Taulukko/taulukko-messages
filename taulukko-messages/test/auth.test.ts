@@ -1,9 +1,7 @@
-import { SimpleAuth } from '../src/auth/simple-auth';
-import  {Server,Publisher, Subscriber} from '../index';
+import  {Server} from '../index';
 import { assert } from "chai"; 
-import { AuthProvider } from '../src/auth/auth-provider';
-import { ClientOnLineDTO } from 'src/server/server-protocols-dtos';
-import { WebSocket } from 'src/ws';
+import { SimpleAuth ,AuthProvider,Publisher, Subscriber } from 'taulukko-messages-client';
+import {  ClientOnLineDTO ,WebSocket } from 'taulukko-messages-core';
 
 async function initServer(options={}){
 
