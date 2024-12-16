@@ -1,13 +1,18 @@
 
-import  {Server,Publisher,Subscriber,Message,serviceStatus, globalConfiguration} from '../index';
-import { LogLevel, logerNames, systemTopics } from 'taulukko-messages-core';
 import { assert } from "chai"; 
-import { Logger } from '../src/common/index.js';
+
+import { LogLevel, logerNames, systemTopics } from 'taulukko-messages-core';
+
+import  {Server,Publisher,Subscriber,Message,serviceStatus} from '../index';
+/*import { Logger } from '../src/common/index.js';
 import { loggerFactory } from '../src/common/log/logger.js';
+
+*/
 
 
 var semaphore:boolean; 
 var lastError:Error; 
+
 
 async function initServer(options={}){
   try { 
@@ -22,6 +27,10 @@ async function initServer(options={}){
   }
 
 }
+
+/*
+
+
 
  
 describe("api.basics",  function test(options={}){
@@ -535,4 +544,4 @@ function cleanupGlobals() {
   semaphore = false;
 
 }
-  
+  */

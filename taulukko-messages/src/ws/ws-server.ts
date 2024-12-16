@@ -1,6 +1,5 @@
 import { logerNames, serviceStatus,validateStateChange,WSServerOptions, WebSocket } from "taulukko-messages-core"; 
-import { loggerFactory } from "../common/log/logger";  
-import * as jsEnv from "browser-or-node"; 
+import { loggerFactory } from "../common/log/logger";   
 import * as socketIo from "socket.io";  
 import { KeyTool, StringsUtil } from "taulukko-commons"; 
 import * as http from "http";
@@ -14,38 +13,19 @@ const KEY_TOOL: KeyTool = new KeyTool();
 const KEY_TOOL_HEAD_SIZE = 13;
 
 var commonHttpType:http.Server|any=null;
+   
+console.log("Creating http node");
+import("http").then(
+  (httpNode)=>{
   
-if(jsEnv.isBrowser)
-{ 
-  console.log("Creating http browser");
-   import("http").then(
-    (httpBrowser)=>{
-      commonHttpType = httpBrowser;
-      console.log("Created http browser",commonHttpType);
-    }
-   ).catch((e)=>{
-    console.error(e);
-   }); 
- 
-}
-else if (jsEnv.isNode)
-{
-  console.log("Creating http node");
-  import("http").then(
-   (httpNode)=>{
-    
-     commonHttpType = httpNode;
-     console.log("Created http node",commonHttpType);
-     console.log("Created htt0.createServer node",commonHttpType.createServer);
-   }
-  ).catch((e)=>{
-   console.error(e);
-  }); 
+    commonHttpType = httpNode;
+    console.log("Created http node",commonHttpType);
+    console.log("Created htt0.createServer node",commonHttpType.createServer);
+  }
+).catch((e)=>{
+  console.error(e);
+}); 
 
-}
-else{
-  console.error("taulukko-message is supported only nto browser(not working) and node");
-}
 
 export class WSServer   {
   id:string;

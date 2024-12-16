@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages-client",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "type": "commonjs",
   "description": "Core for a Simple messaging system in-memory based on WebSocket",
   "author": "Edson Vicente Carli Junior",
@@ -42,7 +42,7 @@
     "socket.io-client": "^4.7.2",
     "source-map-support": "^0.5.16",
     "taulukko-commons": "^1.1.41",
-    "taulukko-messages-core": "^0.1.10"
+    "taulukko-messages-core": "^0.1.11"
   },
   "devDependencies": {
     "@types/chai": "^4.3.11",

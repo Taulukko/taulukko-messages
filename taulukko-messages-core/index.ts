@@ -3,7 +3,7 @@ import {PearData,Data, Message,systemTopics,logerNames,serviceStatus,LogLevel,cl
 import { PublisherProvider } from "./src/publisher";
 import { SubscriberProvider,Listener } from "./src/subscriber/provider/subscriber-provider";
 import { ServerProvider,ClientData,ServerData,ClientOffLineDTO,ClientOnLineDTO } from "./src/server";
-import { WSClient,WSClientOptions,WSServerOptions,WebSocket,WebSocketClient,WebSocketOptions,WebSocketServer} from "src/ws";
+import { WSClient,WSClientOptions,WSServerOptions,WebSocket,WebSocketClient,WebSocketOptions,WebSocketServer} from "./src/ws";
 
 
 export { 
