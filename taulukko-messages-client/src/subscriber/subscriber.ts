@@ -1,6 +1,6 @@
  
 import { DefaultSubscriberProvider } from "./provider/default-subscriberprovider";
-import { Listener, SubscriberProvider,PearData } from "taulukko-messages-core"; 
+import { Listener, SubscriberProvider,PearData,SubscriberOptions } from "taulukko-messages-core"; 
  
 export class Subscriber implements SubscriberProvider {
   provider: SubscriberProvider;
@@ -50,8 +50,3 @@ export class Subscriber implements SubscriberProvider {
     }
   }
   
-interface SubscriberOptions{ 
-  provider:SubscriberProvider,
-  topics:Array<string>
-}
-

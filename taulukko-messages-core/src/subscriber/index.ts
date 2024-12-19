@@ -1,2 +1,2 @@
-export { SubscriberProvider,Listener } from "./provider/subscriber-provider";
+export { SubscriberProvider,Listener,SubscriberOptions } from "./provider/subscriber-provider";
 

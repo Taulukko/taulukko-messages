@@ -1,9 +1,8 @@
  
-import { WebSocket,ClientOffLineDTO, ClientOnLineDTO, WSServerOptions,ServerProvider,ServerData ,serviceStatus,Message,ClientData,systemTopics,logerNames,protocolNames,clientTypes} from "taulukko-messages-core";
-import { loggerFactory } from "../../common/log/logger";
-import { WSServer} from "../../ws/"; 
+import {WebSocket,ClientOffLineDTO, ClientOnLineDTO, WSServerOptions,ServerProvider,ServerData ,serviceStatus,Message,ClientData,systemTopics,logerNames,protocolNames,clientTypes} from "taulukko-messages-core";
+import { loggerFactory } from "../../common/log/logger"; 
 import { AuthProvider } from "taulukko-messages-client";
-
+import { WSServer } from "../../ws";
 
 const logger = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 
