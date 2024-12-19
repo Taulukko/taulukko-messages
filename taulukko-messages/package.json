@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages",
-  "version": "0.1.10",
+  "version": "0.1.12",
   "type": "commonjs",
   "description": "Simple messaging system in-memory based on WebSocket",
   "author": "Edson Vicente Carli Junior",
@@ -37,14 +37,13 @@
   "bugs": {
     "url": "https://github.com/Taulukko/taulukko-messages/issues"
   },
-  "dependencies": { 
-    "express": "^4.18.2", 
+  "dependencies": {
+    "express": "^4.18.2",
     "moment": "^2.30.1",
     "socket.io": "^4.7.2",
-    "socket.io-client": "^4.7.2",
     "source-map-support": "^0.5.16",
-    "taulukko-commons": "^1.1.41", 
-    "taulukko-messages-client": "^0.1.11",
+    "taulukko-commons": "^1.1.41",
+    "taulukko-messages-client": "^0.1.24",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1"
   },

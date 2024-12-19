@@ -1,6 +1,6 @@
 import { validateStateChange } from "../common/service-utils";
-import { logerNames, serviceStatus } from "../common/names";
-import { WSClientOptions, WSServerOptions } from "./"; 
+import {serviceStatus } from "../common/names";
+import { WSClientOptions } from "./ws-client-options"; 
 import { KeyTool, StringsUtil } from "taulukko-commons"; 
 import * as io from "socket.io-client"; 
 const KEY_TOOL = new KeyTool();

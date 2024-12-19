@@ -1,3 +1,2 @@
-import { SubscriberProvider } from "./provider/subscriber-provider";
+export { SubscriberProvider,Listener } from "./provider/subscriber-provider";
 
-export {SubscriberProvider};

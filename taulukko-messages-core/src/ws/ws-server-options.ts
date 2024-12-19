@@ -1,4 +1,4 @@
-import { WebSocket } from "./";
+import { WebSocket } from "./web-socket";
 
 export interface WSServerOptions {
     port:number;

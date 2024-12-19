@@ -1,4 +1,4 @@
-import { logerNames, serviceStatus,validateStateChange,WSServerOptions, WebSocket } from "taulukko-messages-core"; 
+import { logerNames, serviceStatus,validateStateChange,WSServerOptions,WebSocket } from "taulukko-messages-core"; 
 import { loggerFactory } from "../common/log/logger";   
 import * as socketIo from "socket.io";  
 import { KeyTool, StringsUtil } from "taulukko-commons"; 
@@ -10,22 +10,10 @@ const LOGGER = loggerFactory.get(logerNames.LOGGER_DEFAULT);
 const KEY_TOOL: KeyTool = new KeyTool();
 
 //see keytool documentation (head = clusterid+ processid + random)
-const KEY_TOOL_HEAD_SIZE = 13;
-
-var commonHttpType:http.Server|any=null;
+const KEY_TOOL_HEAD_SIZE = 13; 
    
 console.log("Creating http node");
-import("http").then(
-  (httpNode)=>{
-  
-    commonHttpType = httpNode;
-    console.log("Created http node",commonHttpType);
-    console.log("Created htt0.createServer node",commonHttpType.createServer);
-  }
-).catch((e)=>{
-  console.error(e);
-}); 
-
+ 
 
 export class WSServer   {
   id:string;
@@ -44,7 +32,7 @@ export class WSServer   {
     this.options = options as WSServerOptions;
     const key:string = KEY_TOOL.build(1, 1);
     this.id = new StringsUtil().right(key, key.length - KEY_TOOL_HEAD_SIZE);
-   this.server = commonHttpType.Server;
+ 
   }
 
   static  create =   (options:any):  WSServer=>{
@@ -80,8 +68,8 @@ export class WSServer   {
       }
       LOGGER.log7("WSServer starting with options : " , this.options);
       const ret = new Promise<any>((resolve,reject)=>{ 
-        console.log("commonHttpType.createServer",commonHttpType.createServer);
-        this.server = commonHttpType.createServer((req, res) => {     
+        console.log("commonHttpType.createServer",http.createServer);
+        this.server = http.createServer((req, res) => {     
             if(me.options.showDefaultMessage)
             {
                 res.end(me.options.defaultMessage);

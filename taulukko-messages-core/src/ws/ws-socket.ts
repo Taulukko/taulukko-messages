@@ -1,7 +1,9 @@
  
-import { WebSocketClient, WebSocketOptions, WebSocketServer,  } from "."; 
+import { WebSocketOptions  } from "./web-socket-options";
 import { KeyTool } from "taulukko-commons";
 import * as socketIo from "socket.io-client";  
+import { WebSocketClient } from "./web-socket-client";
+import { WebSocketServer } from "./web-socket-server";
 
 const keyTool: KeyTool = new KeyTool();
 
@@ -13,7 +15,7 @@ export class WSSocket {
     {
       const clientOptions:WebSocketOptions = {...options};
       clientOptions.id =  (options.socket.client.id ) as string;
-      this.client = new WebSocketClient(clientOptions);
+      this.client = new WebSocketClient(options);
       this.server = new WebSocketServer(options);
       this.socket = options.socket;
     }

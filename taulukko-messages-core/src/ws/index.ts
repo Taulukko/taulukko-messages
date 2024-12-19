@@ -1,9 +1,8 @@
-import { WSClient } from "./ws-client";
-import { WSServerOptions } from "./ws-server-options"; 
-import { WSSocket } from "./ws-socket";
-import { WSClientData } from "./ws-client-data";
-import { WSServerData } from "./ws-server-data";  
-import { WSClientOptions } from "./ws-client-options";
-import { WebSocketOptions } from "./ws-options"; 
-
-export {WSClient,WSServerOptions,WSClientOptions,WSSocket as WebSocket,WSServerData as WebSocketServer,WSClientData as WebSocketClient,WebSocketOptions};
+export { WSClient } from "./ws-client";
+export { WSServerOptions } from "./ws-server-options"; 
+export { WSSocket } from "./ws-socket"; 
+export { WSClientOptions } from "./ws-client-options";
+export { WebSocketOptions } from "./ws-options"; 
+export {WebSocketClient} from "./web-socket-client";
+export {WebSocketServer} from "./web-socket-server";
+export {WebSocket} from "./web-socket" ;

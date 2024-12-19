@@ -1,3 +1,2 @@
-import { PublisherProvider } from "./provider/publisher-provider";
-
-export {PublisherProvider} ;
+export { PublisherProvider } from "./provider/publisher-provider";
+ 

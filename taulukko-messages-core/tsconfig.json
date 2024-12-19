@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "CommonJS",
-    "skipLibCheck": true,
+    "skipLibCheck": true, 
     "declaration": true,         // Gera arquivos .d.ts para cada arquivo .ts ,
     "baseUrl": "./" ,
     "outDir": "./dist",

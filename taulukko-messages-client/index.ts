@@ -1,16 +1,7 @@
- 
-
-import { Publisher } from "./src/publisher/publisher";
-import { Subscriber } from "./src/subscriber/subscriber";
-import { PublisherProvider ,SubscriberProvider,Listener} from "taulukko-messages-core";
-import  { SimpleAuth ,SimpleAuthOptions,AuthProvider} from "./src/auth";
+ export { Publisher } from "./src/publisher";
+ export { Subscriber } from "./src/subscriber";
+ export { PublisherProvider ,SubscriberProvider,Listener} from "taulukko-messages-core";
+ export  { SimpleAuth ,SimpleAuthOptions,AuthProvider} from "./src/auth";
 
  
- 
-export {
-    Publisher,
-    Subscriber,
-    PublisherProvider,SubscriberProvider,Listener,
-    SimpleAuth ,SimpleAuthOptions,AuthProvider
-}; 
  
