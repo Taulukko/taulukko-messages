@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages",
-  "version": "0.1.30",
+  "version": "0.1.34",
   "type": "commonjs",
   "description": "Simple messaging system in-memory based on WebSocket",
   "author": "Edson Vicente Carli Junior",

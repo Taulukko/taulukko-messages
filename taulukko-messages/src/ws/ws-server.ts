@@ -80,7 +80,12 @@ export class WSServer   {
           LOGGER.log7("WSServer listen port : " , me.options.port);
         
 
-          me.io = new socketIo.Server(me.server as any); 
+          me.io = new socketIo.Server(me.server as any, {
+            cors: {
+              origin: "*",
+              methods: ["GET", "POST", "PUT", "OPTIONS"],
+            },
+          });
          
           me.state = serviceStatus.ONLINE; 
           
