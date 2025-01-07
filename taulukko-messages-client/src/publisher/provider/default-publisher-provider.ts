@@ -1,5 +1,6 @@
    
 import {serviceStatus,PublisherProvider,protocolNames,clientTypes,Message,PearData,WSClient ,WebSocket, WSServerOptions } from "taulukko-messages-core"; 
+import {   TaulukkoProviderOptions } from "./default-publisher-options";
  
 export class DefaultPublisherProvider implements PublisherProvider {
   
@@ -9,9 +10,16 @@ export class DefaultPublisherProvider implements PublisherProvider {
   private id:string;
  
 
-  private constructor(options:any){
+  private constructor(options:TaulukkoProviderOptions){
     let host:string = "localhost";
     let port :number = 80;
+ 
+
+    if(!options.topics || options.topics.length==0)
+    { 
+      throw new Error("Option topics:Array<String> are required");
+    }
+    
 
     if(options.server!=null)
     {
@@ -22,14 +30,14 @@ export class DefaultPublisherProvider implements PublisherProvider {
       
       if(portSlices.length=2)
       {
-        port = portSlices[1];
+        port = parseInt(portSlices[1]);
       } 
  
       options.server=null;
     }
 
     const defaults = { port,host ,topics:new Array()};
-    this.options = Object.assign({}, defaults, options);
+    this.options = Object.assign({}, defaults, options) as TaulukkoProviderOptions;
 
      
     const wsoptions =  this.options = Object.assign({}, this.options, {port,host});
@@ -43,27 +51,35 @@ export class DefaultPublisherProvider implements PublisherProvider {
   };
 
   send(...data: any) { 
+    console.info("Taulukko Publisher Provider send " );
     if(this.status!=serviceStatus.ONLINE)
     {
       throw new Error("Publisher isn't open yet");
-    }
-    this.options.topics.forEach((item,index)=>{
+    } 
+
+    this.options.topics.forEach((item,index)=>{ 
       const message:Message = Message.create({topic:item,data}); 
       this.client.emit(protocolNames.NEW_MESSAGE,message.struct); 
         
-    }); 
+    });  
   }
  
+  log = (data:string,datab:any="") => {
+    console.log(data,datab); 
+  };
+
+  info = (data:string,datab:any="") => {
+    console.info(data,datab); 
+  };
   
   open = async  () :Promise<void>  => {
 
-  
-
+   
     if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Publisher already started");
     }
     
-    console.info("Taulukko Publisher Provider starting with options : " );
+    console.info("Taulukko Publisher Provider starting..." );
      
     const ret:Promise<void> = new Promise(async (resolve,reject)=>{
 
@@ -74,16 +90,13 @@ export class DefaultPublisherProvider implements PublisherProvider {
           reject(new Error("Time out in publisher"));
         },this.options.timeout);
       }
-    
-      console.info("Taulukko Publisher Provider preparing the connection with websocket " );
+     
       
       this.client = WSClient.create(this.options);
  
          
       await this.client.open(); 
-        
-
-      console.info("Taulukko Publisher Provider get connection with server ");
+         
 
       await this.onTaulukkoServerConnectionOK(resolve).then((onTaulukkoServerConnectionOK)=>{
         this.client.on(protocolNames.CONNECTION_OK,onTaulukkoServerConnectionOK );
@@ -94,10 +107,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
       await  this.onTaulukkoServerUnregisteredClient(reject,this).then((onTaulukkoServerUnregisteredClient)=>{
         this.client.on(protocolNames.UNREGISTERED,onTaulukkoServerUnregisteredClient );
       }); 
- 
-      console.info("Taulukko Publisher Provider finish open, start detect disconnect ");
-
-    
+  
       this.client.on('disconnect',  this.onDisconnect);
       
       
@@ -154,19 +164,17 @@ export class DefaultPublisherProvider implements PublisherProvider {
   };
 
 
-  onTaulukkoServerConnectionOK = async (reject: any)=>{ 
+  onTaulukkoServerConnectionOK = async (resolve:any)=>{ 
  
     return  (async (websocket:WebSocket)=>{ 
-      console.info("  Publisher   onTaulukkoServerConnectionOK received");
-        this.id = websocket.client.id;
-        console.log( "this.socket",this.client,this.client.emit,protocolNames.CLIENT_ONLINE,clientTypes.PUBLISHER,this);
+      this.info("Publisher  onTaulukkoServerConnectionOK received"); 
+      this.id = websocket.client.id; 
         if(this.options.timeout)
-          {
+          { 
             setTimeout(()=>{
-              reject(new Error("Time out in publisher"));
+              resolve(new Error("Time out in publisher"));
             },this.options.timeout);
-          }
-
+          } 
         this.client.emit(protocolNames.CLIENT_ONLINE,{type: clientTypes.PUBLISHER,id:this.id,topics:this.data.topics}); 
       });
   };
@@ -183,16 +191,14 @@ export class DefaultPublisherProvider implements PublisherProvider {
   onTaulukkoServerUnregisteredClient = async (reject: (ret:any)=>void , me:DefaultPublisherProvider)=>{
     const ret =  (async (websocket:WebSocket)=>{
 
-      console.info("Taulukko Publisher Provider onTaulukkoServerUnregisteredClient"); 
-      console.log("onTaulukkoServerUnregisteredClient resolvido com rejeição ",reject); 
+      console.info("Taulukko Publisher Provider onTaulukkoServerUnregisteredClient");  
         this.status = serviceStatus.STOPED; 
-        me.client.forceClose();
-        console.info("Taulukko Publisher Provider rejeitando em onTaulukkoServerUnregisteredClient"); 
+        me.client.forceClose(); 
         try{
           reject({}); 
         }catch(e){
           //fine
-          console.log("onTaulukkoServerUnregisteredClient error expected, so this is not a problem "); 
+          console.info("onTaulukkoServerUnregisteredClient error expected, so this is not a problem "); 
         }
        
       
@@ -205,8 +211,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
 
     const ret : Promise<void> = new Promise(async (resolve,)=>{
 
-      if(this.status!=serviceStatus.ONLINE){
-
+      if(this.status!=serviceStatus.ONLINE){ 
         console.error("Publisher isnt open");
         throw Error("Publisher isnt open");
       } 
@@ -224,7 +229,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
 
         }
       },1000); 
-      console.log("Taulukko Publisher Provider ends"); 
+      console.info("Taulukko Publisher Provider finished"); 
     });
 
    return  ret;
@@ -236,26 +241,16 @@ export class DefaultPublisherProvider implements PublisherProvider {
       this.close();
     }
     catch{
-      console.log("Taulukko Publisher Provider error ");
+      console.warn("Taulukko Publisher Provider error in forceClose");
     }
     this.status = serviceStatus.STOPED;
     
   };
 
-  
-  
   get data() :PearData {
     const ret = {port:this.options.port, status: this.status ,
       online:this.status==serviceStatus.ONLINE,
-      offline:this.status!=serviceStatus.ONLINE,topics:this.options.topics};
-      console.debug("get data ", ret);
+      offline:this.status!=serviceStatus.ONLINE,topics:this.options.topics}; 
       return ret;
   }
 }
-
-interface TaulukkoProviderOptions extends WSServerOptions{
-  topics:Array<string>;
-  timeout?:number;
-  port:number;
-}
- 

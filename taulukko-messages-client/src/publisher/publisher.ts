@@ -40,7 +40,7 @@ export class Publisher implements PublisherProvider{
     static create(options: any):Publisher { 
       const publisher =  new Publisher(options);
       
-      console.log("New publisher created ", publisher);
+      console.info("New publisher created ");
        
       return publisher;
     }

@@ -7,6 +7,14 @@ export class Subscriber implements SubscriberProvider {
   options: SubscriberOptions;
 
     private constructor(options: any) {
+
+      if(!options.topics || options.topics.length==0)
+      { 
+        throw new Error("Option topics:Array<String> are required");
+      }
+
+      
+      
       this.provider = options.provider? options.provider: new DefaultSubscriberProvider(options) ;
 
       const defaults = { 
@@ -15,15 +23,17 @@ export class Subscriber implements SubscriberProvider {
         topics: new Array()};
       options = Object.assign({}, defaults, options);
       this.options = options as SubscriberOptions;
+
+      
+      console.log("New subscriber created ", this);
+       
+  
     }
 
 
     static create(options: any):Subscriber {
-      const publisher =  new Subscriber(options);
       
-      console.log("New subscriber created ", publisher);
-       
-      return publisher;
+      return   new Subscriber(options);
     }
     
     async open():Promise<void>{

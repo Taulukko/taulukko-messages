@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages-client",
-  "version": "0.1.32",
+  "version": "0.1.39",
   "type": "commonjs",
   "description": "Core for a Simple messaging system in-memory based on WebSocket",
   "author": "Edson Vicente Carli Junior",
@@ -9,6 +9,7 @@
   "main": "./dist/index.js",
   "files": [
     "./dist/index.js",
+    "./dist/taulukko-messages.js",
     "./dist/src/**/*.js",
     "./dist/index.d.ts",
     "./dist/src/**/*.d.ts",
@@ -18,12 +19,13 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "compile": "tsc --sourceMap",
+    "build": "npm run compile && npm run bundle",
+    "bundle": "webpack --config=webpack.config.js",
     "installGlobals": "npm install i -g esrun",
     "REM-posttest": "npm run tslint",
     "tsfm": "tsfmt -r --no-tslint",
     "test": "npm run compile && cd dist && mocha \"test/**/*.test.js\"",
-    "start": "node -r source-map-support/register index.js",
-    "startDev": "nodemon -r source-map-support/register index.js"
+    "start": "node -r source-map-support/register index.js"
   },
   "repository": {
     "type": "git",
@@ -39,10 +41,12 @@
   },
   "dependencies": {
     "moment": "^2.30.1",
+    "npx": "^10.2.2",
     "socket.io-client": "^4.7.2",
     "source-map-support": "^0.5.16",
     "taulukko-commons": "^1.1.41",
-    "taulukko-messages-core": "^0.1.31"
+    "taulukko-messages-core": "^0.1.32",
+    "webpack": "^5.97.1"
   },
   "devDependencies": {
     "@types/chai": "^4.3.11",
@@ -52,11 +56,13 @@
     "chai": "^4.3.6",
     "mocha": "^10.2.0",
     "sinon": "^17.0.1",
+    "terser-webpack-plugin": "^5.3.11",
     "ts-jest": "^24.0.2",
     "ts-node": "^10.9.2",
     "tslint": "^5.11.0",
     "tslint-eslint-rules-recommended": "^1.2.2",
     "typescript": "4.8",
-    "typescript-formatter": "^7.2.2"
+    "typescript-formatter": "^7.2.2",
+    "webpack-cli": "^6.0.1"
   }
 }
