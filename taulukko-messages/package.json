@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages",
-  "version": "0.1.34",
+  "version": "0.1.40",
   "type": "commonjs",
   "description": "Simple messaging system in-memory based on WebSocket",
   "author": "Edson Vicente Carli Junior",
@@ -43,7 +43,7 @@
     "socket.io": "^4.7.2",
     "source-map-support": "^0.5.16",
     "taulukko-commons": "^1.1.41",
-    "taulukko-messages-client": "^0.1.32",
+    "taulukko-messages-client": "^0.1.40",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1"
   },

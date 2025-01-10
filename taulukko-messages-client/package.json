@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages-client",
-  "version": "0.1.39",
+  "version": "0.1.41",
   "type": "commonjs",
   "description": "Core for a Simple messaging system in-memory based on WebSocket",
   "author": "Edson Vicente Carli Junior",
@@ -11,6 +11,7 @@
     "./dist/index.js",
     "./dist/taulukko-messages.js",
     "./dist/src/**/*.js",
+    "./dist/bundle/**/*.js",
     "./dist/index.d.ts",
     "./dist/src/**/*.d.ts",
     "./dist/index.js.map",
@@ -41,12 +42,10 @@
   },
   "dependencies": {
     "moment": "^2.30.1",
-    "npx": "^10.2.2",
     "socket.io-client": "^4.7.2",
     "source-map-support": "^0.5.16",
     "taulukko-commons": "^1.1.41",
-    "taulukko-messages-core": "^0.1.32",
-    "webpack": "^5.97.1"
+    "taulukko-messages-core": "^0.1.32"
   },
   "devDependencies": {
     "@types/chai": "^4.3.11",
@@ -63,6 +62,8 @@
     "tslint-eslint-rules-recommended": "^1.2.2",
     "typescript": "4.8",
     "typescript-formatter": "^7.2.2",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "npx": "^10.2.2",
+    "webpack": "^5.97.1"
   }
 }
