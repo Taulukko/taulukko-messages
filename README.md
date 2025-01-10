@@ -26,13 +26,27 @@ Taulukko Messages is a lightweight, efficient, and embedded JavaScript messaging
 
 ### Installation
 
-You can install Taulukko Messages via NPM:
+You can install Taulukko Messages via NPM, for node servers:
 
 ```bash
 npm install taulukko-messages
 ```
 
-### Usage Examples
+For client (webapplications with frameworks like Angular, VueJS, etc):
+```bash
+npm install taulukko-messages-client
+```
+
+For client (webapplications with Javascript Vanilla):
+```bash
+<script
+  src="https://cdn.jsdelivr.net/npm/taulukko-messages-client@0.1.41/dist/bundle/taulukko-messages-client.js"></script>
+```
+
+
+Note: Browsers only can create Publisher and Subscribers, the server need be create into the node server.
+
+### Usage Examples for frameworks like VueJS, Angular, etc.
 
 #### Initializing the Server
 
@@ -47,10 +61,10 @@ async function initServer() {
 }
 ```
 
-#### Publishing and Subscribing to Messages
+#### Publishing and Subscribing to Messages with some framework:
 
 ```javascript
-import { Publisher, Subscriber, Message } from 'taulukko-messages';
+import { Publisher, Subscriber, Message } from 'taulukko-messages-client';
 
 //Publishing
 async function publishMessage() {
@@ -78,6 +92,34 @@ async function subscribeToTopic() {
   //...
    await subscriber.close();
 }
+```
+
+
+#### Publishing and Subscribing to Messages with Javascript Vanilla:
+
+index.html
+```html
+(...)
+    <script src="taulukko-messages-client.js" ></script> 
+    <script src="index.js" type="module"></script>
+
+  </body>
+</html>
+
+```
+
+index.js
+```html
+const publisher = taulukko_messages_client.Publisher.create({topics:["echo"]}); 
+const subscriber = taulukko_messages_client.Subscriber.create({topics:["echo"]});
+ 
+await subscriber.open();
+await publisher.open(); 
+await subscriber.on((message)=>console.log(message));
+await publisher.send("teste enviado pro servidor");
+
+(...)
+
 ```
 ### Documentation
 
