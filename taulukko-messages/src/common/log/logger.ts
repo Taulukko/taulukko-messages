@@ -1,5 +1,5 @@
 import { LogLevel } from "taulukko-messages-client";
-import {logerNames} from "../../global-configuration";
+import { logerNames } from "../names";   
 import { globalConfiguration } from "../global-configuration";
 
 import * as moment from "moment";
