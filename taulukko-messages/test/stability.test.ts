@@ -17,7 +17,7 @@ async function initServer(options={}){
 }
 
 
-describe('stability test', function  () {
+describe('#Stability test-', function  () {
   it('init Server',async  () => {
     let server = await initServer({port:7779,localhost:"127.0.0.1"});
     
@@ -41,17 +41,14 @@ describe('stability test', function  () {
     
     this.timeout(10000); 
     const before:number = new Date().getTime();
-    try{
-     
+    try{ 
       const publisher = await Publisher.create({
-        server:"taulukko://notexist:" + DEFAULT_PORT, timeout:1000
-      });
-      console.log("test.Tentando se conectar");
-      await publisher.open();
-      console.log("test.conectado");
+        server:"taulukko://notexist:" + DEFAULT_PORT, timeout:1000,topics:["echo"]
+      }); 
+      await publisher.open(); 
     }
     catch(e)
-    {
+    { 
       assert.isTrue((e.toString() as string).toUpperCase().indexOf("TIME OUT")>=0,"Must be a time out error");
       const after:number = new Date().getTime();
       const delta:number = after-before;
@@ -341,7 +338,7 @@ describe('stability test', function  () {
 const MINUTE = 60*1000;
 const TIMEOUT = 10 * MINUTE;
 
-describe('stability long time test', function ()  {
+describe('#stability long time test-', function ()  {
   this.timeout(TIMEOUT);
   it('Publisher and subscriber reconect after server restart',async  () => {
     const logger = Logger.create({});

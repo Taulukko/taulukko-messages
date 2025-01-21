@@ -4,10 +4,9 @@ import { assert } from "chai";
 import { LogLevel, logerNames, systemTopics } from 'taulukko-messages-core';
 
 import  {Server,Publisher,Subscriber,Message,serviceStatus} from '../index';
-/*import { Logger } from '../src/common/index.js';
+ import { Logger } from '../src/common/index.js';
 import { loggerFactory } from '../src/common/log/logger.js';
-
-*/
+ 
 
 
 var semaphore:boolean; 
@@ -27,13 +26,8 @@ async function initServer(options={}){
   }
 
 }
-
-/*
-
-
-
- 
-describe("api.basics",  function test(options={}){
+  
+describe("#api.basics-",  function test(options={}){
  
   it("Open server ",async function(){
     const server = await initServer();
@@ -468,7 +462,7 @@ describe("api.basics",  function test(options={}){
 
     const subscriber2 = await Subscriber.create({
       server:"taulukko://localhost:7777", 
-      topics:[ ] 
+      topics:["topic.helloWorld1"] 
     }); 
 
     await subscriber1.open();
@@ -543,5 +537,4 @@ function cleanupGlobals() {
   lastError = null;
   semaphore = false;
 
-}
-  */
+} 

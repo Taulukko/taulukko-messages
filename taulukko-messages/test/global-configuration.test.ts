@@ -5,7 +5,7 @@ import { assert } from "chai";
 import * as sinon from "sinon";
 import { globalConfiguration } from "../";
 
-describe('global configuration api - log configuration', () => {
+describe('#global configuration api - log configuration-', () => {
   before(function() {
     globalConfiguration.log.level = LogLevel.WARNING;
     globalConfiguration.log.showInConsole = false;

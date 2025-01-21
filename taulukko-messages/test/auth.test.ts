@@ -12,7 +12,7 @@ async function initServer(options={}){
  
 
 
-describe.skip('auth test - Simple Auth', () => {
+describe.skip('#auth test - Simple Auth-', () => {
   it('init Server with simple Auth',async  () => {
     const server:Server = await initServer({auth:SimpleAuth.create({password:"test123"})});
     
