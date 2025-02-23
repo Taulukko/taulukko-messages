@@ -51,7 +51,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
   };
 
   send(...data: any) { 
-    console.info("Taulukko Publisher Provider send " );
+    
     if(this.status!=serviceStatus.ONLINE)
     {
       throw new Error("Publisher isn't open yet");
@@ -78,8 +78,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
     if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Publisher already started");
     }
-    
-    console.info("Taulukko Publisher Provider starting..." );
+     
      
     const ret:Promise<void> = new Promise(async (resolve,reject)=>{
 
@@ -122,29 +121,29 @@ export class DefaultPublisherProvider implements PublisherProvider {
     if(this.status ===  serviceStatus.STOPED )
     { 
       return;
-    }
-     console.info("Server disconnected, restarting the connection");
-      this.client.forceClose();
-      this.status = serviceStatus.RESTARTING;
-      let isOpenning:boolean = false;
-      const handle = setInterval(async ()=>{
-        if(isOpenning &&  this.status === serviceStatus.RESTARTING)
-          { 
-            return;
-          }
-        try{ 
- 
-          isOpenning=true;
-          await this.open( );
-          clearInterval(handle);
-          isOpenning=false; 
+    } 
+
+    this.client.forceClose();
+    this.status = serviceStatus.RESTARTING;
+    let isOpenning:boolean = false;
+    const handle = setInterval(async ()=>{
+      if(isOpenning &&  this.status === serviceStatus.RESTARTING)
+        { 
+          return;
         }
-        catch(e)
-        {
-          isOpenning=false;
-          console.error(e);
-        }
-      },1000);
+      try{ 
+
+        isOpenning=true;
+        await this.open( );
+        clearInterval(handle);
+        isOpenning=false; 
+      }
+      catch(e)
+      {
+        isOpenning=false;
+        console.error(e);
+      }
+    },1000);
   };
 
   waitReconnect = async () : Promise<boolean> => {
@@ -166,8 +165,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
 
   onTaulukkoServerConnectionOK = async (resolve:any)=>{ 
  
-    return  (async (websocket:WebSocket)=>{ 
-      this.info("Publisher  onTaulukkoServerConnectionOK received"); 
+    return  (async (websocket:WebSocket)=>{  
       this.id = websocket.client.id; 
         if(this.options.timeout)
           { 
@@ -190,15 +188,13 @@ export class DefaultPublisherProvider implements PublisherProvider {
 
   onTaulukkoServerUnregisteredClient = async (reject: (ret:any)=>void , me:DefaultPublisherProvider)=>{
     const ret =  (async (websocket:WebSocket)=>{
-
-      console.info("Taulukko Publisher Provider onTaulukkoServerUnregisteredClient");  
+ 
         this.status = serviceStatus.STOPED; 
         me.client.forceClose(); 
         try{
           reject({}); 
         }catch(e){
-          //fine
-          console.info("onTaulukkoServerUnregisteredClient error expected, so this is not a problem "); 
+          //fine 
         }
        
       
@@ -211,8 +207,7 @@ export class DefaultPublisherProvider implements PublisherProvider {
 
     const ret : Promise<void> = new Promise(async (resolve,)=>{
 
-      if(this.status!=serviceStatus.ONLINE){ 
-        console.error("Publisher isnt open");
+      if(this.status!=serviceStatus.ONLINE){  
         throw Error("Publisher isnt open");
       } 
 
@@ -222,21 +217,18 @@ export class DefaultPublisherProvider implements PublisherProvider {
         if(this.status == serviceStatus.STOPED)
         {
           clearInterval(handle);
-
           this.client.forceClose();
-
+          
           resolve();
 
         }
-      },1000); 
-      console.info("Taulukko Publisher Provider finished"); 
+      },1000);  
     });
 
    return  ret;
   };
 
-  forceClose = async () :Promise<void> => {
-    console.info("Taulukko Publisher Provider forceClose ");
+  forceClose = async () :Promise<void> => { 
     try{
       this.close();
     }

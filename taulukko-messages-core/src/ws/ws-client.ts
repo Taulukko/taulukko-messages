@@ -45,8 +45,7 @@ export class WSClient {
       if (me.state != serviceStatus.STARTING) { 
         throw Error("State need be STARTING");
       }
-        
-      console.log("WSClient starting with options : " );
+         
  
       const ret:Promise<{}> = new Promise((resolve,reject)=>{
         let success:boolean = false;
@@ -78,8 +77,7 @@ export class WSClient {
         });
         
         me.client.on('connect', () => {  
-          success=true; 
-          console.info("WSClient connection with server sucefull ");
+          success=true;  
           this.state = serviceStatus.ONLINE;
           resolve(true);
         });
@@ -89,8 +87,7 @@ export class WSClient {
       return  ret;
   };
 
-  close = async () => {
-    console.info("WSClient close ", this.state);
+  close = async () => { 
     if (this.state != serviceStatus.ONLINE) {
       throw Error("State need be ONLINE");
     }
@@ -105,7 +102,7 @@ export class WSClient {
      }
      catch(e)
      {
-      console.info("forceClose error ", e);
+      console.warn("Server already closed" );
       return;
      }
      finally{

@@ -23,7 +23,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
  
 
   on = async (listener:  Listener)=> {
-    console.info("Taulukko Subscriber Provider on: inserting a new listener "  );
+    
     this.listeners.push(listener);
   
       await this.client.on( protocolNames.NEW_MESSAGE,async (message:Message)=>{
@@ -31,8 +31,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
       });   
     };
  
-  open = async () :Promise<void>  => {
-    console.info("Publisher Default Provider  open ");
+  open = async () :Promise<void>  => { 
     if(this.status!==serviceStatus.STARTING && this.status!==serviceStatus.RESTARTING){
       throw Error("Subscriber already started");
     }
@@ -57,7 +56,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
    
 
       this.client.on('connect', () => {
-        console.info("Taulukko Subscriber Provider connection with server sucefull ");
+       //console.info("Taulukko Subscriber Provider connection with server sucefull ");
       }); 
     
       this.client.on('disconnect',  this.onDisconnect);
@@ -96,8 +95,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
   };
 
   onTaulukkoServerConnectionOK = async (resolve)=>{
-    return  (async (websocket:WebSocket)=>{
-      console.info("Taulukko Subscriber Provider onTaulukkoServerConnectionOK ");
+    return  (async (websocket:WebSocket)=>{ 
         this.id = websocket.client.id; 
         await this.client.emit(protocolNames.CLIENT_ONLINE,{type: clientTypes.SUBSCRIBER,id:this.id,topics:this.data.topics});
          
@@ -106,8 +104,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
 
  
   onTaulukkoServerRegisteredClient = async (resolve)=>{
-    return  (async (websocket:WebSocket)=>{
-      console.info("Taulukko Subscriber Provider onTaulukkoServerRegisteredClient "); 
+    return  (async (websocket:WebSocket)=>{ 
         if(this.status==serviceStatus.RESTARTING)
         {
 
@@ -122,8 +119,7 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
 
   
   onTaulukkoServerUnregisteredClient = async (resolve: (ret:any)=>void,me:DefaultSubscriberProvider )=>{
-    const ret =  (async (websocket:WebSocket)=>{
-      console.info("Taulukko Publisher Provider onTaulukkoServerRegisteredClient "); 
+    const ret =  (async (websocket:WebSocket)=>{ 
         this.status = serviceStatus.STOPED;
      
         try{
@@ -149,21 +145,18 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
         if(this.status == serviceStatus.STOPED)
         {
           clearInterval(handle);
-          try{
-            this.client.close();
-          }
-          catch(e)
-          {}
+         
+          
+          this.client.forceClose();
+          
           resolve();
         }
-      },100); 
-      console.info("Taulukko Subscriber Provider finished");
+      },100);  
     });
    return ret;
   };
 
-  forceClose = async () : Promise<void> => {
-    console.info("Taulukko Subscriber Provider forceClose ");
+  forceClose = async () : Promise<void> => { 
     try{
        this.close();
     }

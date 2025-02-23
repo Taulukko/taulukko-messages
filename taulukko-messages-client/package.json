@@ -1,6 +1,6 @@
 {
   "name": "taulukko-messages-client",
-  "version": "0.1.41",
+  "version": "0.1.60",
   "type": "commonjs",
   "description": "Core for a Simple messaging system in-memory based on WebSocket",
   "author": "Edson Vicente Carli Junior",
@@ -45,7 +45,7 @@
     "socket.io-client": "^4.7.2",
     "source-map-support": "^0.5.16",
     "taulukko-commons": "^1.1.41",
-    "taulukko-messages-core": "^0.1.32"
+    "taulukko-messages-core": "^0.1.60"
   },
   "devDependencies": {
     "@types/chai": "^4.3.11",
@@ -54,6 +54,7 @@
     "@types/sinon": "^17.0.3",
     "chai": "^4.3.6",
     "mocha": "^10.2.0",
+    "npx": "^10.2.2",
     "sinon": "^17.0.1",
     "terser-webpack-plugin": "^5.3.11",
     "ts-jest": "^24.0.2",
@@ -62,8 +63,7 @@
     "tslint-eslint-rules-recommended": "^1.2.2",
     "typescript": "4.8",
     "typescript-formatter": "^7.2.2",
-    "webpack-cli": "^6.0.1",
-    "npx": "^10.2.2",
-    "webpack": "^5.97.1"
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
   }
 }
