@@ -1,4 +1,4 @@
- import { assert } from "chai";  
+ import { assert,expect } from "chai";  
 import  {Server,Publisher,Subscriber,Message,serviceStatus,globalConfiguration} from '../index';
 import { LogLevel } from 'taulukko-messages-core';
 import { Logger } from "../src/common/log/logger";   
@@ -8,7 +8,11 @@ var semaphore:boolean;
 var lastError:Error; 
 
 
+
+    
 globalConfiguration.log.level = LogLevel.ERROR;
+globalConfiguration.log.showInConsole = true; 
+ 
 
 async function initServer(options={}){
 
@@ -459,10 +463,7 @@ describe('#stability long time test-', function ()  {
   it('Publisher and subscriber reconect after server restart',async  () => {
     const logger = Logger.create({});
     
-    
-    globalConfiguration.log.level = LogLevel.ALERT;
-    globalConfiguration.log.showInConsole = true; 
-
+     
     const NUMBER_OF_TESTS = 2;
     let times = 0;
    
@@ -610,7 +611,31 @@ describe('#stability long time test-', function ()  {
      
 
   });
+
+  
+  it('Publish into a inexistent server with timeout',async  () => {
+    const logger = Logger.create({});
+    
+ 
+    let publisher = await Publisher.create({ 
+      server:"taulukko://localhost:" + DEFAULT_PORT,
+      topics:["topic.helloWorld"],
+      defaultLogLevel:LogLevel.ERROR,
+      timeout:2000
+    });
+ 
+    assert.equal(publisher.data.status,serviceStatus.STARTING,"Must be STARTING before publisher.open");
+
+    publisher.open().then( (v)=>assert.fail("expected a error")).catch((e)=>{
+      console.log(e);
+    });
+ 
+  });
+
+
 });
+
+
 
 //auxiliar functions
 function receiveTheMessage():Promise<Error|null> { 
