@@ -76,20 +76,24 @@ export class DefaultSubscriberProvider implements SubscriberProvider {
     this.status = serviceStatus.RESTARTING;
     let isOpenning = false;
     const handle = setInterval(async ()=>{
+      
+      isOpenning = false;
+ 
       try{
-        if(isOpenning &&  this.status === serviceStatus.RESTARTING)
+        if(isOpenning ||  this.status === serviceStatus.ONLINE )
           { 
             return;
           }
         isOpenning = true;
-        await this.open();
         clearInterval(handle);
+        await this.open();
         isOpenning=false; 
       }
       catch(e)
       {
         isOpenning=false;
         console.error(e);
+        clearInterval(handle);
       }
     },1000);
   };

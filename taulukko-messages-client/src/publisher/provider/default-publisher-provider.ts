@@ -127,12 +127,14 @@ export class DefaultPublisherProvider implements PublisherProvider {
     this.status = serviceStatus.RESTARTING;
     let isOpenning:boolean = false;
     const handle = setInterval(async ()=>{
-      if(isOpenning &&  this.status === serviceStatus.RESTARTING)
+      console.log("Tentando reiniciar a conexão");
+      if(isOpenning ||  this.status === serviceStatus.ONLINE)
         { 
+          console.log("Já está reiniciando ou aberto");
           return;
         }
       try{ 
-
+        console.log("Reiniciando...");
         isOpenning=true;
         await this.open( );
         clearInterval(handle);
@@ -214,13 +216,12 @@ export class DefaultPublisherProvider implements PublisherProvider {
       await this.client.emit(protocolNames.CLIENT_OFFLINE,{type:clientTypes.PUBLISHER, id:this.id}); 
 
       const handle = setInterval(async ()=>{ 
+     
         if(this.status == serviceStatus.STOPED)
-        {
+        { 
           clearInterval(handle);
-          this.client.forceClose();
-          
-          resolve();
-
+          this.client.forceClose(); 
+          resolve(); 
         }
       },1000);  
     });
