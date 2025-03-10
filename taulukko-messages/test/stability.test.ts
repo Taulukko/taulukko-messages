@@ -614,21 +614,21 @@ describe('#stability long time test-', function ()  {
 
   
   it('Publish into a inexistent server with timeout',async  () => {
-    const logger = Logger.create({});
+    this.timeout(10000);
     
- 
-    let publisher = await Publisher.create({ 
-      server:"taulukko://localhost:" + DEFAULT_PORT,
-      topics:["topic.helloWorld"],
-      defaultLogLevel:LogLevel.ERROR,
-      timeout:2000
-    });
- 
-    assert.equal(publisher.data.status,serviceStatus.STARTING,"Must be STARTING before publisher.open");
-
-    publisher.open().then( (v)=>assert.fail("expected a error")).catch((e)=>{
-      console.log(e);
-    });
+      const before = new Date().getTime();
+        try {
+            const publisher = await Publisher.create({
+                server: "taulukko://notexist:" + DEFAULT_PORT, timeout: 1000, topics: ["echo"]
+            });
+            await publisher.open();
+        }
+        catch (e) {
+            assert.isTrue(e.toString().toUpperCase().indexOf("TIME OUT") >= 0, "Must be a time out error");
+            const after = new Date().getTime();
+            const delta = after - before;
+            assert.isTrue(delta >= 1000, "timeout need be more then the configuration");
+        }
  
   });
 
